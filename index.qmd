@@ -83,9 +83,9 @@ The methodology presented here addresses key challenges in fire emissions accoun
 
 ------------------------------------------------------------------------
 
-## IPCC Tier 1 Overview
+## IPCC Tier 1 Fire Emissions
 
-The IPCC Tier 1 approach for estimating greenhouse gas emissions from fires provides a standardized, globally applicable framework based on readily available data and default emission factors. This methodology applies Equation 2.27 from the 2006 IPCC Guidelines for National Greenhouse Gas Inventories (refined in 2019):
+The IPCC Tier 1 approach for estimating greenhouse gas emissions from fires provides a standardized, globally applicable framework based on readily available data and default emission factors. This methodology applies Equation 2.27 from the 2019 IPCC Refinements to Guidelines for National Greenhouse Gas Inventories [@ipccChapter2Generic2019]:
 
 $$
 L_{fire} = A \times M_B \times C_f \times G_{ef} \times 10^{-3}
@@ -735,15 +735,15 @@ Resources:
 
 The following chapters provide detailed, step-by-step guidance for implementing each component of the IPCC Tier 1 burned area and emissions estimation workflow. Each chapter builds upon data and methods from previous sections, creating an integrated analytical framework.
 
-### Chapter 1: Burned Area Data {.unnumbered}
+### Chapter 1: Burn Area {.unnumbered}
 
 Extract MODIS MCD64A1 data, apply quality filters, aggregate temporally and spatially, handle missing data, and validate against alternative fire products.
 
-### Chapter 2: Vegetation Classification {.unnumbered}
+### Chapter 2: Fuel Stratification {.unnumbered}
 
 Classify burned pixels into Forest (Humid Tropical, Other), Savanna, and Organic Soil categories using MODIS land cover and auxiliary datasets.
 
-### Chapter 3: Fuel Biomass {.unnumbered}
+### Chapter 3: Fuel Consumption {.unnumbered}
 
 Assign IPCC default fuel consumption values based on vegetation type and climate zone stratification, calculate total burned biomass.
 
@@ -751,21 +751,9 @@ Assign IPCC default fuel consumption values based on vegetation type and climate
 
 Apply IPCC emission factors, compute CH₄, N₂O, and CO₂ emissions, handle CO₂ reporting exclusions for non-stand-replacing fires.
 
-### Chapter 5: Peatland Fires {.unnumbered}
-
-Special treatment of Histosol fires, IPCC Wetlands Supplement methodology, regional uncertainty assessment and SE Asia validation.
-
-### Chapter 6: Google Earth Engine {.unnumbered}
-
-Complete GEE scripts for automated processing, batch export strategies, computational optimization, and reproducible workflows.
-
-### Chapter 7: QA/QC & Validation {.unnumbered}
+### Chapter 5: QA/QC & SOPs {.unnumbered}
 
 Cross-validation with UNFCCC data, uncertainty propagation, sensitivity analysis, and documentation for NGHGI reporting.
-
-### Chapter 8: Reporting Formats {.unnumbered}
-
-FAOSTAT database structure, CRF table formatting, time series visualization, and transparent documentation of methods and assumptions.
 
 ------------------------------------------------------------------------
 

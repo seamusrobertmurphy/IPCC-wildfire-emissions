@@ -1,5 +1,5 @@
 ---
-title: "Burn Area"
+title: "Fuel Stratification"
 execute:
   echo: true
 format:
@@ -23,18 +23,95 @@ citeproc: true
 ## Overview {.unnumbered}
 
 This chapter describes the classification of burned areas
-into IPCC-compliant vegetation categories using MODIS Land
-Cover (MCD12Q1) and auxiliary datasets. The classification
-determines which emission factors and fuel consumption
-values apply to each burned pixel, directly impacting
-greenhouse gas emission estimates.
+into IPCC vegetation strata using MODIS Land Cover (MCD12Q1)
+and auxiliary datasets. The classification determines which
+emission factors and fuel consumption values apply to each
+burned pixel, directly impacting greenhouse gas emission
+estimates.
+
+### Environment Setup {.unnumbered}
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: true
+#| comment: NA
+
+easypackages::packages(
+  "bslib", 
+  "cols4all", "covr", "cowplot", 
+  "dendextend", "digest","DiagrammeR","dtwclust", "downlit", 
+  "e1071", "exactextractr","elevatr", 
+  "FNN", "future", "forestdata",
+  "gdalcubes", "gdalUtilities", "geojsonsf", "geos", "ggplot2", "ggstats", 
+  "ggspatial", "ggmap", "ggplotify", "ggpubr", "ggrepel", "giscoR", 
+  "hdf5r", "httr", "httr2", "htmltools",
+  "jsonlite", 
+  "kohonen", 
+  "leaflet.providers", "leafem", "libgeos","luz","lwgeom", "leaflet", "leafgl",
+  "mapedit", "mapview", "maptiles", "methods", "mgcv", 
+  "ncdf4", "nnet", 
+  "openxlsx", "parallel", "plotly", 
+  "randomForest", "rasterVis", "raster", "Rcpp", "RcppArmadillo", 
+  "RcppCensSpatial","rayshader", "RcppEigen", "RcppParallel", 
+  "RColorBrewer", "reactable", "rgl", "rsconnect","RStoolbox", "rts", 
+  "s2", "sf", "scales", "sits","spdep", "stars", "stringr","supercells", 
+  "terra", "testthat", "tidyverse", "tidyterra","tools", 
+  "tmap", "tmaptools", "terrainr", 
+  "xgboost",
+  prompt = F)
+
+#mapviewOptions(fgb = FALSE)
+sf::sf_use_s2(use_s2 = FALSE)
+```
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| comment: NA
+
+options(repos = c(CRAN = "https://cloud.r-project.org"),
+        htmltools.dir.version = FALSE, 
+        htmltools.preserve.raw = FALSE
+        )
+
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  message = FALSE, 
+  warning = FALSE,
+  error = FALSE, 
+  comment = NA, 
+  tidy.opts = list(width.cutoff = 60)
+  ) 
+```
+
+```{css, echo=FALSE, class.source = 'foldable'}
+div.column {
+    display: inline-block;
+    vertical-align: top;
+    width: 50%;
+}
+
+#TOC::before {
+  content: "";
+  display: block;
+  height:200px;
+  width: 200px;
+  background-image: url('https://raw.githubusercontent.com/seamusrobertmurphy/map-templates/refs/heads/main/assets/outputs/01-site-map.png');
+  background-size: contain;
+  background-position: 50% 50%;
+  padding-top: 80px !important;
+  background-repeat: no-repeat;
+}
+```
 
 ------------------------------------------------------------
 
-### IPCC Vegetation Categories {#sec-veg-ipcc-categories}
+## IPCC Vegetation Strata {#sec-veg-ipcc-categories}
 
 FAOSTAT implements three primary fire categories aligned
-with IPCC 2006 Guidelines [@intergovernmental2006chapter]:
+with IPCC 2006 Guidelines [@ipccChapter3Consistent2006]:
 
 1\. Forest Fires:
 
@@ -61,7 +138,7 @@ with IPCC 2006 Guidelines [@intergovernmental2006chapter]:
 ```{r}
 #| eval: false
 #| label: veg-decision-tree
-#| echo: false
+#| echo: true
 
 # Conceptual decision tree (not executable code)
 # 
@@ -79,15 +156,15 @@ with IPCC 2006 Guidelines [@intergovernmental2006chapter]:
 #   └─ ELSE → Not classified (excluded from analysis)
 ```
 
-### Vegetation Reporting Requirements {#sec-veg-reporting}
+## IPCC Vegetation Requirements {#sec-veg-reporting}
 
 Following IPCC guidelines:
 
-| Vegetation Type    | CO₂ | CH₄ | N₂O | Rationale                   |
-|--------------------|-----|-----|-----|-----------------------------|
-| Forest Fires       | ❌  | ✅  | ✅  | CO₂ in carbon stock changes |
-| Savanna Fires      | ❌  | ✅  | ✅  | Assumes annual CO₂ balance  |
-| Organic Soil Fires | ✅  | ✅  | ❌  | Per Wetlands Supplement     |
+| Vegetation Type | CO₂ | CH₄ | N₂O | Rationale                   |
+|-----------------|-----|-----|-----|-----------------------------|
+| Forest Fires    | ❌  | ✅  | ✅  | CO₂ in carbon stock changes |
+| Savanna Fires   | ❌  | ✅  | ✅  | Assumes annual CO₂ balance  |
+| Peatland Fires  | ✅  | ✅  | ❌  | Per Wetlands Supplement     |
 
 Key principle: CO₂ from non-stand-replacing fires assumed
 balanced by regrowth within one year (IPCC 2019, Section
@@ -95,9 +172,9 @@ balanced by regrowth within one year (IPCC 2019, Section
 
 ------------------------------------------------------------
 
-## MODIS Land Cover Classification {#sec-veg-modis}
+## MODIS Land Cover: MCD12Q1 {#sec-veg-modis}
 
-### MCD12Q1 IGBP Classification Scheme {#sec-veg-igbp}
+### IGBP Classification Scheme {#sec-veg-igbp}
 
 #### Product Overview {#sec-veg-mcd12q1-overview}
 
@@ -115,7 +192,7 @@ balanced by regrowth within one year (IPCC 2019, Section
 Forest Classes (1-5):
 
 | Class | Name | IPCC Category | Fuel Consumption (t ha⁻¹) |
-|------------|------------|-------------|-------------------------|
+|---------------|---------------|---------------|-----------------|
 | 1 | Evergreen Needleleaf Forests | Other Forest | 41.0 (mean) |
 | 2 | Evergreen Broadleaf Forests | Humid Tropical Forest | 119.6 (mean) |
 | 3 | Deciduous Needleleaf Forests | Other Forest | 41.0 (mean) |
@@ -195,7 +272,7 @@ Known Classification Issues:
 Regional Accuracy (Sulla-Menashe & Friedl, 2022):
 
 | Region        | Overall Accuracy | Forest Accuracy | Savanna Accuracy |
-|---------------|------------------|-----------------|------------------|
+|---------------|---------------|---------------|---------------|
 | Africa        | 73%              | 68%             | 78%              |
 | South America | 77%              | 82%             | 71%              |
 | Europe        | 79%              | 86%             | 65%              |
@@ -554,7 +631,7 @@ print(paste("Late season:", late_area$getInfo()$burned, "ha"))
 
 ------------------------------------------------------------
 
-## Organic Soil Fire Classification {#sec-veg-organic}
+## Peatland Fire Classification {#sec-veg-organic}
 
 ### Histosols Identification {#sec-veg-histosols}
 
@@ -700,9 +777,9 @@ until more validation data available
 
 ------------------------------------------------------------
 
-## Multi-Source Validation of Vegetation Classification {#sec-veg-validation}
+## Multi-Source Validation {#sec-veg-validation}
 
-### GLAD Forest Height for Forest/Non-Forest Validation {#sec-veg-glad-height}
+### GLAD Validation {#sec-veg-glad-height}
 
 ```{r}
 #| eval: false
@@ -756,7 +833,7 @@ print(confusion)
 print(paste("Cohen's Kappa:", round(confusion$overall["Kappa"], 3)))
 ```
 
-### ESRI Land Cover for High-Resolution Validation {#sec-veg-esri-validation}
+### ESRI-LC Validation {#sec-veg-esri-validation}
 
 ```{r}
 #| eval: false
@@ -843,7 +920,7 @@ pinus_pinaster <- fd_forest_eutrees4f(
 # 3. Climate stratification is appropriate
 ```
 
-### Chorological Maps for Forest Type Verification {#sec-veg-chorological}
+### Chorological Forest Type Maps {#sec-veg-chorological}
 
 ```{r}
 #| eval: false
@@ -878,9 +955,56 @@ plot(pinus_pinaster$geometry, col = "blue", add = TRUE)
 
 ------------------------------------------------------------
 
-## Complete Vegetation Classification Workflow {#sec-veg-workflow}
+## Uncertainty & QA/QC {#sec-veg-qc}
 
-### Integrated Processing Pipeline {#sec-veg-pipeline}
+### Accuracy Assessment {#sec-veg-uncertainty-assess}
+
+Sources of uncertainty:
+
+1.  Land cover classification error: ±10-15% (MCD12Q1
+    validation)
+2.  Burned area overlay error: ±2-5% (geometric
+    registration)
+3.  Ecological zone delineation: ±5-10% (climate proxy vs.
+    official zones)
+4.  Temporal mismatch: Land cover annual vs. monthly burns
+
+Total uncertainty (quadrature): $$
+U_{classification}^2 = U_{landcover}^2 + U_{overlay}^2 + U_{ecozone}^2
+$$
+
+Typical result: ±15-20% uncertainty in vegetation type
+assignment
+
+### QC Checklist {#sec-veg-qc-checklist}
+
+Pre-classification:
+
+-   Burned area and land cover from same year
+-   Land cover projection matches burned area
+-   All forest classes (1-5) included in forest mask
+-   All savanna classes (6-10) included in savanna mask
+
+Classification:
+
+-   Mutually exclusive categories (no pixel in multiple
+    categories)
+-   Complete coverage (all burned pixels classified)
+-   Climate zones applied correctly
+-   Organic soils restricted to validated regions
+
+Post-classification:
+
+-   Area totals match Chapter 1 burned area
+-   No negative or unrealistic values
+-   Results comparable to previous years (if available)
+-   Validation with independent data completed
+
+------------------------------------------------------------
+
+## Reproducible Workflow {#sec-veg-workflow}
+
+### Integrated Pipeline {#sec-veg-pipeline}
 
 ```{r}
 #| eval: false
@@ -1001,7 +1125,7 @@ Map$addLayer(other_forest_fires, list(palette = "orange"), "Other Forest Fires")
 Map$addLayer(savanna_fires, list(palette = "yellow"), "Savanna Fires")
 ```
 
-### Output Format for Chapter 3 {#sec-veg-output}
+### Output Format {#sec-veg-output}
 
 Required outputs for fuel biomass calculation (Chapter 3):
 
@@ -1031,56 +1155,7 @@ knitr::kable(output_table, caption = "Vegetation Classification Output Example")
 
 ------------------------------------------------------------
 
-## Quality Control and Uncertainty {#sec-veg-qc}
-
-### Classification Uncertainty Assessment {#sec-veg-uncertainty-assess}
-
-Sources of uncertainty:
-
-1.  Land cover classification error: ±10-15% (MCD12Q1
-    validation)
-2.  Burned area overlay error: ±2-5% (geometric
-    registration)
-3.  Ecological zone delineation: ±5-10% (climate proxy vs.
-    official zones)
-4.  Temporal mismatch: Land cover annual vs. monthly burns
-
-Total uncertainty (quadrature): $$
-U_{classification}^2 = U_{landcover}^2 + U_{overlay}^2 + U_{ecozone}^2
-$$
-
-Typical result: ±15-20% uncertainty in vegetation type
-assignment
-
-### QC Checklist {#sec-veg-qc-checklist}
-
-Pre-classification:
-
--   Burned area and land cover from same year
--   Land cover projection matches burned area
--   All forest classes (1-5) included in forest mask
--   All savanna classes (6-10) included in savanna mask
-
-Classification:
-
--   Mutually exclusive categories (no pixel in multiple
-    categories)
--   Complete coverage (all burned pixels classified)
--   Climate zones applied correctly
--   Organic soils restricted to validated regions
-
-Post-classification:
-
--   Area totals match Chapter 1 burned area
--   No negative or unrealistic values
--   Results comparable to previous years (if available)
--   Validation with independent data completed
-
-------------------------------------------------------------
-
-## Chapter Summary and Next Steps {#sec-veg-summary}
-
-### Key Takeaways {#sec-veg-takeaways}
+## Notes & Next Steps {#sec-veg-summary}
 
 1.  MODIS MCD12Q1 IGBP classification provides globally
     consistent vegetation types
@@ -1092,8 +1167,6 @@ Post-classification:
     EU-Trees4F) reduces uncertainty
 5.  Uncertainty \~±15-20% in vegetation classification
     acceptable for Tier 1
-
-### Progression to Chapter 3 {#sec-veg-to-chapter3}
 
 Chapter 3: Fuel Biomass Consumption will use vegetation
 classifications to:
@@ -1114,26 +1187,3 @@ Critical linkage: Each vegetation type carries forward:
 -   Geographic location (for validation and reporting)
 
 ------------------------------------------------------------
-
-## References {#sec-veg-references}
-
-FAO (2012). Global ecological zones for FAO forest
-reporting: 2010 Update. *Forest Resources Assessment Working
-Paper 179*. FAO, Rome, Italy.
-
-IPCC (2006). 2006 IPCC Guidelines for National Greenhouse
-Gas Inventories, Volume 4: Agriculture, Forestry and Other
-Land Use. IGES, Japan.
-
-IPCC (2014). 2013 Supplement to the 2006 IPCC Guidelines for
-National Greenhouse Gas Inventories: Wetlands. IPCC,
-Switzerland.
-
-Loveland, T.R., & Belward, A.S. (1997). The IGBP-DIS global
-1km land cover data set, DISCover: First results.
-*International Journal of Remote Sensing*, 18(15),
-3289-3295.
-
-Sulla-Menashe, D., & Friedl, M.A. (2022). User Guide to
-Collection 6 MODIS Land Cover (MCD12Q1 and MCD12C1) Product.
-NASA LP DAAC.

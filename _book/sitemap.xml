@@ -2,15 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://seamusrobertmurphy.quarto.pub/TREES-wildfire-replications/index.html</loc>
-    <lastmod>2025-11-05T05:30:53.186Z</lastmod>
+    <lastmod>2025-11-06T21:29:30.521Z</lastmod>
   </url>
   <url>
     <loc>https://seamusrobertmurphy.quarto.pub/TREES-wildfire-replications/01-burn-area/index.html</loc>
-    <lastmod>2025-11-05T05:50:02.170Z</lastmod>
+    <lastmod>2025-11-06T19:44:12.965Z</lastmod>
   </url>
   <url>
-    <loc>https://seamusrobertmurphy.quarto.pub/TREES-wildfire-replications/02-veg-classes/index.html</loc>
-    <lastmod>2025-11-05T06:04:35.981Z</lastmod>
+    <loc>https://seamusrobertmurphy.quarto.pub/TREES-wildfire-replications/02-fuel-stratification/index.html</loc>
+    <lastmod>2025-11-06T20:55:54.511Z</lastmod>
+  </url>
+  <url>
+    <loc>https://seamusrobertmurphy.quarto.pub/TREES-wildfire-replications/03-fuel-consumption/index.html</loc>
+    <lastmod>2025-11-06T20:08:28.298Z</lastmod>
+  </url>
+  <url>
+    <loc>https://seamusrobertmurphy.quarto.pub/TREES-wildfire-replications/04-emission-factors/index.html</loc>
+    <lastmod>2025-11-06T21:19:25.786Z</lastmod>
   </url>
   <url>
     <loc>https://seamusrobertmurphy.quarto.pub/TREES-wildfire-replications/references/index.html</loc>

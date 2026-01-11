@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.7.33">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>1&nbsp; Burn Area – IPCC Fire Emissions</title>
+<title>1&nbsp; Burn Area – WildFire Emissions</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -81,7 +81,7 @@ div.csl-indent {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../02-veg-classes/index.html" rel="next">
+<link href="../02-fuel-stratification/index.html" rel="next">
 <link href="../index.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -144,9 +144,9 @@ window.Quarto = {
   typesetMath
 };
 </script>
-<meta property="og:title" content="1&nbsp; Burn Area – IPCC Fire Emissions">
+<meta property="og:title" content="1&nbsp; Burn Area – WildFire Emissions">
 <meta property="og:description" content="">
-<meta property="og:site_name" content="IPCC Fire Emissions">
+<meta property="og:site_name" content="WildFire Emissions">
 </head>
 <body class="nav-sidebar floating quarto-light">
 
@@ -166,7 +166,7 @@ window.Quarto = {
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="../">IPCC Fire Emissions</a> 
+      <a href="../">WildFire Emissions</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/seamusrobertmurphy/TREES-wildfire-replications" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
 </div>
@@ -193,8 +193,20 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../02-veg-classes/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Burn Area</span></span></a>
+  <a href="../02-fuel-stratification/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Fuel Stratification</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03-fuel-consumption/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Fuel Consumption</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04-emission-factors/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Emission Factors</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -225,7 +237,7 @@ window.Quarto = {
 <li>
 <a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a>
   <ul class="collapse">
-<li><a href="#environmental-setup" id="toc-environmental-setup" class="nav-link" data-scroll-target="#environmental-setup">Environmental Setup</a></li>
+<li><a href="#environment-setup" id="toc-environment-setup" class="nav-link" data-scroll-target="#environment-setup">Environment Setup</a></li>
   </ul>
 </li>
   <li>
@@ -304,7 +316,7 @@ window.Quarto = {
 
 </header><section id="overview" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="overview">Overview</h2>
 <p>This chapter provides detailed workflows for detecting, processing, and validating burned areas using MODIS MCD64A1 Collection 6.1 data within the Google Earth Engine (GEE) platform. The methodology implements IPCC Tier 1 requirements while incorporating multi-source validation using the <code>forestdata</code> package and alternative remote sensing products.</p>
-<section id="environmental-setup" class="level3 unnumbered"><h3 class="unnumbered anchored" data-anchor-id="environmental-setup">Environmental Setup</h3>
+<section id="environment-setup" class="level3 unnumbered"><h3 class="unnumbered anchored" data-anchor-id="environment-setup">Environment Setup</h3>
 <div class="cell">
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">easypackages</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/easypackages/man/packages.html">packages</a></span><span class="op">(</span></span>
 <span>  <span class="st">"bslib"</span>, </span>
@@ -1809,8 +1821,8 @@ Rossi, S., Tubiello, F. N., Prosperi, P., Salvatore, M., Jacobs, H., Biancalani,
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../02-veg-classes/index.html" class="pagination-link" aria-label="Burn Area">
-        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Burn Area</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../02-fuel-stratification/index.html" class="pagination-link" aria-label="Fuel Stratification">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Fuel Stratification</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
@@ -1846,7 +1858,7 @@ Rossi, S., Tubiello, F. N., Prosperi, P., Salvatore, M., Jacobs, H., Biancalani,
 <span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>using the <span class="in">`forestdata`</span> package and alternative remote</span>
 <span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>sensing products.</span>
 <span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a><span class="fu">### Environmental Setup {.unnumbered}</span></span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a><span class="fu">### Environment Setup {.unnumbered}</span></span>
 <span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>

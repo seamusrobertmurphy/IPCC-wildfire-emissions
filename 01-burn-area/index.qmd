@@ -30,7 +30,7 @@ requirements while incorporating multi-source validation
 using the `forestdata` package and alternative remote
 sensing products.
 
-### Environmental Setup {.unnumbered}
+### Environment Setup {.unnumbered}
 
 ```{r}
 #| warning: false

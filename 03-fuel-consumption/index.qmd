@@ -1,0 +1,1027 @@
+---
+title: "Fuel Consumption"
+execute:
+  echo: true
+format:
+  html:
+    toc: true
+    toc-location: right
+    toc-depth: 3
+    toc-title: "**On this page**"
+    highlight-style: pygments
+    page-layout: article
+
+editor_options: 
+  markdown: 
+    wrap: 60
+engine: knitr
+bibliography: ../references/references.bib
+csl: ../references/apa.csl
+citeproc: true
+---
+
+## Overview {.unnumbered}
+
+This chapter describes the estimation of fuel mass available for combustion (M~B~) and combustion factors (C~f~) following IPCC Tier 1 default values. These parameters, combined with burned area and vegetation classifications from Chapters 1-2, determine the total biomass burned in fire events.
+
+### Environment Setup
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: true
+#| comment: NA
+
+easypackages::packages(
+  "bslib", 
+  "cols4all", "covr", "cowplot", 
+  "dendextend", "digest","DiagrammeR","dtwclust", "downlit", 
+  "e1071", "exactextractr","elevatr", 
+  "FNN", "future", "forestdata",
+  "gdalcubes", "gdalUtilities", "geojsonsf", "geos", "ggplot2", "ggstats", 
+  "ggspatial", "ggmap", "ggplotify", "ggpubr", "ggrepel", "giscoR", 
+  "hdf5r", "httr", "httr2", "htmltools",
+  "jsonlite", 
+  "kohonen", 
+  "leaflet.providers", "leafem", "libgeos","luz","lwgeom", "leaflet", "leafgl",
+  "mapedit", "mapview", "maptiles", "methods", "mgcv", 
+  "ncdf4", "nnet", 
+  "openxlsx", "parallel", "plotly", 
+  "randomForest", "rasterVis", "raster", "Rcpp", "RcppArmadillo", 
+  "RcppCensSpatial","rayshader", "RcppEigen", "RcppParallel", 
+  "RColorBrewer", "reactable", "rgl", "rsconnect","RStoolbox", "rts", 
+  "s2", "sf", "scales", "sits","spdep", "stars", "stringr","supercells", 
+  "terra", "testthat", "tidyverse", "tidyterra","tools", 
+  "tmap", "tmaptools", "terrainr", 
+  "xgboost",
+  prompt = F)
+
+#mapviewOptions(fgb = FALSE)
+sf::sf_use_s2(use_s2 = FALSE)
+```
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+#| comment: NA
+
+options(repos = c(CRAN = "https://cloud.r-project.org"),
+        htmltools.dir.version = FALSE, 
+        htmltools.preserve.raw = FALSE
+        )
+
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  message = FALSE, 
+  warning = FALSE,
+  error = FALSE, 
+  comment = NA, 
+  tidy.opts = list(width.cutoff = 60)
+  ) 
+```
+
+```{css, echo=FALSE, class.source = 'foldable'}
+div.column {
+    display: inline-block;
+    vertical-align: top;
+    width: 50%;
+}
+
+#TOC::before {
+  content: "";
+  display: block;
+  height:200px;
+  width: 200px;
+  background-image: url('https://raw.githubusercontent.com/seamusrobertmurphy/map-templates/refs/heads/main/assets/outputs/01-site-map.png');
+  background-size: contain;
+  background-position: 50% 50%;
+  padding-top: 80px !important;
+  background-repeat: no-repeat;
+}
+```
+
+------------------------------------------------------------
+
+IPCC Fuel Biomass
+
+### Component in Equation 2.27 {#sec-fuel-equation}
+
+Fuel biomass consumption represents two components of the IPCC fire emissions equation:
+
+$$
+L_{fire} = A \times M_B \times C_f \times G_{ef} \times 10^{-3}
+$$
+
+Where:
+-   **M~B~** = Mass of fuel available for combustion (tonnes dry matter ha⁻¹)
+-   **C~f~** = Combustion factor (dimensionless, 0-1)
+-   **M~B~ × C~f~** = Actual biomass consumed per unit area (tonnes DM ha⁻¹)
+
+**Tier 1 Approach**: Use IPCC default values stratified by:
+1. Vegetation type (Forest, Savanna, Organic Soil)
+2. Climate zone (Tropical, Temperate, Boreal)
+3. Forest type (Humid Tropical vs. Other)
+4. Season (Early vs. Late dry season for savannas)
+
+### IPCC Default Values - Quick Reference {#sec-fuel-defaults}
+
+**Forest Fires** (IPCC 2019 Table 2.4):
+
+| Forest Type | M~B~ (t DM ha⁻¹) | C~f~ | M~B~ × C~f~ |
+|-------------|------------------|------|-------------|
+| Humid Tropical Forest | 119.6 ± 52.4 | 0.36 ± 0.09 | 43.1 |
+| Other Forest (Boreal) | 41.0 ± 25.3 | 0.45 ± 0.15 | 18.5 |
+| Other Forest (Temperate) | 50.4 ± 30.8 | 0.47 ± 0.14 | 23.7 |
+| Other Forest (Tropical) | 69.4 ± 44.3 | 0.47 ± 0.14 | 32.6 |
+
+**Savanna Fires** (IPCC 2019 Table 2.4):
+
+| Vegetation Type | Season | M~B~ (t DM ha⁻¹) | C~f~ | M~B~ × C~f~ |
+|----------------|--------|------------------|------|-------------|
+| Savanna Woodland | Early | 9.0 ± 7.5 | 0.29 ± 0.09 | 2.6 |
+| Savanna Woodland | Late | 9.0 ± 7.5 | 0.51 ± 0.15 | 4.6 |
+| Savanna Grassland | Early | 6.8 ± 6.0 | 0.31 ± 0.09 | 2.1 |
+| Savanna Grassland | Late | 6.8 ± 6.0 | 0.83 ± 0.15 | 5.6 |
+| Other Grassland | - | 13.4 ± 8.8 | 0.52 ± 0.15 | 7.0 |
+
+**Organic Soil Fires** (IPCC 2014 Wetlands Supplement Table 2.6):
+
+| Soil Type | M~B~ (t DM ha⁻¹) | C~f~ | M~B~ × C~f~ |
+|-----------|------------------|------|-------------|
+| Tropical Peatland | 41.2 ± 1.4 | 1.0 | 41.2 |
+
+**Note**: Organic soil combustion factor = 1.0 assumes complete consumption of affected layer.
+
+------------------------------------------------------------------------
+
+## Fuel Available for Combustion (M~B~) {#sec-fuel-available}
+
+### Forest Fuel Loads {#sec-fuel-forest}
+
+#### Components of Forest Fuel {#sec-fuel-forest-components}
+
+Forest fuel includes multiple strata burned during fire:
+
+**Surface Fuels**:
+-   Litter (freshly fallen leaves, needles)
+-   Duff (decomposed organic layer)
+-   Herbaceous vegetation
+-   Woody debris (< 7.5 cm diameter)
+
+**Ground Fuels**:
+-   Organic soil horizons (O and A)
+-   Roots (fine and coarse)
+-   Stumps and buried wood
+
+**Crown Fuels** (stand-replacing fires only):
+-   Foliage
+-   Fine branches
+-   Bark
+-   Lichen and epiphytes
+
+**Tier 1 Simplification**: M~B~ represents **average fuel consumed across fire severity gradient**, from surface fires (low M~B~) to crown fires (high M~B~).
+
+#### Climate-Dependent Forest Fuel Loads {#sec-fuel-forest-climate}
+
+**Boreal Forests** (41.0 t DM ha⁻¹):
+-   Slow decomposition → thick organic layers
+-   Coniferous litter high in lignin
+-   Permafrost limits root depth
+-   Fire-adapted species (e.g., Pinus sylvestris)
+
+**Temperate Forests** (50.4 t DM ha⁻¹):
+-   Moderate decomposition rates
+-   Mixed deciduous/coniferous litter
+-   Seasonal accumulation patterns
+-   Variable fire regimes
+
+**Tropical Forests** (69.4 t DM ha⁻¹):
+-   Rapid decomposition → less litter
+-   BUT: high biomass density
+-   Fire-sensitive under natural conditions
+-   Droughts enable fire spread
+
+**Humid Tropical Forests** (119.6 t DM ha⁻¹):
+-   **Highest fuel loads** due to:
+    -   Dense canopy biomass
+    -   Multi-story structure
+    -   Epiphytes, vines, and bamboo
+    -   Deep root systems
+-   Primarily **deforestation fires** (slash-and-burn)
+-   Stand-replacing events
+
+### Savanna Fuel Loads {#sec-fuel-savanna}
+
+#### Savanna Fuel Characteristics {#sec-fuel-savanna-chars}
+
+**Dominant fuel type**: **Herbaceous grass** (70-90% of fuel consumed)
+
+**Key determinants of fuel load**:
+1. **Annual precipitation**: Grass productivity increases with rainfall
+2. **Season**: Fuel cures (dries) during dry season
+3. **Fire frequency**: Frequent fires → lower woody component
+4. **Grazing pressure**: Reduces available fuel
+
+**Spatial heterogeneity**: Fuel patchy due to:
+-   Termite mounds (fuel-free zones)
+-   Tree shade (reduced grass growth)
+-   Grazing concentration around water
+-   Previous fire scars
+
+#### Climate-Dependent Savanna Fuel Loads {#sec-fuel-savanna-climate}
+
+**Tropical Savannas** (500-1500 mm rainfall):
+-   High grass productivity
+-   Distinct wet/dry seasons
+-   Fuel curing rapid
+-   **M~B~**: 6.8-9.0 t DM ha⁻¹
+
+**Temperate Grasslands** (250-750 mm rainfall):
+-   Lower productivity than tropical
+-   Variable seasonality
+-   Mixed grass/forb composition
+-   **M~B~**: 13.4 t DM ha⁻¹ (includes crop residues)
+
+**Woody Savannas** vs. **Open Savannas**:
+-   Woody component adds coarse fuels
+-   BUT: tree canopy reduces grass fuel
+-   Net effect: Similar M~B~ to open savanna
+-   Combustion factor varies more than fuel load
+
+#### Seasonal Dynamics {#sec-fuel-seasonal-dynamics}
+
+**Early Dry Season**:
+-   Fuel partially cured (50-70% dry matter)
+-   Lower combustion efficiency
+-   **Lower C~f~**: 0.29-0.31
+-   **Total consumption**: 2.1-2.6 t DM ha⁻¹
+
+**Late Dry Season**:
+-   Fuel fully cured (>90% dry matter)
+-   Complete combustion of grass layer
+-   **Higher C~f~**: 0.51-0.83
+-   **Total consumption**: 4.6-5.6 t DM ha⁻¹
+
+### Organic Soil Fuel Loads {#sec-fuel-organic}
+
+#### Peat Fuel Characteristics {#sec-fuel-peat-chars}
+
+**Definition**: Organic soils (Histosols) with >30 cm organic layer
+
+**Fuel properties**:
+-   **High carbon content**: 50-60% C by dry weight
+-   **Variable bulk density**: 0.05-0.20 g cm⁻³
+-   **High moisture retention**: 200-1000% (dry weight basis)
+-   **Smoldering combustion**: Can burn for months
+
+**Fire behavior**:
+-   **Surface fires**: Consume litter and upper peat (10-30 cm)
+-   **Deep burns**: Consume entire peat layer to mineral soil (>100 cm)
+-   **Drainage amplifies risk**: Drained peat extremely flammable
+
+#### Fuel Load Calculation {#sec-fuel-peat-calculation}
+
+**IPCC Wetlands Supplement Approach**:
+
+$$
+M_B = D_{burn} \times BD \times 10
+$$
+
+Where:
+-   $D_{burn}$ = Depth of burn (cm)
+-   $BD$ = Bulk density of peat (g cm⁻³)
+-   10 = Conversion factor (cm → m, g cm⁻³ → t ha⁻¹)
+
+**IPCC Default** (Southeast Asia):
+-   **Depth of burn**: 41 cm (range: 18-65 cm)
+-   **Bulk density**: 0.10 g cm⁻³ (range: 0.05-0.15)
+-   **M~B~**: 41.2 t DM ha⁻¹
+
+**High uncertainty**: Coefficient of variation ~50%
+
+------------------------------------------------------------------------
+
+## Combustion Factor (C~f~) {#sec-combustion-factor}
+
+### Definition and Interpretation {#sec-cf-definition}
+
+**Combustion Factor** (C~f~) = Proportion of available fuel actually consumed by fire
+
+$$
+C_f = \frac{\text{Mass of fuel consumed}}{\text{Mass of fuel available}} \quad (0 \leq C_f \leq 1)
+$$
+
+**Determinants**:
+1. **Fuel moisture**: Higher moisture → lower C~f~
+2. **Fire intensity**: Hotter fires → higher C~f~
+3. **Fire type**: Surface vs. crown fire
+4. **Fuel particle size**: Fine fuels (< 0.6 cm) burn more completely
+5. **Weather conditions**: Wind, humidity, temperature
+
+### Forest Combustion Factors {#sec-cf-forest}
+
+**Low C~f~ for Humid Tropical Forests** (0.36):
+-   High ambient moisture
+-   Rapid fuel accumulation → green fuels mixed with dead
+-   Incomplete combustion of large woody debris
+-   Char and partially burned material remain
+
+**Moderate C~f~ for Other Forests** (0.45-0.47):
+-   Drier climates → lower fuel moisture
+-   More complete consumption of surface fuels
+-   Variability based on fire severity:
+    -   Surface fires: C~f~ ~ 0.20-0.40
+    -   Crown fires: C~f~ ~ 0.60-0.80
+    -   Default represents average across severities
+
+### Savanna Combustion Factors {#sec-cf-savanna}
+
+**Early Dry Season** (0.29-0.31):
+-   Fuel partially cured
+-   High moisture content in live grass (30-50%)
+-   Incomplete combustion
+-   Patchy fire spread
+-   Much grass left standing
+
+**Late Dry Season** (0.51-0.83):
+-   Fuel fully cured (<10% moisture)
+-   Complete consumption of grass layer
+-   Only woody stems and char remain
+-   Higher C~f~ for grasslands vs. woody savannas:
+    -   **Grassland**: C~f~ = 0.83 (almost complete)
+    -   **Woody Savanna**: C~f~ = 0.51 (trees create shade/barriers)
+
+**Physical explanation**:
+$$
+C_f \propto \frac{1}{\text{Fuel Moisture}} \times \text{Fire Intensity}
+$$
+
+Late season → Lower moisture × Higher intensity → Higher C~f~
+
+### Organic Soil Combustion Factors {#sec-cf-organic}
+
+**Complete Consumption** (C~f~ = 1.0):
+-  Once peat ignites, burns to completion within affected depth
+-   Smoldering combustion eliminates unburned fuel
+-   Char production minimal
+
+**Caveat**: C~f~ = 1.0 applies to **depth of burn**, not total peat column
+-   If burn depth = 41 cm, that 41 cm is fully consumed
+-   Deeper peat layers remain intact (if fire extinguished)
+
+------------------------------------------------------------------------
+
+## Applying Fuel Consumption Parameters {#sec-fuel-application}
+
+### Workflow: Vegetation Type to Fuel Values {#sec-fuel-workflow}
+
+```{r}
+#| eval: false
+#| label: fuel-lookup-table
+#| code-summary: "Create IPCC fuel consumption lookup table"
+
+library(tidyverse)
+
+# IPCC 2019 Table 2.4 - Default fuel consumption values
+fuel_consumption_table <- tribble(
+  ~fire_category, ~vegetation_type, ~climate_zone, ~season, ~MB_tDM_ha, ~Cf, ~MB_Cf,
+  
+  # Forest Fires
+  "Forest", "Humid_Tropical_Forest", "Tropical_Moist", NA, 119.6, 0.36, 43.1,
+  "Forest", "Other_Forest", "Boreal", NA, 41.0, 0.45, 18.5,
+  "Forest", "Other_Forest", "Temperate", NA, 50.4, 0.47, 23.7,
+  "Forest", "Other_Forest", "Tropical", NA, 69.4, 0.47, 32.6,
+  
+  # Savanna Fires
+  "Savanna", "Savanna_Woodland", "All", "Early", 9.0, 0.29, 2.6,
+  "Savanna", "Savanna_Woodland", "All", "Late", 9.0, 0.51, 4.6,
+  "Savanna", "Savanna_Grassland", "All", "Early", 6.8, 0.31, 2.1,
+  "Savanna", "Savanna_Grassland", "All", "Late", 6.8, 0.83, 5.6,
+  "Savanna", "Other_Grassland", "All", NA, 13.4, 0.52, 7.0,
+  
+  # Organic Soil Fires
+  "Organic_Soil", "Tropical_Peatland", "Tropical", NA, 41.2, 1.0, 41.2
+)
+
+print(fuel_consumption_table)
+
+# Save for use in emissions calculation
+write.csv(
+  fuel_consumption_table,
+  "IPCC_fuel_consumption_defaults.csv",
+  row.names = FALSE
+)
+```
+
+### Matching Vegetation Classifications to Fuel Values {#sec-fuel-matching}
+
+```{r}
+#| eval: false
+#| label: fuel-value-assignment
+#| code-summary: "Assign fuel consumption values to classified fires"
+
+library(rgee)
+library(tidyverse)
+
+ee_Initialize()
+
+# Load vegetation classification results (from Chapter 2)
+# Assuming structure: country, year, fire_type, area_ha, climate_zone, season
+
+veg_classification <- read.csv("Portugal_VegetationClassification_2023.csv")
+
+# Join with fuel consumption table
+fires_with_fuel <- veg_classification %>%
+  # Standardize column names
+  mutate(
+    fire_category = case_when(
+      str_detect(fire_type, "Forest") ~ "Forest",
+      str_detect(fire_type, "Savanna") ~ "Savanna",
+      str_detect(fire_type, "Organic") ~ "Organic_Soil",
+      TRUE ~ "Unknown"
+    ),
+    vegetation_type = fire_type,
+    season = ifelse(is.na(season), NA, season)
+  ) %>%
+  # Join with lookup table
+  left_join(
+    fuel_consumption_table,
+    by = c("fire_category", "vegetation_type", "climate_zone", "season")
+  ) %>%
+  # Calculate total biomass burned
+  mutate(
+    biomass_burned_tDM = area_ha * MB_Cf
+  )
+
+print(fires_with_fuel)
+```
+
+### Example: Portugal 2023 {#sec-fuel-example-portugal}
+
+```{r}
+#| eval: false
+#| label: fuel-portugal-example
+#| code-summary: "Complete fuel consumption calculation - Portugal"
+
+# Mock data for demonstration
+portugal_fires_2023 <- tribble(
+  ~fire_type, ~area_ha, ~climate_zone, ~season,
+  "Other_Forest", 45230, "Temperate", NA,
+  "Savanna_Grassland", 8200, "Temperate", "Late",
+  "Savanna_Woodland", 4250, "Temperate", "Early"
+)
+
+# Assign fuel values
+portugal_fuel <- portugal_fires_2023 %>%
+  mutate(fire_category = ifelse(str_detect(fire_type, "Forest"), "Forest", "Savanna")) %>%
+  mutate(vegetation_type = fire_type) %>%
+  left_join(
+    fuel_consumption_table,
+    by = c("fire_category", "vegetation_type", "climate_zone", "season")
+  ) %>%
+  mutate(
+    biomass_burned_tDM = area_ha * MB_Cf,
+    biomass_burned_Gg = biomass_burned_tDM / 1000  # Convert to Gigagrams
+  )
+
+# Summarize
+portugal_summary <- portugal_fuel %>%
+  group_by(fire_category) %>%
+  summarise(
+    total_area_ha = sum(area_ha),
+    total_biomass_Gg = sum(biomass_burned_Gg)
+  )
+
+print(portugal_summary)
+
+# Result:
+# fire_category  total_area_ha  total_biomass_Gg
+# Forest              45,230           1,072
+# Savanna             12,450              57
+```
+
+------------------------------------------------------------------------
+
+## Spatial Implementation in Google Earth Engine {#sec-fuel-gee}
+
+### Creating Fuel Consumption Rasters {#sec-fuel-gee-rasters}
+
+```{r}
+#| eval: false
+#| label: fuel-gee-rasters
+#| code-summary: "Generate spatially-explicit fuel consumption maps"
+
+library(rgee)
+ee_Initialize()
+
+# Load inputs (from Chapters 1-2)
+annual_burn_2023 <- [burned area raster from Chapter 1]
+lc_2023 <- ee$ImageCollection("MODIS/061/MCD12Q1")$
+  filterDate("2023-01-01", "2023-12-31")$
+  first()$
+  select("LC_Type1")
+
+# Load climate zones
+temp <- ee$Image("WORLDCLIM/V1/BIO")$select("bio01")
+precip <- ee$Image("WORLDCLIM/V1/BIO")$select("bio12")
+
+# Define climate zones
+boreal <- temp$lt(0)
+tropical <- temp$gt(180)
+temperate <- boreal$Not()$And(tropical$Not())
+
+# Define humid tropical
+humid_tropical <- tropical$And(precip$gt(1500))
+
+# Create fuel consumption image
+# Initialize with zeros
+fuel_consumption <- ee$Image(0)$rename("fuel_consumption")
+
+# 1. Humid Tropical Forest (MB*Cf = 43.1)
+htf_mask <- lc_2023$gte(1)$And(lc_2023$lte(5))$And(humid_tropical)
+fuel_consumption <- fuel_consumption$where(htf_mask, 43.1)
+
+# 2. Other Forest - Boreal (MB*Cf = 18.5)
+forest_boreal <- lc_2023$gte(1)$And(lc_2023$lte(5))$
+  And(boreal)$
+  And(humid_tropical$Not())
+fuel_consumption <- fuel_consumption$where(forest_boreal, 18.5)
+
+# 3. Other Forest - Temperate (MB*Cf = 23.7)
+forest_temperate <- lc_2023$gte(1)$And(lc_2023$lte(5))$
+  And(temperate)$
+  And(humid_tropical$Not())
+fuel_consumption <- fuel_consumption$where(forest_temperate, 23.7)
+
+# 4. Other Forest - Tropical (MB*Cf = 32.6)
+forest_tropical <- lc_2023$gte(1)$And(lc_2023$lte(5))$
+  And(tropical)$
+  And(humid_tropical$Not())
+fuel_consumption <- fuel_consumption$where(forest_tropical, 32.6)
+
+# 5. Savanna (simplified - use average of 7.0 t DM ha-1)
+savanna_mask <- lc_2023$gte(6)$And(lc_2023$lte(10))
+fuel_consumption <- fuel_consumption$where(savanna_mask, 7.0)
+
+# Note: For seasonal stratification, need burn date analysis (see next section)
+
+# Apply to burned areas only
+fuel_consumption_burned <- fuel_consumption$updateMask(annual_burn_2023)
+
+# Visualize
+fuel_vis <- list(
+  min = 0,
+  max = 50,
+  palette = c('yellow', 'orange', 'red', 'darkred')
+)
+
+Map$addLayer(
+  fuel_consumption_burned,
+  fuel_vis,
+  "Fuel Consumption (t DM ha-1)"
+)
+```
+
+### Seasonal Stratification for Savannas {#sec-fuel-gee-seasonal}
+
+```{r}
+#| eval: false
+#| label: fuel-seasonal-stratification
+#| code-summary: "Apply seasonal fuel consumption to savannas"
+
+# Extract burn month (from Chapter 1)
+extractBurnMonth <- function(mcd64_image) {
+  burn_date <- mcd64_image$select("BurnDate")
+  img_date <- ee$Date(mcd64_image$get("system:time_start"))
+  month <- img_date$get("month")
+  
+  month_band <- ee$Image$constant(month)$
+    updateMask(burn_date$gt(0))$
+    rename("burn_month")
+  
+  return(month_band)
+}
+
+# Apply to collection
+mcd64 <- ee$ImageCollection("MODIS/061/MCD64A1")$
+  filterDate("2023-01-01", "2023-12-31")
+
+burn_months <- mcd64$map(extractBurnMonth)
+burn_month_composite <- burn_months$max()
+
+# Define seasons (example: Southern Hemisphere)
+# Early dry season: May-July (months 5-7)
+# Late dry season: August-October (months 8-10)
+
+early_season <- burn_month_composite$gte(5)$And(burn_month_composite$lte(7))
+late_season <- burn_month_composite$gte(8)$And(burn_month_composite$lte(10))
+
+# Apply seasonal fuel consumption to savannas
+savanna_mask <- lc_2023$gte(6)$And(lc_2023$lte(10))
+
+# Woody savanna (IGBP class 8)
+woody_savanna <- lc_2023$eq(8)
+woody_early <- woody_savanna$And(early_season)
+woody_late <- woody_savanna$And(late_season)
+
+# Grassland/savanna (IGBP classes 9-10)
+grassland <- lc_2023$gte(9)$And(lc_2023$lte(10))
+grass_early <- grassland$And(early_season)
+grass_late <- grassland$And(late_season)
+
+# Create seasonal fuel consumption
+fuel_seasonal <- ee$Image(0)
+
+# Apply values
+fuel_seasonal <- fuel_seasonal$
+  where(woody_early, 2.6)$   # Early woody savanna
+  where(woody_late, 4.6)$    # Late woody savanna
+  where(grass_early, 2.1)$   # Early grassland
+  where(grass_late, 5.6)     # Late grassland
+
+# Mask to burned areas
+fuel_seasonal_burned <- fuel_seasonal$updateMask(annual_burn_2023)
+
+# Visualize
+Map$addLayer(
+  fuel_seasonal_burned,
+  list(min = 0, max = 6, palette = c('lightyellow', 'yellow', 'orange')),
+  "Savanna Fuel Consumption (Seasonal)"
+)
+```
+
+### Calculating Total Biomass Burned {#sec-fuel-gee-total}
+
+```{r}
+#| eval: false
+#| label: fuel-total-biomass
+#| code-summary: "Calculate total biomass burned by country"
+
+# Define area of interest
+countries <- ee$FeatureCollection("FAO/GAUL/2015/level0")
+portugal <- countries$filter(ee$Filter$eq("ADM0_NAME", "Portugal"))
+
+# Calculate biomass burned per pixel (t DM)
+# Pixel area in hectares
+pixel_area_ha <- ee$Image$pixelArea()$divide(10000)
+
+# Biomass = Fuel Consumption (t ha-1) × Area (ha)
+biomass_per_pixel <- fuel_consumption_burned$multiply(pixel_area_ha)
+
+# Aggregate by vegetation type
+# Forest biomass
+forest_biomass <- biomass_per_pixel$
+  updateMask(lc_2023$gte(1)$And(lc_2023$lte(5)))$
+  reduceRegion(
+    reducer = ee$Reducer$sum(),
+    geometry = portugal,
+    scale = 500,
+    maxPixels = 1e9
+  )
+
+# Savanna biomass
+savanna_biomass <- biomass_per_pixel$
+  updateMask(lc_2023$gte(6)$And(lc_2023$lte(10)))$
+  reduceRegion(
+    reducer = ee$Reducer$sum(),
+    geometry = portugal,
+    scale = 500,
+    maxPixels = 1e9
+  )
+
+# Extract values
+forest_total_t <- forest_biomass$getInfo()$fuel_consumption
+savanna_total_t <- savanna_biomass$getInfo()$fuel_consumption
+
+# Convert to Gigagrams (Gg) for IPCC reporting
+forest_Gg <- forest_total_t / 1000
+savanna_Gg <- savanna_total_t / 1000
+
+print(paste("Forest biomass burned:", round(forest_Gg, 1), "Gg DM"))
+print(paste("Savanna biomass burned:", round(savanna_Gg, 1), "Gg DM"))
+```
+
+------------------------------------------------------------------------
+
+## Uncertainty in Fuel Consumption Estimates {#sec-fuel-uncertainty}
+
+### Sources of Uncertainty {#sec-fuel-uncertainty-sources}
+
+**1. IPCC Default Value Uncertainty**:
+
+IPCC provides 95% confidence intervals for all default values:
+
+| Parameter | Relative Uncertainty |
+|-----------|---------------------|
+| M~B~ (Forest) | ±40-60% |
+| M~B~ (Savanna) | ±60-90% |
+| C~f~ (Forest) | ±20-30% |
+| C~f~ (Savanna) | ±30-40% |
+| M~B~×C~f~ (combined) | ±50-70% |
+
+**2. Spatial Extrapolation Uncertainty**:
+-   IPCC values derived from limited field studies
+-   Geographic bias toward well-studied regions (North America, Australia)
+-   Underrepresentation of tropical systems
+
+**3. Fire Severity Variability**:
+-   Default values represent averages across fire severity spectrum
+-   Individual fires may have 2-3× higher/lower consumption
+-   No severity stratification in Tier 1
+
+**4. Temporal Variability**:
+-   Fuel accumulation varies with:
+    -   Time since last fire
+    -   Precipitation anomalies (ENSO, droughts)
+    -   Forest management (fuel reduction treatments)
+-   Tier 1 assumes constant fuel loads
+
+### Quantifying Combined Uncertainty {#sec-fuel-uncertainty-quantify}
+
+Following IPCC Error Propagation (Chapter 3, Equation 3.1):
+
+$$
+U_{total}^2 = U_A^2 + U_{MB}^2 + U_{Cf}^2 + U_{Gef}^2
+$$
+
+**For Tier 1 Forest Fires**:
+-   $U_A$ = ±30% (from Chapter 1 - burned area)
+-   $U_{MB}$ = ±50% (IPCC Table 2.4)
+-   $U_{Cf}$ = ±25% (IPCC Table 2.4)
+-   $U_{Gef}$ = ±30% (Chapter 4 - emission factors)
+
+**Combined uncertainty** (quadrature):
+$$
+U_{total} = \sqrt{30^2 + 50^2 + 25^2 + 30^2} = \sqrt{4350} \approx 66\%
+$$
+
+**For Tier 1 Savanna Fires**:
+-   $U_A$ = ±30%
+-   $U_{MB}$ = ±80% (higher variability)
+-   $U_{Cf}$ = ±35%
+-   $U_{Gef}$ = ±30%
+
+**Combined uncertainty**:
+$$
+U_{total} = \sqrt{30^2 + 80^2 + 35^2 + 30^2} = \sqrt{9925} \approx 100\%
+$$
+
+**Interpretation**: Tier 1 uncertainties are large but expected given coarse default values. Tier 2/3 approaches reduce uncertainty through country-specific data.
+
+### Sensitivity Analysis {#sec-fuel-sensitivity}
+
+```{r}
+#| eval: false
+#| label: fuel-sensitivity-analysis
+#| code-summary: "Assess sensitivity to fuel consumption parameters"
+
+library(tidyverse)
+
+# Define parameter ranges (from IPCC confidence intervals)
+fuel_params <- expand.grid(
+  MB_forest = c(41.0 - 25.3, 50.4, 50.4 + 30.8),  # Temperate forest: low, mean, high
+  Cf_forest = c(0.47 - 0.14, 0.47, 0.47 + 0.14),
+  area_ha = 45230  # Fixed (from Portugal example)
+)
+
+# Calculate biomass burned for each parameter combination
+fuel_params <- fuel_params %>%
+  mutate(
+    biomass_tDM = area_ha * MB_forest * Cf_forest,
+    biomass_Gg = biomass_tDM / 1000,
+    scenario = paste0("MB=", round(MB_forest, 1), ", Cf=", round(Cf_forest, 2))
+  )
+
+# Visualize sensitivity
+ggplot(fuel_params, aes(x = MB_forest, y = Cf_forest, fill = biomass_Gg)) +
+  geom_tile() +
+  geom_text(aes(label = round(biomass_Gg, 0)), color = "white", fontface = "bold") +
+  scale_fill_viridis_c(name = "Biomass\nBurned (Gg)") +
+  labs(
+    title = "Sensitivity of Biomass Burned to Fuel Parameters",
+    subtitle = "Portugal Temperate Forest Fires (45,230 ha)",
+    x = "Fuel Load MB (t DM ha⁻¹)",
+    y = "Combustion Factor Cf"
+  ) +
+  theme_minimal()
+
+# Calculate coefficient of variation
+cv_biomass <- sd(fuel_params$biomass_Gg) / mean(fuel_params$biomass_Gg) * 100
+print(paste("Coefficient of Variation:", round(cv_biomass, 1), "%"))
+```
+
+------------------------------------------------------------------------
+
+## Advanced Topics {#sec-fuel-advanced}
+
+### Country-Specific Fuel Data (Tier 2) {#sec-fuel-tier2}
+
+**Moving beyond defaults**:
+
+When available, countries can use:
+1. **National forest inventory data**: Standing biomass, litter depths
+2. **Fire behavior models**: BEHAVE, FuelCalc, FCCS
+3. **Field measurements**: Post-fire fuel consumption studies
+4. **Remote sensing**: LiDAR for 3D fuel structure
+
+**Example: Portugal**:
+```{r}
+#| eval: false
+#| label: fuel-tier2-example
+#| code-summary: "Using country-specific fuel data"
+
+# Hypothetical: Portugal National Forest Inventory fuel loads
+portugal_fuel_data <- tribble(
+  ~forest_type, ~MB_tDM_ha, ~Cf, ~source,
+  "Pinus pinaster", 65.3, 0.52, "National Forest Inventory 2015",
+  "Eucalyptus globulus", 48.7, 0.48, "Field studies (Fernandes et al. 2020)",
+  "Quercus suber", 38.2, 0.41, "Cork Oak Management Database"
+)
+
+# These values would replace IPCC defaults for Portuguese forests
+# Result: Reduced uncertainty (~±25% instead of ±50%)
+```
+
+### Fire Severity Stratification (Tier 2+) {#sec-fuel-severity}
+
+**Fire severity classes** (from satellite indices):
+
+| Severity | dNBR Range | C~f~ Multiplier |
+|----------|------------|-----------------|
+| Unburned | < 0.1 | 0 |
+| Low | 0.1 - 0.27 | 0.5× |
+| Moderate | 0.27 - 0.44 | 1.0× (default) |
+| High | > 0.44 | 1.5× |
+
+```{r}
+#| eval: false
+#| label: fuel-severity-stratification
+#| code-summary: "Stratify fuel consumption by fire severity"
+
+# Calculate dNBR (from Landsat or Sentinel-2)
+# (See Chapter 1 for NBR calculation example)
+
+# Example: Use dNBR to adjust Cf
+dnbr <- [calculated dNBR image]
+
+# Define severity classes
+low_severity <- dnbr$gte(0.1)$And(dnbr$lt(0.27))
+moderate_severity <- dnbr$gte(0.27)$And(dnbr$lt(0.44))
+high_severity <- dnbr$gte(0.44)
+
+# Adjust combustion factor
+Cf_default <- 0.47  # IPCC Temperate Forest
+Cf_adjusted <- ee$Image(Cf_default)$
+  where(low_severity, Cf_default * 0.5)$
+  where(high_severity, Cf_default * 1.5)
+
+# Recalculate fuel consumption
+MB <- 50.4  # IPCC Temperate Forest
+fuel_consumption_adjusted <- ee$Image(MB)$multiply(Cf_adjusted)
+
+# This provides spatially-explicit fuel consumption
+# More accurate than uniform default
+```
+
+### Fuel Moisture Effects {#sec-fuel-moisture}
+
+**Fuel moisture reduces combustion efficiency**:
+
+$$
+C_f = C_{f,dry} \times e^{-k \times MC}
+$$
+
+Where:
+-   $C_{f,dry}$ = Combustion factor at 0% moisture
+-   $MC$ = Moisture content (%)
+-   $k$ = Decay constant (~0.02 for grass, ~0.01 for wood)
+
+```{r}
+#| eval: false
+#| label: fuel-moisture-correction
+#| code-summary: "Adjust Cf for fuel moisture content"
+
+# Load ERA5 relative humidity or precipitation data
+# (Example: use as proxy for fuel moisture)
+
+# Simplified relationship
+# High precipitation → High fuel moisture → Low Cf
+
+precip_monthly <- ee$ImageCollection("ECMWF/ERA5/MONTHLY")$
+  select("total_precipitation")
+
+# Get precipitation in month of fire
+# (Would need to match with burn dates from Chapter 1)
+
+# For demonstration: use annual average
+precip_annual <- precip_monthly$
+  filterDate("2023-01-01", "2023-12-31")$
+  mean()
+
+# Convert to fuel moisture proxy (simplified)
+# Assume: High precip → High moisture → Low Cf
+# (Actual relationship requires mechanistic model)
+
+# This is TIER 3 level - requires significant data and validation
+```
+
+------------------------------------------------------------------------
+
+## Integration with Emissions Calculation {#sec-fuel-integration}
+
+### Preparing Outputs for Chapter 4 {#sec-fuel-to-chapter4}
+
+**Required data structure**:
+
+```{r}
+#| eval: false
+#| label: fuel-output-structure
+#| code-summary: "Format fuel consumption data for emissions calculation"
+
+# Create comprehensive fuel consumption table
+fuel_output <- tribble(
+  ~country, ~year, ~fire_category, ~vegetation_type, ~climate_zone, ~season,
+  ~area_ha, ~MB_tDM_ha, ~Cf, ~biomass_burned_Gg,
+  
+  "Portugal", 2023, "Forest", "Other_Forest", "Temperate", NA,
+  45230, 50.4, 0.47, 1072,
+  
+  "Portugal", 2023, "Savanna", "Savanna_Woodland", "Temperate", "Early",
+  4250, 9.0, 0.29, 11,
+  
+  "Portugal", 2023, "Savanna", "Savanna_Grassland", "Temperate", "Late",
+  8200, 6.8, 0.83, 46
+)
+
+# Save for Chapter 4
+write.csv(
+  fuel_output,
+  "Portugal_FuelConsumption_2023.csv",
+  row.names = FALSE
+)
+
+print(fuel_output)
+```
+
+### Quality Control Checklist {#sec-fuel-qc-checklist}
+
+**Pre-calculation**:
+- [ ] Vegetation classifications complete (from Chapter 2)
+- [ ] Climate zones assigned correctly
+- [ ] Seasonal stratification applied (savannas only)
+- [ ] IPCC fuel consumption table loaded correctly
+
+**Calculation**:
+- [ ] Fuel values matched to vegetation types
+- [ ] Units consistent (t DM ha⁻¹, Gg)
+- [ ] Biomass = Area × M~B~ × C~f~
+- [ ] No missing values (all vegetation types have fuel values)
+
+**Post-calculation**:
+- [ ] Biomass totals reasonable (order of magnitude check)
+- [ ] Sum of vegetation-specific biomass = total biomass
+- [ ] Uncertainty quantified and documented
+- [ ] Results comparable to previous years (if available)
+
+**Validation**:
+- [ ] Compare with published values (if available)
+- [ ] Check extreme values (outliers)
+- [ ] Sensitivity analysis completed
+- [ ] Documentation complete
+
+------------------------------------------------------------------------
+
+## Chapter Summary and Next Steps {#sec-fuel-summary}
+
+### Key Takeaways {#sec-fuel-takeaways}
+
+1. **Fuel consumption** (M~B~ × C~f~) varies by:
+   -   **Vegetation type**: Forest (18-43 t ha⁻¹) vs. Savanna (2-7 t ha⁻¹)
+   -   **Climate zone**: Boreal < Temperate < Tropical < Humid Tropical
+   -   **Season**: Early (lower) vs. Late (higher) dry season for savannas
+
+2. **IPCC Tier 1 defaults** provide globally consistent estimates but have **high uncertainty** (±50-100%)
+
+3. **Combustion factor** (C~f~) represents proportion of fuel consumed, ranging from 0.29 (early season savanna) to 1.0 (organic soils)
+
+4. **Total biomass burned** calculated as: **Area (ha) × M~B~ (t ha⁻¹) × C~f~**
+
+5. **Tier 2/3 improvements** possible through country-specific data, fire severity mapping, and fuel moisture modeling
+
+### Progression to Chapter 4 {#sec-fuel-to-chapter4-summary}
+
+**Chapter 4: Emission Factors and GHG Calculations** will use fuel consumption estimates to:
+
+1. Apply IPCC emission factors (G~ef~) by gas (CO₂, CH₄, N₂O)
+2. Calculate trace gas emissions: **Biomass Burned × G~ef~**
+3. Report emissions by IPCC category (Forest, Savanna, Organic Soils)
+4. Convert to CO₂-equivalents for aggregate reporting
+
+**Critical linkage**: Each fire event carries forward:
+-   **Biomass burned** (Gg DM) by vegetation type
+-   **Fire category** (Forest/Savanna/Organic Soil) for emission factor selection
+-   **Climate zone** (for organic soil CH₄ emission factors)
+-   **Uncertainty estimates** for error propagation
+
+------------------------------------------------------------------------

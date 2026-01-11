@@ -2,7 +2,7 @@ project:
   type: book
 
 book:
-  title: "IPCC Fire Emissions"
+  title: "WildFire Emissions"
   author: 
     - name: Seamus Murphy
       url: https://scholar.google.com/citations?hl=en&user=jDGq9I4AAAAJ
@@ -25,7 +25,9 @@ book:
   chapters:
     - index.qmd
     - 01-burn-area/index.qmd
-    - 02-veg-classes/index.qmd    
+    - 02-fuel-stratification/index.qmd
+    - 03-fuel-consumption/index.qmd
+    - 04-emission-factors/index.qmd
 
   appendices:
     - references/index.qmd
@@ -38,7 +40,7 @@ filters:
   - quarto
 
 sidebar:
-    title: "IPCC Fire Emissions"
+    title: "Wildfire Emissions"
     search: true
     style: "docked"
     collapse-level: 4
