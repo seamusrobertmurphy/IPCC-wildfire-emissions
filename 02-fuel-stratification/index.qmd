@@ -11,8 +11,8 @@ format:
     highlight-style: pygments
     page-layout: article
 
-editor_options: 
-  markdown: 
+editor_options:
+  markdown:
     wrap: 60
 engine: knitr
 bibliography: ../references/references.bib
@@ -38,26 +38,26 @@ estimates.
 #| comment: NA
 
 easypackages::packages(
-  "bslib", 
-  "cols4all", "covr", "cowplot", 
-  "dendextend", "digest","DiagrammeR","dtwclust", "downlit", 
-  "e1071", "exactextractr","elevatr", 
+  "bslib",
+  "cols4all", "covr", "cowplot",
+  "dendextend", "digest","DiagrammeR","dtwclust", "downlit",
+  "e1071", "exactextractr","elevatr",
   "FNN", "future", "forestdata",
-  "gdalcubes", "gdalUtilities", "geojsonsf", "geos", "ggplot2", "ggstats", 
-  "ggspatial", "ggmap", "ggplotify", "ggpubr", "ggrepel", "giscoR", 
+  "gdalcubes", "gdalUtilities", "geojsonsf", "geos", "ggplot2", "ggstats",
+  "ggspatial", "ggmap", "ggplotify", "ggpubr", "ggrepel", "giscoR",
   "hdf5r", "httr", "httr2", "htmltools",
-  "jsonlite", 
-  "kohonen", 
+  "jsonlite",
+  "kohonen", "knitr",
   "leaflet.providers", "leafem", "libgeos","luz","lwgeom", "leaflet", "leafgl",
-  "mapedit", "mapview", "maptiles", "methods", "mgcv", 
-  "ncdf4", "nnet", 
-  "openxlsx", "parallel", "plotly", 
-  "randomForest", "rasterVis", "raster", "Rcpp", "RcppArmadillo", 
-  "RcppCensSpatial","rayshader", "RcppEigen", "RcppParallel", 
-  "RColorBrewer", "reactable", "rgl", "rsconnect","RStoolbox", "rts", 
-  "s2", "sf", "scales", "sits","spdep", "stars", "stringr","supercells", 
-  "terra", "testthat", "tidyverse", "tidyterra","tools", 
-  "tmap", "tmaptools", "terrainr", 
+  "mapedit", "mapview", "maptiles", "methods", "mgcv",
+  "ncdf4", "nnet",
+  "openxlsx", "parallel", "plotly",
+  "randomForest", "rasterVis", "raster", "Rcpp", "RcppArmadillo",
+  "RcppCensSpatial","rayshader", "RcppEigen", "RcppParallel",
+  "RColorBrewer", "reactable", "rgl", "rsconnect","RStoolbox", "rts", "reticulate",
+  "s2", "sf", "scales", "sits","spdep", "stars", "stringr","supercells",
+  "terra", "testthat", "tidyverse", "tidyterra","tools",
+  "tmap", "tmaptools", "terrainr",
   "xgboost",
   prompt = F)
 
@@ -72,18 +72,18 @@ sf::sf_use_s2(use_s2 = FALSE)
 #| comment: NA
 
 options(repos = c(CRAN = "https://cloud.r-project.org"),
-        htmltools.dir.version = FALSE, 
+        htmltools.dir.version = FALSE,
         htmltools.preserve.raw = FALSE
         )
 
 knitr::opts_chunk$set(
-  echo = TRUE, 
-  message = FALSE, 
+  echo = TRUE,
+  message = FALSE,
   warning = FALSE,
-  error = FALSE, 
-  comment = NA, 
+  error = FALSE,
+  comment = NA,
   tidy.opts = list(width.cutoff = 60)
-  ) 
+  )
 ```
 
 ```{css, echo=FALSE, class.source = 'foldable'}
@@ -141,9 +141,9 @@ with IPCC 2006 Guidelines [@ipccChapter3Consistent2006]:
 #| echo: true
 
 # Conceptual decision tree (not executable code)
-# 
+#
 # For each burned pixel:
-#   ├─ Is pixel on Histosol? 
+#   ├─ Is pixel on Histosol?
 #   │   └─ YES → Organic Soil Fire
 #   │   └─ NO → Continue
 #   ├─ Is land cover = Forest (Classes 1-5)?
@@ -154,6 +154,47 @@ with IPCC 2006 Guidelines [@ipccChapter3Consistent2006]:
 #   ├─ Is land cover = Grassland/Savanna/Shrubland (Classes 6-10)?
 #   │   └─ YES → Savanna Fire
 #   └─ ELSE → Not classified (excluded from analysis)
+```
+
+------------------------------------------------------------
+
+## GEE Initialisation {#sec-veg-gee-init}
+
+```{r}
+#| label: veg-gee-setup
+#| warning: false
+#| message: false
+#| error: false
+
+# Point environment to your configured python
+reticulate::use_python("/opt/local/bin/python", required=T)
+
+# Initialise Earth Engine
+ee <- reticulate::import("ee")
+ee$Initialize(project = "murphys-deforisk")
+cat("GEE initialised\n")
+
+# Helper: visualize EE tile in tmap/leaflet
+ee_tile_url <- function(ee_image, vis_params) {
+  ee_image$getMapId(vis_params)$tile_fetcher$url_format
+}
+
+# Helper: EE FeatureCollection => sf
+ee_to_sf <- function(fc) {
+  geojsonsf::geojson_sf(
+    jsonlite::toJSON(fc$getInfo(), auto_unbox = TRUE))
+}
+
+# Load AOI boundaries from FAO GAUL
+aoi_country_ee <- ee$FeatureCollection("FAO/GAUL/2015/level0")$
+  filter(ee$Filter$eq("ADM0_NAME", "Honduras"))
+aoi_states_ee  <- ee$FeatureCollection("FAO/GAUL/2015/level1")$
+  filter(ee$Filter$eq("ADM0_NAME", "Honduras"))
+aoi_country_sf <- ee_to_sf(aoi_country_ee)
+aoi_states_sf  <- ee_to_sf(aoi_states_ee)
+
+cat("AOI loaded:", aoi_country_ee$size()$getInfo(), "country,",
+    aoi_states_ee$size()$getInfo(), "states\n")
 ```
 
 ------------------------------------------------------------
@@ -211,37 +252,43 @@ Excluded Classes:
 ### Earth Engine: MCD12Q1 {#sec-veg-gee-access}
 
 ```{r}
-#| eval: false
+#| message: false
+#| error: false
+#| warning: false
+#| comment: NA
 #| label: veg-mcd12q1-access
 #| code-summary: "Load MODIS Land Cover"
-
-library(rgee)
-ee_Initialize()
 
 # Load land cover collection
 landCover <- ee$ImageCollection("MODIS/061/MCD12Q1")
 
-# Select IGBP classification (Type 1)
-igbp <- landCover$select("LC_Type1")
+# Select IGBP classification (Type 1) for 2010 (matching Ch1 burn year)
+lc_2010 <- landCover$
+  select("LC_Type1")$
+  filterDate("2010-01-01", "2010-12-31")$
+  first()$
+  clip(aoi_country_ee$geometry())
 
-# Get land cover for specific year (example: 2023)
-lc_2023 <- igbp$
-  filterDate("2023-01-01", "2023-12-31")$
-  first()
+cat("Land cover bands:", paste(lc_2010$bandNames()$getInfo(),
+    collapse = ", "), "\n")
 
-# Visualize
+# IGBP palette
 lc_vis <- list(
-  min = 1,
-  max = 17,
+  min = 0L,
+  max = 17L,
   palette = c(
     '05450a', '086a10', '54a708', '78d203', '009900',  # Forests 1-5
     'c6b044', 'dcd159', 'dade48', 'fbff13', 'b6ff05',  # Savanna/Grass 6-10
-    'c24f44', 'a5a5a5', 'ff6d4c', '69fff8', 'f9ffa4',  # Other 11-15
-    '1c0dff', 'ffffff'                                   # Barren/Unclass 16-17
+    '27ff87', 'c24f44', 'a5a5a5', 'ff6d4c', '69fff8',  # Other 11-15
+    'f9ffa4', '1c0dff'                                   # Barren/Unclass 16-17
   )
 )
 
-Map$addLayer(lc_2023, lc_vis, "IGBP Land Cover 2023")
+tmap::tmap_mode("view")
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  tmap::tm_tiles(ee_tile_url(lc_2010, lc_vis),group = "IGBP Land Cover 2010") +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 ### Land Cover Validation and Uncertainty {#sec-veg-lc-uncertainty}
@@ -265,6 +312,63 @@ Regional Accuracy (Sulla-Menashe & Friedl, 2022):
 | Asia          | 74%              | 75%             | 73%              |
 | North America | 81%              | 88%             | 74%              |
 
+### Land Cover Class Distribution {#sec-veg-lc-distribution}
+
+```{r}
+#| message: false
+#| error: false
+#| warning: false
+#| comment: NA
+#| label: veg-lc-class-counts
+#| code-summary: "Pixel counts per IGBP class in Honduras"
+
+# IGBP class labels
+igbp_labels <- c(
+  "0"  = "Water",
+  "1"  = "Evergreen Needleleaf",
+  "2"  = "Evergreen Broadleaf",
+  "3"  = "Deciduous Needleleaf",
+  "4"  = "Deciduous Broadleaf",
+  "5"  = "Mixed Forests",
+  "6"  = "Closed Shrublands",
+  "7"  = "Open Shrublands",
+  "8"  = "Woody Savannas",
+  "9"  = "Savannas",
+  "10" = "Grasslands",
+  "11" = "Permanent Wetlands",
+  "12" = "Croplands",
+  "13" = "Urban",
+  "14" = "Cropland/Veg Mosaic",
+  "15" = "Snow/Ice",
+  "16" = "Barren",
+  "17" = "Unclassified"
+)
+
+# Frequency histogram of IGBP classes
+lc_hist <- lc_2010$reduceRegion(
+  reducer  = ee$Reducer$frequencyHistogram(),
+  geometry = aoi_country_ee$geometry(),
+  scale    = 500L,
+  maxPixels = 1e9
+)$getInfo()
+
+lc_counts <- lc_hist[["LC_Type1"]]
+lc_df <- data.frame(
+  class = as.integer(names(lc_counts)),
+  pixels = as.integer(unlist(lc_counts))
+)
+lc_df$label <- igbp_labels[as.character(lc_df$class)]
+lc_df$area_ha <- round(lc_df$pixels * 25, 1)  # 500m pixel ~ 25 ha
+lc_df <- lc_df[order(-lc_df$pixels), ]
+
+cat("Honduras 2010 — IGBP Land Cover Distribution\n")
+for (i in seq_len(nrow(lc_df))) {
+  cat(sprintf("  Class %2d %-25s: %7d pixels (%9.0f ha)\n",
+    lc_df$class[i], lc_df$label[i],
+    lc_df$pixels[i], lc_df$area_ha[i]))
+}
+```
+
 ------------------------------------------------------------
 
 ## Forest Fire Classification {#sec-veg-forest}
@@ -272,41 +376,35 @@ Regional Accuracy (Sulla-Menashe & Friedl, 2022):
 ### Forest Type Identification {#sec-veg-forest-identify}
 
 ```{r}
-#| eval: false
 #| label: veg-forest-classification
 #| code-summary: "Classify forest fires"
 
 # Define forest classes (IGBP 1-5)
-FOREST_CLASSES <- c(1, 2, 3, 4, 5)
+forest_mask <- lc_2010$gte(1L)$And(lc_2010$lte(5L))$rename("forest_mask")
 
-# Function to extract forest mask
-extractForest <- function(lc_image) {
-  lc <- lc_image$select("LC_Type1")
-  
-  # Create forest mask
-  forest_mask <- lc$eq(1)$  # Evergreen Needleleaf
-    Or(lc$eq(2))$           # Evergreen Broadleaf
-    Or(lc$eq(3))$           # Deciduous Needleleaf
-    Or(lc$eq(4))$           # Deciduous Broadleaf
-    Or(lc$eq(5))            # Mixed Forests
-  
-  return(forest_mask$rename("forest_mask"))
-}
+# Count forest pixels
+forest_count <- forest_mask$selfMask()$reduceRegion(
+  reducer   = ee$Reducer$count(),
+  geometry  = aoi_country_ee$geometry(),
+  scale     = 500L,
+  maxPixels = 1e9
+)$getInfo()
 
-# Apply to land cover
-forest_mask_2023 <- extractForest(lc_2023)
+cat("Forest pixels in Honduras:", forest_count[["forest_mask"]], "\n")
+cat("Forest area (approx):",
+    round(as.integer(forest_count[["forest_mask"]]) * 25 / 1e3, 1),
+    "thousand ha\n")
 
-# Overlay with burned area (from Chapter 1)
-# Assuming annual_burned_2023 is available from Chapter 1
-forest_fires_2023 <- annual_burned_2023$
-  updateMask(forest_mask_2023)
-
-# Visualize
-Map$addLayer(
-  forest_fires_2023,
-  list(palette = "red"),
-  "Forest Fires 2023"
-)
+# Visualize forest mask
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  tmap::tm_tiles(
+    ee_tile_url(
+      forest_mask$selfMask()$clip(aoi_country_ee$geometry()),
+      list(palette = "086a10", min = 1L, max = 1L)
+    ), group = "Forest (IGBP 1-5)"
+  ) +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 ### Humid Tropical Forest Delineation {#sec-veg-humid-tropical}
@@ -324,134 +422,135 @@ Tropical Moist Zones (for Humid Tropical Forest):
 Implementation:
 
 ```{r}
-#| eval: false
 #| label: veg-humid-tropical
 #| code-summary: "Identify Humid Tropical Forest fires"
 
-# Note: FAO-FRA zones not directly in GEE
-# Alternative 1: Use climate proxy (precipitation + temperature)
-# Alternative 2: Upload FAO zones as asset
+# Climate-based proxy for tropical moist zones
+# Load WorldClim data
+bio <- ee$Image("WORLDCLIM/V1/BIO")
+precip <- bio$select("bio12")  # Annual precipitation (mm)
+temp   <- bio$select("bio01")  # Annual mean temp (°C * 10)
 
-# METHOD 1: Climate-based proxy
-# Load WorldClim precipitation
-precip <- ee$Image("WORLDCLIM/V1/BIO")$select("bio12")  # Annual precip
-
-# Load temperature
-temp <- ee$Image("WORLDCLIM/V1/BIO")$select("bio01")  # Annual mean temp
-
-# Define tropical moist criteria (simplified)
-# Tropical: Mean annual temp > 18°C
+# Define tropical moist criteria
+# Tropical: Mean annual temp > 18°C (WorldClim stores as °C * 10)
 # Moist: Annual precip > 1500mm
-tropical <- temp$gt(180)  # WorldClim temp in °C * 10
-moist <- precip$gt(1500)
-
+tropical <- temp$gt(180L)
+moist    <- precip$gt(1500L)
 humid_tropical_mask <- tropical$And(moist)
 
 # Combine with forest mask
-humid_tropical_forest <- forest_mask_2023$And(humid_tropical_mask)
+humid_tropical_forest <- forest_mask$And(humid_tropical_mask)
+other_forest          <- forest_mask$And(humid_tropical_mask$Not())
 
-# Other forest = all forests NOT in humid tropical zones
-other_forest <- forest_mask_2023$And(humid_tropical_mask$Not())
+# Count pixels
+htf_count <- humid_tropical_forest$selfMask()$reduceRegion(
+  reducer   = ee$Reducer$count(),
+  geometry  = aoi_country_ee$geometry(),
+  scale     = 500L,
+  maxPixels = 1e9
+)$getInfo()
 
-# Overlay with burned areas
-htf_fires_2023 <- annual_burned_2023$updateMask(humid_tropical_forest)
-other_fires_2023 <- annual_burned_2023$updateMask(other_forest)
+of_count <- other_forest$selfMask()$reduceRegion(
+  reducer   = ee$Reducer$count(),
+  geometry  = aoi_country_ee$geometry(),
+  scale     = 500L,
+  maxPixels = 1e9
+)$getInfo()
+
+cat("Honduras — Forest Type Split\n")
+cat("  Humid Tropical Forest:", htf_count[["forest_mask"]] %||% 0, "pixels\n")
+cat("  Other Forest:         ", of_count[["forest_mask"]] %||% 0, "pixels\n")
 
 # Visualize
-Map$addLayer(htf_fires_2023, list(palette = "darkred"), "Humid Tropical Fires")
-Map$addLayer(other_fires_2023, list(palette = "orange"), "Other Forest Fires")
-```
-
-```{r}
-#| eval: false
-#| label: veg-fao-zones-asset
-#| code-summary: "Using FAO-FRA zones as GEE asset (if available)"
-
-# If FAO-FRA zones uploaded as asset
-# (User would need to upload this manually)
-
-# Load FAO zones (example path)
-fao_zones <- ee$FeatureCollection("users/your_username/FAO_FRA_EcoZones")
-
-# Filter to tropical moist zones
-tropical_moist_zones <- fao_zones$filter(
-  ee$Filter$inList("GEZ_NAME", list(
-    "Tropical rainforest",
-    "Tropical moist deciduous forest",
-    "Tropical mountain systems"
-  ))
-)
-
-# Rasterize to match MODIS resolution
-tropical_moist_raster <- tropical_moist_zones$
-  reduceToImage(
-    properties = list("GEZ_CODE"),
-    reducer = ee$Reducer$first()
-  )$
-  reproject(crs = lc_2023$projection(), scale = 500)
-
-# Create mask
-humid_tropical_mask_fao <- tropical_moist_raster$gt(0)
-
-# Apply to forest fires
-htf_fires_fao <- annual_burned_2023$
-  updateMask(forest_mask_2023)$
-  updateMask(humid_tropical_mask_fao)
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  tmap::tm_tiles(
+    ee_tile_url(
+      humid_tropical_forest$selfMask()$clip(aoi_country_ee$geometry()),
+      list(palette = "darkgreen", min = 1L, max = 1L)
+    ), group = "Humid Tropical Forest"
+  ) +
+  tmap::tm_tiles(
+    ee_tile_url(
+      other_forest$selfMask()$clip(aoi_country_ee$geometry()),
+      list(palette = "orange", min = 1L, max = 1L)
+    ), group = "Other Forest"
+  ) +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 ### Forest Fire Area Calculation {#sec-veg-forest-area}
 
 ```{r}
-#| eval: false
 #| label: veg-forest-area-calc
 #| code-summary: "Calculate forest fire areas by type"
 
-# Define area of interest (from Chapter 1)
-# Assuming 'aoi' is defined (e.g., country boundary)
+# Load burned area from Chapter 1 (2010)
+mcd64 <- ee$ImageCollection("MODIS/061/MCD64A1")
+burned_2010 <- mcd64$
+  filterBounds(aoi_country_ee$geometry())$
+  filterDate("2010-01-01", "2010-12-31")
 
-# Function to calculate area
-calculateForestFireArea <- function(fire_image, mask, name) {
-  area_ha <- fire_image$
-    updateMask(mask)$
-    multiply(ee$Image$pixelArea()$divide(10000))$
-    reduceRegion(
-      reducer = ee$Reducer$sum(),
-      geometry = aoi,
-      scale = 500,
-      maxPixels = 1e9
-    )
-  
-  return(ee$Feature(NULL, list(
-    fire_type = name,
-    area_ha = area_ha$get("burned")
-  )))
+# FAOSTAT quality filter (matching Ch1)
+faostat_filter <- function(image) {
+  unc  <- image$select("Uncertainty")
+  burn <- image$select("BurnDate")
+  mask <- unc$lt(20L)$And(burn$gt(0L))
+  image$updateMask(mask)
 }
 
-# Calculate areas
-htf_area <- calculateForestFireArea(
-  annual_burned_2023, 
-  humid_tropical_forest,
-  "Humid Tropical Forest"
-)
+# Annual burned mask for 2010
+annual_burned_2010 <- burned_2010$
+  map(faostat_filter)$
+  select("BurnDate")$max()$gt(0L)$selfMask()
 
-other_forest_area <- calculateForestFireArea(
-  annual_burned_2023,
-  other_forest,
-  "Other Forest"
-)
+# Overlay with vegetation masks
+htf_fires_2010    <- annual_burned_2010$updateMask(humid_tropical_forest)
+other_fires_2010  <- annual_burned_2010$updateMask(other_forest)
 
-# Combine results
-forest_fire_stats <- ee$FeatureCollection(list(
-  htf_area,
-  other_forest_area
-))
+# Calculate areas (ha)
+pixelArea_ha <- ee$Image$pixelArea()$divide(10000L)
 
-# Export or retrieve
-forest_results <- ee_as_sf(forest_fire_stats) %>%
-  st_drop_geometry() %>%
-  as.data.frame()
+htf_area <- htf_fires_2010$
+  multiply(pixelArea_ha)$
+  reduceRegion(
+    reducer   = ee$Reducer$sum(),
+    geometry  = aoi_country_ee$geometry(),
+    scale     = 500L,
+    maxPixels = 1e9
+  )$getInfo()
 
-print(forest_results)
+of_area <- other_fires_2010$
+  multiply(pixelArea_ha)$
+  reduceRegion(
+    reducer   = ee$Reducer$sum(),
+    geometry  = aoi_country_ee$geometry(),
+    scale     = 500L,
+    maxPixels = 1e9
+  )$getInfo()
+
+cat("Honduras 2010 — Forest Fire Areas\n")
+cat("  Humid Tropical Forest fires:",
+    round(htf_area[["BurnDate"]] %||% 0, 1), "ha\n")
+cat("  Other Forest fires:         ",
+    round(of_area[["BurnDate"]] %||% 0, 1), "ha\n")
+
+# Visualize
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  tmap::tm_tiles(
+    ee_tile_url(
+      htf_fires_2010$clip(aoi_country_ee$geometry()),
+      list(palette = "darkred", min = 0L, max = 1L)
+    ), group = "Humid Tropical Forest Fires"
+  ) +
+  tmap::tm_tiles(
+    ee_tile_url(
+      other_fires_2010$clip(aoi_country_ee$geometry()),
+      list(palette = "orange", min = 0L, max = 1L)
+    ), group = "Other Forest Fires"
+  ) +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 ------------------------------------------------------------
@@ -461,48 +560,70 @@ print(forest_results)
 ### Grassland and Woody Vegetation Types {#sec-veg-savanna-types}
 
 ```{r}
-#| eval: false
 #| label: veg-savanna-classification
 #| code-summary: "Classify savanna fires by vegetation type"
 
-# Define savanna/grassland classes
-SAVANNA_CLASSES <- list(
-  grassland = 10,
-  savanna = 9,
-  woody_savanna = 8,
-  open_shrubland = 7,
-  closed_shrubland = 6
-)
+# Savanna/grassland classes (IGBP 6-10)
+savanna_mask <- lc_2010$gte(6L)$And(lc_2010$lte(10L))
 
-# Extract each vegetation type
-extractSavannaType <- function(lc_image, class_value, class_name) {
-  mask <- lc_image$select("LC_Type1")$eq(class_value)
-  return(mask$rename(class_name))
-}
+# Individual sub-type masks
+grassland_mask     <- lc_2010$eq(10L)
+savanna_only_mask  <- lc_2010$eq(9L)
+woody_savanna_mask <- lc_2010$eq(8L)
+open_shrub_mask    <- lc_2010$eq(7L)
+closed_shrub_mask  <- lc_2010$eq(6L)
 
-# Create masks for each type
-grassland_mask <- extractSavannaType(lc_2023, 10, "grassland")
-savanna_mask <- extractSavannaType(lc_2023, 9, "savanna")
-woody_savanna_mask <- extractSavannaType(lc_2023, 8, "woody_savanna")
-open_shrub_mask <- extractSavannaType(lc_2023, 7, "open_shrubland")
-closed_shrub_mask <- extractSavannaType(lc_2023, 6, "closed_shrubland")
+# Count pixels by sub-type
+savanna_stats <- ee$Image$cat(
+  grassland_mask$rename("grassland"),
+  savanna_only_mask$rename("savanna"),
+  woody_savanna_mask$rename("woody_savanna"),
+  open_shrub_mask$rename("open_shrub"),
+  closed_shrub_mask$rename("closed_shrub")
+)$reduceRegion(
+  reducer   = ee$Reducer$sum(),
+  geometry  = aoi_country_ee$geometry(),
+  scale     = 500L,
+  maxPixels = 1e9
+)$getInfo()
 
-# Combined savanna mask (all types)
-savanna_all_mask <- grassland_mask$
-  Or(savanna_mask)$
-  Or(woody_savanna_mask)$
-  Or(open_shrub_mask)$
-  Or(closed_shrub_mask)
+cat("Honduras 2010 — Savanna/Grassland Sub-Types\n")
+cat("  Grasslands:       ", savanna_stats$grassland, "pixels\n")
+cat("  Savannas:         ", savanna_stats$savanna, "pixels\n")
+cat("  Woody Savannas:   ", savanna_stats$woody_savanna, "pixels\n")
+cat("  Open Shrublands:  ", savanna_stats$open_shrub, "pixels\n")
+cat("  Closed Shrublands:", savanna_stats$closed_shrub, "pixels\n")
 
-# Overlay with burned areas
-savanna_fires_2023 <- annual_burned_2023$updateMask(savanna_all_mask)
+# Overlay with burned area
+savanna_fires_2010 <- annual_burned_2010$updateMask(savanna_mask)
+
+sav_area <- savanna_fires_2010$
+  multiply(pixelArea_ha)$
+  reduceRegion(
+    reducer   = ee$Reducer$sum(),
+    geometry  = aoi_country_ee$geometry(),
+    scale     = 500L,
+    maxPixels = 1e9
+  )$getInfo()
+
+cat("  Total savanna fire area:", round(sav_area[["BurnDate"]] %||% 0, 1), "ha\n")
 
 # Visualize
-Map$addLayer(
-  savanna_fires_2023,
-  list(palette = "yellow"),
-  "Savanna Fires 2023"
-)
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  tmap::tm_tiles(
+    ee_tile_url(
+      savanna_mask$selfMask()$clip(aoi_country_ee$geometry()),
+      list(palette = "fbff13", min = 1L, max = 1L)
+    ), group = "Savanna/Grassland (IGBP 6-10)"
+  ) +
+  tmap::tm_tiles(
+    ee_tile_url(
+      savanna_fires_2010$clip(aoi_country_ee$geometry()),
+      list(palette = "red", min = 0L, max = 1L)
+    ), group = "Savanna Fires 2010"
+  ) +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 ### Climate Zone Stratification {#sec-veg-climate-stratification}
@@ -517,37 +638,78 @@ IPCC Climate Zones:
 -   Tropical (Wet/Moist/Dry/Montane)
 
 ```{r}
-#| eval: false
 #| label: veg-climate-zones
 #| code-summary: "Apply IPCC climate zone stratification"
 
-# Load JRC Climate Zones (IPCC-based)
-# Note: May need to upload as asset if not in GEE catalog
-
-# Alternative: Use temperature/precipitation proxies
-# Load WorldClim data
-bio01 <- ee$Image("WORLDCLIM/V1/BIO")$select("bio01")  # Annual mean temp
-bio12 <- ee$Image("WORLDCLIM/V1/BIO")$select("bio12")  # Annual precip
-
-# Define climate zones (simplified)
+# Climate zones from WorldClim (already loaded)
 # Tropical: MAT > 18°C
-tropical_zone <- bio01$gt(180)
-
+tropical_zone  <- temp$gt(180L)
 # Boreal: MAT < 0°C
-boreal_zone <- bio01$lt(0)
-
+boreal_zone    <- temp$lt(0L)
 # Temperate: Everything else
-temperate_zone <- bio01$gte(0)$And(bio01$lte(180))
+temperate_zone <- temp$gte(0L)$And(temp$lte(180L))
 
-# Apply to savanna fires
-savanna_tropical <- savanna_fires_2023$updateMask(tropical_zone)
-savanna_temperate <- savanna_fires_2023$updateMask(temperate_zone)
-savanna_boreal <- savanna_fires_2023$updateMask(boreal_zone)
+# Climate zone pixel counts within Honduras
+zone_stats <- ee$Image$cat(
+  tropical_zone$rename("tropical"),
+  temperate_zone$rename("temperate"),
+  boreal_zone$rename("boreal")
+)$reduceRegion(
+  reducer   = ee$Reducer$sum(),
+  geometry  = aoi_country_ee$geometry(),
+  scale     = 500L,
+  maxPixels = 1e9
+)$getInfo()
+
+cat("Honduras — Climate Zone Distribution\n")
+cat("  Tropical pixels: ", zone_stats$tropical, "\n")
+cat("  Temperate pixels:", zone_stats$temperate, "\n")
+cat("  Boreal pixels:   ", zone_stats$boreal, "\n")
+
+# Apply climate stratification to savanna fires
+savanna_tropical  <- savanna_fires_2010$updateMask(tropical_zone)
+savanna_temperate <- savanna_fires_2010$updateMask(temperate_zone)
+
+sav_trop_area <- savanna_tropical$
+  multiply(pixelArea_ha)$
+  reduceRegion(
+    reducer   = ee$Reducer$sum(),
+    geometry  = aoi_country_ee$geometry(),
+    scale     = 500L,
+    maxPixels = 1e9
+  )$getInfo()
+
+sav_temp_area <- savanna_temperate$
+  multiply(pixelArea_ha)$
+  reduceRegion(
+    reducer   = ee$Reducer$sum(),
+    geometry  = aoi_country_ee$geometry(),
+    scale     = 500L,
+    maxPixels = 1e9
+  )$getInfo()
+
+cat("Honduras 2010 — Savanna Fires by Climate Zone\n")
+cat("  Tropical savanna fires: ",
+    round(sav_trop_area[["BurnDate"]] %||% 0, 1), "ha\n")
+cat("  Temperate savanna fires:",
+    round(sav_temp_area[["BurnDate"]] %||% 0, 1), "ha\n")
 
 # Visualize climate-stratified fires
-Map$addLayer(savanna_tropical, list(palette = "red"), "Tropical Savanna Fires")
-Map$addLayer(savanna_temperate, list(palette = "orange"), "Temperate Savanna Fires")
-Map$addLayer(savanna_boreal, list(palette = "blue"), "Boreal Savanna Fires")
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  tmap::tm_tiles(
+    ee_tile_url(
+      tropical_zone$selfMask()$clip(aoi_country_ee$geometry()),
+      list(palette = "ff6600", min = 1L, max = 1L)
+    ), group = "Tropical Zone"
+  ) +
+  tmap::tm_tiles(
+    ee_tile_url(
+      temperate_zone$selfMask()$clip(aoi_country_ee$geometry()),
+      list(palette = "3399ff", min = 1L, max = 1L)
+    ), group = "Temperate Zone"
+  ) +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 ### Seasonal Burn Patterns {#sec-veg-seasonal}
@@ -561,58 +723,69 @@ season (IPCC Table 2.4)
     savanna woodland)
 
 ```{r}
-#| eval: false
 #| label: veg-seasonal-analysis
 #| code-summary: "Analyze seasonal fire patterns"
 
 # Extract burn month from burn date
 extractBurnMonth <- function(mcd64_image) {
   burn_date <- mcd64_image$select("BurnDate")
-  
-  # Get image date (represents the month)
+
+  # Get image month from system:time_start
   img_date <- ee$Date(mcd64_image$get("system:time_start"))
-  month <- img_date$get("month")
-  
-  # Create month band
+  month    <- img_date$get("month")
+
+  # Create month band (only where burned)
   month_band <- ee$Image$constant(month)$
-    updateMask(burn_date$gt(0))$
-    rename("burn_month")
-  
-  return(burn_date$addBands(month_band))
+    updateMask(burn_date$gt(0L))$
+    rename("burn_month")$
+    toInt()
+
+  burn_date$addBands(month_band)
 }
 
-# Apply to monthly collection (from Chapter 1)
-mcd64_with_months <- mcd64_faostat$  # From Chapter 1
-  filterDate("2023-01-01", "2023-12-31")$
+# Apply to 2010 collection
+mcd64_with_months <- burned_2010$
+  map(faostat_filter)$
   map(extractBurnMonth)
 
-# Extract months as separate images
+# Composite: latest month if pixel burned multiple times
 month_composite <- mcd64_with_months$
   select("burn_month")$
-  max()  # Takes the latest month if pixel burned multiple times
+  max()
 
-# Define seasons (example for Southern Hemisphere savanna)
-# Early dry season: May-July (months 5-7)
-# Late dry season: August-October (months 8-10)
+# Honduras dry season: roughly Feb-May (Central America)
+# Early dry: Feb-Mar (months 2-3)
+# Late dry:  Apr-May (months 4-5)
+early_season <- month_composite$gte(2L)$And(month_composite$lte(3L))
+late_season  <- month_composite$gte(4L)$And(month_composite$lte(5L))
 
-early_season <- month_composite$gte(5)$And(month_composite$lte(7))
-late_season <- month_composite$gte(8)$And(month_composite$lte(10))
+# Calculate areas for savanna fires by season
+savanna_early <- savanna_fires_2010$updateMask(early_season)
+savanna_late  <- savanna_fires_2010$updateMask(late_season)
 
-# Apply to savanna fires
-savanna_early <- savanna_fires_2023$updateMask(early_season)
-savanna_late <- savanna_fires_2023$updateMask(late_season)
-
-# Calculate areas
 early_area <- savanna_early$
-  multiply(ee$Image$pixelArea()$divide(10000))$
-  reduceRegion(reducer = ee$Reducer$sum(), geometry = aoi, scale = 500)
+  multiply(pixelArea_ha)$
+  reduceRegion(
+    reducer   = ee$Reducer$sum(),
+    geometry  = aoi_country_ee$geometry(),
+    scale     = 500L,
+    maxPixels = 1e9
+  )$getInfo()
 
 late_area <- savanna_late$
-  multiply(ee$Image$pixelArea()$divide(10000))$
-  reduceRegion(reducer = ee$Reducer$sum(), geometry = aoi, scale = 500)
+  multiply(pixelArea_ha)$
+  reduceRegion(
+    reducer   = ee$Reducer$sum(),
+    geometry  = aoi_country_ee$geometry(),
+    scale     = 500L,
+    maxPixels = 1e9
+  )$getInfo()
 
-print(paste("Early season:", early_area$getInfo()$burned, "ha"))
-print(paste("Late season:", late_area$getInfo()$burned, "ha"))
+cat("Honduras 2010 — Seasonal Savanna Fire Areas\n")
+cat("  Early dry season (Feb-Mar):",
+    round(early_area[["BurnDate"]] %||% 0, 1), "ha\n")
+cat("  Late dry season (Apr-May): ",
+    round(late_area[["BurnDate"]] %||% 0, 1), "ha\n")
 ```
 
 ------------------------------------------------------------
@@ -628,50 +801,44 @@ print(paste("Late season:", late_area$getInfo()$burned, "ha"))
     of surface land cover
 
 ```{r}
-#| eval: false
 #| label: veg-histosols-access
 #| code-summary: "Identify organic soil fires"
 
-# Note: HWSD not directly in GEE
-# Two approaches:
-# 1. Upload HWSD as asset
-# 2. Use existing peatland datasets in GEE
+# Proxy approach: Permanent wetlands (IGBP 11) in lowland tropics
+wetlands_mask <- lc_2010$eq(11L)
 
-# APPROACH 1: Using Global Peatland Dataset
-# (Example: Several peatland datasets exist in GEE catalog)
-
-# Search for peatland/wetland datasets
-# Example using a hypothetical peatland layer
-# Actual implementation depends on available datasets
-
-# For FAOSTAT methodology: Upload HWSD Histosols layer
-# (User action required)
-
-# APPROACH 2: Simplified proxy using permanent wetlands + tropical
-wetlands_mask <- lc_2023$select("LC_Type1")$eq(11)  # Permanent wetlands
-
-# Focus on Southeast Asia (where validated)
-# Define Southeast Asia bounding box
-sea_bbox <- ee$Geometry$Rectangle([95, -10, 141, 20])
-
-# Peatland proxy: Wetlands in SE Asia lowlands
+# Elevation threshold for lowlands
 elevation <- ee$Image("USGS/SRTMGL1_003")
-lowlands <- elevation$lt(100)  # < 100m elevation
+lowlands  <- elevation$lt(100L)
 
-organic_soil_mask <- wetlands_mask$
-  And(lowlands)$
-  clip(sea_bbox)
+# Organic soil proxy = wetlands in lowlands
+organic_soil_mask <- wetlands_mask$And(lowlands)
 
-# Overlay with burned areas
-organic_fires_2023 <- annual_burned_2023$
+# Count in Honduras
+org_count <- organic_soil_mask$selfMask()$reduceRegion(
+  reducer   = ee$Reducer$count(),
+  geometry  = aoi_country_ee$geometry(),
+  scale     = 500L,
+  maxPixels = 1e9
+)$getInfo()
+
+cat("Honduras — Organic Soil Proxy\n")
+cat("  Lowland wetland pixels:", org_count[["LC_Type1"]] %||% 0, "\n")
+
+# Overlay with burned area
+organic_fires_2010 <- annual_burned_2010$
   updateMask(organic_soil_mask)
 
-# Visualize
-Map$addLayer(
-  organic_fires_2023,
-  list(palette = "brown"),
-  "Organic Soil Fires 2023 (SE Asia)"
-)
+org_area <- organic_fires_2010$
+  multiply(pixelArea_ha)$
+  reduceRegion(
+    reducer   = ee$Reducer$sum(),
+    geometry  = aoi_country_ee$geometry(),
+    scale     = 500L,
+    maxPixels = 1e9
+  )$getInfo()
+
+cat("  Organic soil fire area:", round(org_area[["BurnDate"]] %||% 0, 1), "ha\n")
 ```
 
 ### Regional Constraints {#sec-veg-organic-regional}
@@ -687,52 +854,17 @@ Southeast Asian Countries (non-zero organic soil fires):
 -   Indonesia
 -   Malaysia
 -   Brunei Darussalam
--   (Potentially: Philippines, Thailand, Vietnam - check
-    FAOSTAT regional definition)
 
 ```{r}
-#| eval: false
 #| label: veg-sea-filter
 #| code-summary: "Apply Southeast Asia regional filter"
 
-# Load country boundaries
-countries <- ee$FeatureCollection("FAO/GAUL/2015/level0")
-
-# Define Southeast Asia countries
-SEA_COUNTRIES <- c(
-  "Indonesia",
-  "Malaysia",
-  "Brunei Darussalam"
-  # Add others as per FAOSTAT definition
-)
-
-# Filter to SE Asia
-sea_countries <- countries$filter(
-  ee$Filter$inList("ADM0_NAME", SEA_COUNTRIES)
-)
-
-# Clip organic fires to SE Asia only
-organic_fires_sea <- organic_fires_2023$clip(sea_countries)
-
-# All organic fires outside SE Asia = 0 (per FAOSTAT)
-# (Achieved by clipping to SE Asia only)
-
-# Calculate area
-organic_area_sea <- organic_fires_sea$
-  multiply(ee$Image$pixelArea()$divide(10000))$
-  reduceRegions(
-    collection = sea_countries,
-    reducer = ee$Reducer$sum(),
-    scale = 500
-  )
-
-# Results
-organic_results <- ee_as_sf(organic_area_sea) %>%
-  st_drop_geometry() %>%
-  select(ADM0_NAME, sum) %>%
-  rename(country = ADM0_NAME, area_ha = sum)
-
-print(organic_results)
+# For Honduras: organic soil fires = 0 per FAOSTAT methodology
+# (Honduras is outside SE Asia)
+cat("Honduras — FAOSTAT Organic Soil Fires\n")
+cat("  Per FAOSTAT methodology, organic soil fires are set to 0\n")
+cat("  for all countries outside Southeast Asia.\n")
+cat("  Honduras organic soil fire area: 0 ha (FAOSTAT convention)\n")
 ```
 
 ### Uncertainty in Organic Soil Classification {#sec-veg-organic-uncertainty}
@@ -765,178 +897,121 @@ until more validation data available
 
 ## Multi-Source Validation {#sec-veg-validation}
 
-### GLAD Validation {#sec-veg-glad-height}
+### GLAD Forest Height Validation {#sec-veg-glad-height}
 
 ```{r}
-#| eval: false
 #| label: veg-glad-height-validation
-#| code-summary: "Validate forest classification with GLAD height"
+#| code-summary: "Validate forest classification with GLAD canopy height"
 
-library(forestdata)
-library(terra)
+# GLAD canopy height in GEE (Potapov et al.)
+glad_height <- ee$Image("UMD/hansen/global_forest_change_2023_v1_11")$
+  select("treecover2000")$
+  clip(aoi_country_ee$geometry())
 
-# Download GLAD forest height (example: Portugal)
-glad_height <- fd_forest_glad(
-  lon = -7.8,
-  lat = 42.7,
-  model = "height",
-  year = 2020
-)
+# Forest threshold: > 25% canopy cover (Hansen definition)
+glad_forest <- glad_height$gt(25L)
 
-# Forest threshold: > 5m height (per IPCC definition)
-glad_forest_mask <- glad_height > 5
+# Compare with MODIS forest mask
+# Agreement: both say forest
+# MODIS-only: MODIS says forest, GLAD does not
+# GLAD-only: GLAD says forest, MODIS does not
+modis_forest_binary <- forest_mask$unmask(0L)
+glad_forest_binary  <- glad_forest$unmask(0L)
 
-# Resample MODIS to GLAD resolution (30m) for comparison
-# (Or aggregate GLAD to MODIS 500m)
-glad_forest_500m <- aggregate(
-  glad_forest_mask,
-  fact = round(500 / 30),  # ~17x aggregation
-  fun = mean  # Proportion of 30m pixels that are forest
-)
+agreement  <- modis_forest_binary$And(glad_forest_binary)
+modis_only <- modis_forest_binary$And(glad_forest_binary$Not())
+glad_only  <- glad_forest_binary$And(modis_forest_binary$Not())
 
-# Export MODIS forest from GEE for comparison
-modis_forest_mask_r <- ee_as_rast(
-  forest_mask_2023,
-  region = ee$Geometry$Point(c(-7.8, 42.7))$buffer(50000),  # 50km radius
-  scale = 500
-)
+val_stats <- ee$Image$cat(
+  agreement$rename("agree"),
+  modis_only$rename("modis_only"),
+  glad_only$rename("glad_only")
+)$reduceRegion(
+  reducer   = ee$Reducer$sum(),
+  geometry  = aoi_country_ee$geometry(),
+  scale     = 500L,
+  maxPixels = 1e9
+)$getInfo()
 
-# Compare classifications
-library(caret)
-# Ensure same extent and resolution
-glad_crop <- crop(glad_forest_500m, modis_forest_mask_r)
-modis_crop <- crop(modis_forest_mask_r, glad_forest_500m)
+total <- as.integer(val_stats$agree %||% 0) +
+  as.integer(val_stats$modis_only %||% 0) +
+  as.integer(val_stats$glad_only %||% 0)
 
-# Confusion matrix
-confusion <- confusionMatrix(
-  data = as.factor(as.vector(modis_crop > 0)),
-  reference = as.factor(as.vector(glad_crop > 0.5))  # >50% forest in aggregated pixel
-)
+cat("Honduras — Forest Classification Agreement\n")
+cat("  Both agree (forest):  ", val_stats$agree, "pixels\n")
+cat("  MODIS-only forest:    ", val_stats$modis_only, "pixels\n")
+cat("  Hansen-only forest:   ", val_stats$glad_only, "pixels\n")
+if (total > 0) {
+  cat("  Agreement rate:       ",
+      round(as.integer(val_stats$agree %||% 0) / total * 100, 1), "%\n")
+}
 
-print(confusion)
-
-# Kappa statistic
-print(paste("Cohen's Kappa:", round(confusion$overall["Kappa"], 3)))
+# Visualize agreement
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  tmap::tm_tiles(
+    ee_tile_url(
+      agreement$selfMask()$clip(aoi_country_ee$geometry()),
+      list(palette = "green", min = 1L, max = 1L)
+    ), group = "Both Agree: Forest"
+  ) +
+  tmap::tm_tiles(
+    ee_tile_url(
+      modis_only$selfMask()$clip(aoi_country_ee$geometry()),
+      list(palette = "blue", min = 1L, max = 1L)
+    ), group = "MODIS-only Forest"
+  ) +
+  tmap::tm_tiles(
+    ee_tile_url(
+      glad_only$selfMask()$clip(aoi_country_ee$geometry()),
+      list(palette = "red", min = 1L, max = 1L)
+    ), group = "Hansen-only Forest"
+  ) +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tmap::tm_basemap("Esri.WorldImagery")
 ```
 
-### ESRI-LC Validation {#sec-veg-esri-validation}
+### ESA WorldCover Validation {#sec-veg-esri-validation}
 
 ```{r}
-#| eval: false
-#| label: veg-esri-lc-validation
-#| code-summary: "Validate with ESRI 10m land cover"
+#| label: veg-esa-worldcover-validation
+#| code-summary: "Validate with ESA WorldCover 10m land cover"
 
-library(forestdata)
+# ESA WorldCover 2020 (10m) in GEE
+esa_2020 <- ee$Image("ESA/WorldCover/v100/2020")$
+  clip(aoi_country_ee$geometry())
 
-# Download ESRI land cover (10m resolution)
-esri_lc_2023 <- fd_landcover_esri(utm_code = "29N", year = 2023)
+# ESA classes: 10=Tree cover, 20=Shrubland, 30=Grassland,
+# 40=Cropland, 50=Built-up, 60=Bare, 70=Snow/Ice,
+# 80=Water, 90=Herbaceous wetland, 95=Mangroves, 100=Moss/Lichen
 
-# ESRI legend (verify from documentation):
-# 1 = Water
-# 2 = Trees
-# 3 = Grass
-# 4 = Flooded Vegetation
-# 5 = Crops
-# 6 = Scrub/Shrub
-# 7 = Built Area
-# 8 = Bare Ground
-# 9 = Snow/Ice
-# 10 = Clouds
+# ESA forest (Tree cover)
+esa_forest <- esa_2020$eq(10L)
 
-# Extract forest (Trees class)
-esri_forest <- esri_lc_2023 == 2
+# ESA savanna proxy (Shrubland + Grassland)
+esa_savanna <- esa_2020$eq(20L)$Or(esa_2020$eq(30L))
 
-# Extract savanna (Grass + Scrub/Shrub)
-esri_savanna <- (esri_lc_2023 == 3) | (esri_lc_2023 == 6)
+# Compare ESA forest with MODIS forest
+esa_forest_binary <- esa_forest$unmask(0L)
 
-# Aggregate to MODIS resolution
-esri_forest_500m <- aggregate(
-  esri_forest,
-  fact = 50,  # 10m to 500m
-  fun = mean
-)
+agree_esa  <- modis_forest_binary$And(esa_forest_binary)
+modis_esa  <- modis_forest_binary$And(esa_forest_binary$Not())
+esa_only   <- esa_forest_binary$And(modis_forest_binary$Not())
 
-esri_savanna_500m <- aggregate(
-  esri_savanna,
-  fact = 50,
-  fun = mean
-)
+esa_stats <- ee$Image$cat(
+  agree_esa$rename("agree"),
+  modis_esa$rename("modis_only"),
+  esa_only$rename("esa_only")
+)$reduceRegion(
+  reducer   = ee$Reducer$sum(),
+  geometry  = aoi_country_ee$geometry(),
+  scale     = 500L,
+  maxPixels = 1e9
+)$getInfo()
 
-# Calculate agreement with MODIS
-# (Code similar to GLAD validation above)
-
-# Overlay with burned areas
-# Areas of disagreement may indicate:
-# - MODIS misclassification
-# - ESRI misclassification
-# - Actual mixed pixels (forest edge, mosaic)
-```
-
-### EU-Trees4F Species Distribution {#sec-veg-eutrees-validation}
-
-```{r}
-#| eval: false
-#| label: veg-eutrees-validation
-#| code-summary: "Validate European forest types with species data"
-
-library(forestdata)
-
-# Download species distribution for key European forest types
-# Example: Pinus pinaster (Maritime Pine) - fire-prone species
-
-pinus_pinaster <- fd_forest_eutrees4f(
-  species = "Pinus pinaster",
-  period = "2005",
-  type = "prob",
-  distrib = "nat"
-)
-
-# High probability areas should align with "Other Forest" classification
-# (Pinus pinaster = Evergreen Needleleaf in Portugal/Spain)
-
-# Overlay with MODIS forest fires
-# Expect fires in areas with:
-# - High Pinus pinaster probability
-# - MODIS Evergreen Needleleaf classification (class 1)
-# - Mediterranean climate zone
-
-# This validates:
-# 1. MODIS correctly classifies needleleaf forests
-# 2. These forests are burning (expected for fire-adapted species)
-# 3. Climate stratification is appropriate
-```
-
-### Chorological Forest Type Maps {#sec-veg-chorological}
-
-```{r}
-#| eval: false
-#| label: veg-chorological-validation
-#| code-summary: "Use chorological maps to validate forest classifications"
-
-library(forestdata)
-library(sf)
-
-# Download chorological maps for dominant European tree species
-quercus_suber <- fd_forest_chorological(
-  species = "Quercus suber",  # Cork Oak
-  range = "nat"
-)
-
-pinus_pinaster <- fd_forest_chorological(
-  species = "Pinus pinaster",  # Maritime Pine
-  range = "nat"
-)
-
-# Plot species ranges
-plot(quercus_suber$geometry, col = "green", main = "Cork Oak Native Range")
-plot(pinus_pinaster$geometry, col = "blue", add = TRUE)
-
-# Overlay with MODIS forest classification
-# Cork Oak (broadleaf evergreen) should align with IGBP class 2
-# Maritime Pine (needleleaf evergreen) should align with IGBP class 1
-
-# Extract MODIS classification within species ranges
-# (Requires converting MODIS to vector or resampling species to raster)
+cat("Honduras — MODIS vs ESA WorldCover Forest Agreement\n")
+cat("  Both agree (forest): ", esa_stats$agree, "pixels\n")
+cat("  MODIS-only forest:   ", esa_stats$modis_only, "pixels\n")
+cat("  ESA-only forest:     ", esa_stats$esa_only, "pixels\n")
 ```
 
 ------------------------------------------------------------
@@ -993,122 +1068,87 @@ Post-classification:
 ### Integrated Pipeline {#sec-veg-pipeline}
 
 ```{r}
-#| eval: false
 #| label: veg-complete-workflow
-#| code-summary: "End-to-end vegetation classification"
+#| code-summary: "End-to-end vegetation classification — Honduras 2010"
 
 # ============================================================
 # IPCC Tier 1 Vegetation Classification Pipeline
-# Integrates: MCD64A1 + MCD12Q1 + FAO Zones + HWSD
+# Integrates: MCD64A1 + MCD12Q1 + WorldClim
 # ============================================================
 
-library(rgee)
-library(sf)
-library(tidyverse)
+# --- All inputs already loaded above ---
+# annual_burned_2010  : binary burned mask (from FAOSTAT filter)
+# lc_2010             : IGBP land cover
+# forest_mask         : IGBP classes 1-5
+# humid_tropical_mask : WorldClim tropical + moist
+# savanna_mask        : IGBP classes 6-10
 
-ee_Initialize()
+# 1. CLASSIFY ALL BURNED PIXELS ---------------------------------
+# Unclassified: burned but not forest or savanna
+unclassified_mask <- forest_mask$Or(savanna_mask)$Not()
+unclassified_fires <- annual_burned_2010$updateMask(unclassified_mask)
 
-# 1. LOAD INPUTS ----------------------------------------------
-# Burned area (from Chapter 1)
-year <- 2023
-mcd64 <- ee$ImageCollection("MODIS/061/MCD64A1")$
-  filterDate(paste0(year, "-01-01"), paste0(year, "-12-31"))
-
-# Land cover
-lc <- ee$ImageCollection("MODIS/061/MCD12Q1")$
-  filterDate(paste0(year, "-01-01"), paste0(year, "-12-31"))$
-  first()$
-  select("LC_Type1")
-
-# Country boundary
-countries <- ee$FeatureCollection("FAO/GAUL/2015/level0")
-country_name <- "Portugal"
-aoi <- countries$filter(ee$Filter$eq("ADM0_NAME", country_name))
-
-# 2. PROCESS BURNED AREA --------------------------------------
-# Quality filter and annual aggregation (from Chapter 1)
-filterQuality <- function(img) {
-  mask <- img$select("Burn_Date_Uncertainty")$lt(20)$
-    And(img$select("BurnDate")$gt(0))
-  return(img$updateMask(mask))
-}
-
-annual_burn <- mcd64$
-  map(filterQuality)$
-  select("BurnDate")$
-  max()$
-  gt(0)$
-  selfMask()
-
-# 3. CLASSIFY VEGETATION TYPES --------------------------------
-
-# 3a. Forest Fires
-forest_mask <- lc$gte(1)$And(lc$lte(5))
-
-# Humid Tropical Forest (using climate proxy)
-temp <- ee$Image("WORLDCLIM/V1/BIO")$select("bio01")
-precip <- ee$Image("WORLDCLIM/V1/BIO")$select("bio12")
-humid_tropical <- temp$gt(180)$And(precip$gt(1500))
-
-htf_fires <- annual_burn$
-  updateMask(forest_mask)$
-  updateMask(humid_tropical)
-
-other_forest_fires <- annual_burn$
-  updateMask(forest_mask)$
-  updateMask(humid_tropical$Not())
-
-# 3b. Savanna Fires
-savanna_mask <- lc$gte(6)$And(lc$lte(10))
-savanna_fires <- annual_burn$updateMask(savanna_mask)
-
-# 3c. Organic Soil Fires (SE Asia only in FAOSTAT)
-# Skip if not in SE Asia, or implement if needed
-
-# 4. CALCULATE AREAS ------------------------------------------
-calculateArea <- function(image, name) {
-  area <- image$
-    multiply(ee$Image$pixelArea()$divide(10000))$
+# 2. CALCULATE ALL AREAS ----------------------------------------
+calcArea <- function(fire_img, label) {
+  result <- fire_img$
+    multiply(pixelArea_ha)$
     reduceRegion(
-      reducer = ee$Reducer$sum(),
-      geometry = aoi,
-      scale = 500,
+      reducer   = ee$Reducer$sum(),
+      geometry  = aoi_country_ee$geometry(),
+      scale     = 500L,
       maxPixels = 1e9
-    )
-  
-  return(ee$Feature(NULL, list(
-    fire_type = name,
-    area_ha = area$get("burned"),
-    year = year,
-    country = country_name
-  )))
+    )$getInfo()
+  round(result[["BurnDate"]] %||% 0, 1)
 }
 
-results <- ee$FeatureCollection(list(
-  calculateArea(htf_fires, "Humid_Tropical_Forest"),
-  calculateArea(other_forest_fires, "Other_Forest"),
-  calculateArea(savanna_fires, "Savanna")
-))
+total_burned_ha <- calcArea(annual_burned_2010, "Total")
+htf_ha          <- calcArea(htf_fires_2010, "HTF")
+of_ha           <- calcArea(other_fires_2010, "Other Forest")
+sav_ha          <- calcArea(savanna_fires_2010, "Savanna")
+unclass_ha      <- calcArea(unclassified_fires, "Unclassified")
 
-# 5. EXPORT RESULTS -------------------------------------------
-results_df <- ee_as_sf(results) %>%
-  st_drop_geometry() %>%
-  as.data.frame()
+cat("============================================================\n")
+cat("Honduras 2010 — IPCC Vegetation Classification Summary\n")
+cat("============================================================\n")
+cat(sprintf("  %-30s %10.1f ha\n", "Total burned area:", total_burned_ha))
+cat("------------------------------------------------------------\n")
+cat(sprintf("  %-30s %10.1f ha\n", "Humid Tropical Forest fires:", htf_ha))
+cat(sprintf("  %-30s %10.1f ha\n", "Other Forest fires:", of_ha))
+cat(sprintf("  %-30s %10.1f ha\n", "Savanna fires:", sav_ha))
+cat(sprintf("  %-30s %10.1f ha\n", "Organic soil fires:", 0))
+cat(sprintf("  %-30s %10.1f ha\n", "Unclassified (excluded):", unclass_ha))
+cat("------------------------------------------------------------\n")
+classified_ha <- htf_ha + of_ha + sav_ha
+cat(sprintf("  %-30s %10.1f ha\n", "Total classified:", classified_ha))
+if (total_burned_ha > 0) {
+  cat(sprintf("  %-30s %9.1f%%\n", "Classification coverage:",
+      classified_ha / total_burned_ha * 100))
+}
+cat("============================================================\n")
 
-print(results_df)
-
-# Save to file
-write.csv(
-  results_df,
-  paste0(country_name, "_VegetationClassification_", year, ".csv"),
-  row.names = FALSE
-)
-
-# 6. VISUALIZE ------------------------------------------------
-Map$centerObject(aoi, zoom = 7)
-Map$addLayer(htf_fires, list(palette = "darkred"), "Humid Tropical Forest Fires")
-Map$addLayer(other_forest_fires, list(palette = "orange"), "Other Forest Fires")
-Map$addLayer(savanna_fires, list(palette = "yellow"), "Savanna Fires")
+# 3. VISUALIZE COMPLETE STRATIFICATION --------------------------
+tmap::tm_shape(aoi_states_sf) + tmap::tm_borders(col = "MAP_COLORS", lwd = 1) +
+  tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  tmap::tm_tiles(
+    ee_tile_url(
+      htf_fires_2010$clip(aoi_country_ee$geometry()),
+      list(palette = "darkred", min = 0L, max = 1L)
+    ), group = "Humid Tropical Forest Fires"
+  ) +
+  tmap::tm_tiles(
+    ee_tile_url(
+      other_fires_2010$clip(aoi_country_ee$geometry()),
+      list(palette = "ff8800", min = 0L, max = 1L)
+    ), group = "Other Forest Fires"
+  ) +
+  tmap::tm_tiles(
+    ee_tile_url(
+      savanna_fires_2010$clip(aoi_country_ee$geometry()),
+      list(palette = "ffff00", min = 0L, max = 1L)
+    ), group = "Savanna Fires"
+  ) +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 ### Output Format {#sec-veg-output}
@@ -1116,27 +1156,29 @@ Map$addLayer(savanna_fires, list(palette = "yellow"), "Savanna Fires")
 Required outputs for fuel biomass calculation (Chapter 3):
 
 ```{r}
-#| eval: false
 #| label: veg-output-format
-#| echo: false
+#| code-summary: "Output table for Chapter 3"
 
-# Example output table structure
+# Build results data frame
 output_table <- data.frame(
-  country = "Portugal",
-  year = 2023,
-  fire_type = c("Humid_Tropical_Forest", "Other_Forest", "Savanna"),
-  burned_area_ha = c(0, 45230, 12450),  # Example values
-  lc_class_dominant = c(NA, 1, 9),  # IGBP class
-  climate_zone = c(NA, "Temperate", "Temperate"),
-  fuel_consumption_tDM_ha = c(NA, 50.4, 7.0),  # From IPCC Table 2.4
+  country = "Honduras",
+  year = 2010L,
+  fire_type = c("Humid_Tropical_Forest", "Other_Forest",
+                "Savanna", "Organic_Soil"),
+  burned_area_ha = c(htf_ha, of_ha, sav_ha, 0),
+  climate_zone = c("Tropical", "Tropical", "Tropical", NA),
+  fuel_consumption_tDM_ha = c(119.6, 69.4, 7.0, 0),
   notes = c(
-    "No humid tropical forest in Portugal",
-    "Primarily Evergreen Needleleaf (Pinus)",
-    "Savanna vegetation"
+    "IGBP 1-5 in humid tropical zone",
+    "IGBP 1-5 outside humid tropical zone",
+    "IGBP 6-10 (all sub-types)",
+    "Set to 0 per FAOSTAT (non-SE Asia)"
   )
 )
 
-knitr::kable(output_table, caption = "Vegetation Classification Output Example")
+knitr::kable(output_table,
+  caption = "Honduras 2010 — Vegetation Classification Output",
+  digits = 1)
 ```
 
 ------------------------------------------------------------
@@ -1149,8 +1191,8 @@ knitr::kable(output_table, caption = "Vegetation Classification Output Example")
     Other), Savanna, Organic Soils
 3.  Climate stratification required for accurate fuel
     consumption assignment
-4.  Validation using forestdata products (GLAD, ESRI,
-    EU-Trees4F) reduces uncertainty
+4.  Validation using Hansen forest cover and ESA WorldCover
+    reduces uncertainty
 5.  Uncertainty \~±15-20% in vegetation classification
     acceptable for Tier 1
 

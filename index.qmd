@@ -119,31 +119,21 @@ Where:
 -   C~f~ = combustion factor (dimensionless, proportion of fuel consumed)
 -   G~ef~ = emission factor (g kg⁻¹ dry matter burnt)
 
-#### Key Principles
-
-The Tier 1 method prioritizes:
-
-1.  Consistency: Uniform application of default parameters enables cross-country comparability
-2.  Transparency: Clear documentation of data sources, assumptions, and limitations
-3.  Completeness: Coverage of all managed lands where fires occur
-4.  Accuracy: Use of satellite-based activity data with quality filtering (uncertainty \< 20%)
-5.  Conservativeness: Appropriate treatment of CO₂ emissions based on vegetation type and recovery dynamics
-
 #### Vegetation-Specific Applications
 
-Forest Fires (Humid Tropical Forest and Other Forest):
+Forest Fires:
 
 -   Only non-CO₂ emissions (CH₄, N₂O) are reported
 -   CO₂ emissions excluded as they are captured in carbon stock change calculations
 -   Applies to fires in Evergreen, Deciduous, and Mixed Forest land cover types
 
-Savanna Fires (Grassland and woody vegetation):
+Savanna Fires:
 
 -   Non-CO₂ emissions only (CH₄, N₂O)
 -   Assumes CO₂ balance through annual vegetation regrowth
 -   Covers Grassland, Savanna, Woody Savanna, and Shrubland types
 
-Organic Soil Fires (Peatland fires):
+Organic Soil Fires:
 
 -   Reports both CO₂ and CH₄ emissions
 -   Uses IPCC Wetlands Supplement parameters [@ipcc2013Supplement20062014]
@@ -172,11 +162,11 @@ Countries experiencing high IAV from natural disturbances may optionally disaggr
 
 #### Database Overview
 
-The FAOSTAT Emissions from Fires domain provides geospatially-computed estimates of CH₄, N₂O, and CO₂ emissions from biomass burning across all countries and territories. The database:
+The FAOSTAT Emissions from Fires domain provides spatially- and temporally stratified estimates of CH₄, N₂O, and CO₂ emissions from biomass burning across all countries and territories. The database:
 
 -   Covers the complete time series 1990–2024
 -   Updates annually with new satellite observations
--   Disseminates both activity data (hectares burned, tonnes biomass burned) and emission estimates (kt CH₄, N₂O, CO₂)
+-   Disseminates activity data and emission estimates (kt CH₄, N₂O, CO₂)
 -   Provides regional aggregations for Annex I / non-Annex I country groups
 -   Integrates country-reported data from UNFCCC submissions for validation
 
@@ -186,7 +176,7 @@ FAOSTAT implements IPCC Tier 1 methodology using:
 
 -   Pixel-level processing in Google Earth Engine (GEE)
 -   Country-level aggregation via Global Administrative Unit Layers [@eurostatGeographicInformationSystem2025]
--   Climate-dependent fuel consumption values stratified by FAO-FRA Global Ecological Zones
+-   Climate-dependent fuel consumption values stratified by FAO-FRA Ecological Zones
 -   Quality-filtered satellite observations (uncertainty \< 20%)
 
 The database serves as an official IPCC-recommended tool for National Greenhouse Gas Inventory (NGHGI) QA/QC processes and validation of activity data and emission estimates (IPCC 2019).
@@ -349,7 +339,11 @@ IPCC defaults (Table 2.5) based on [@andreae2001emission]:
 -   Standard deviations: 20-60% of mean values
 -   Influenced by combustion efficiency (flaming vs. smoldering)
 
-Example (Savanna fires): - CO₂: 1613 ± 95 g kg⁻¹ - CH₄: 2.3 ± 0.9 g kg⁻¹ - N₂O: 0.21 ± 0.10 g kg⁻¹
+Example (Savanna fires):
+
+-   CO₂: 1613 ± 95 g kg⁻¹
+-   CH₄: 2.3 ± 0.9 g kg⁻¹
+-   N₂O: 0.21 ± 0.10 g kg⁻¹
 
 #### Uncertainty Aggregation
 
@@ -381,14 +375,7 @@ Methodological Enhancements:
 3.  Burn severity mapping for combustion factors
 4.  Seasonal stratification of fuel moisture
 
-Transparent Reporting:
-
-1.  Document all assumptions and parameter choices
-2.  Report uncertainty ranges alongside emission estimates
-3.  Conduct sensitivity analyses for key parameters
-4.  Compare with independent data sources where available
-
-#### Treatment of Inter-Annual Variability
+#### Managing Inter-Annual Variability
 
 High IAV from natural disturbances complicates trend analysis:
 
@@ -400,7 +387,7 @@ Optional Disaggregation Approach [@ipccChapter2Generic2019][^index-2]:
 
 Countries may separate:
 
--   Natural disturbance component: Emissions/removals beyond normal variability (e.g., \> 95th percentile)
+-   Natural disturbance component: Emissions beyond normal variability or 95% CI
 -   Anthropogenic component: Remaining managed land fluxes
 
 This disaggregation:

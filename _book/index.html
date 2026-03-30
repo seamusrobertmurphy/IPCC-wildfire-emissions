@@ -803,19 +803,6 @@ Google Earth Engine is a cloud-based geospatial analysis platform providing:</p>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">// Country Boundaries</span></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> countries <span class="op">=</span> ee<span class="op">.</span><span class="fu">FeatureCollection</span>(<span class="st">"FAO/GAUL/2015/level0"</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Computational Considerations:</p>
-<ul>
-<li>Global annual processing requires substantial compute resources</li>
-<li>Batch processing via Earth Engine Tasks for large exports</li>
-<li>Memory and timeout limits apply (user-specific quotas)</li>
-<li>Tiling strategies may be needed for very large analyses</li>
-</ul>
-<p>Resources:</p>
-<ul>
-<li>Documentation: https://developers.google.com/earth-engine/</li>
-<li>Code Archive: https://earthengine.google.com/</li>
-<li>Community Tutorials: https://developers.google.com/earth-engine/tutorials/</li>
-</ul>
 <hr>
 
 
@@ -860,7 +847,7 @@ Sulla-Menashe, D., Friedl, M. A., et al. (2018). User guide to collection 6 MODI
 <ol>
 <li id="fn1"><p>Note to self: 2025 wishlist<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>Direct Page Link: <a href="https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf#page=71" class="uri">https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf#page=71</a><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>Code chunks provided in both Python, Javascript, and R for use in either Google Colaboratory, Earth Engine Codespace, or using <code>rgee</code> and <code>reticulate</code> dependencies.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Code provided Python and R, with some cells in Java for use natively in Earth Engine Codespace<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol></section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -1965,26 +1952,13 @@ Sulla-Menashe, D., Friedl, M. A., et al. (2018). User guide to collection 6 MODI
 <span id="cb3-649"><a href="#cb3-649" aria-hidden="true" tabindex="-1"></a><span class="dt">var</span> countries <span class="op">=</span> ee<span class="op">.</span><span class="fu">FeatureCollection</span><span class="op">(</span><span class="st">"FAO/GAUL/2015/level0"</span><span class="op">);</span></span>
 <span id="cb3-650"><a href="#cb3-650" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb3-651"><a href="#cb3-651" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-652"><a href="#cb3-652" aria-hidden="true" tabindex="-1"></a>Computational Considerations:</span>
+<span id="cb3-652"><a href="#cb3-652" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
 <span id="cb3-653"><a href="#cb3-653" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-654"><a href="#cb3-654" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Global annual processing requires substantial compute resources</span>
-<span id="cb3-655"><a href="#cb3-655" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Batch processing via Earth Engine Tasks for large exports</span>
-<span id="cb3-656"><a href="#cb3-656" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Memory and timeout limits apply (user-specific quotas)</span>
-<span id="cb3-657"><a href="#cb3-657" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Tiling strategies may be needed for very large analyses</span>
-<span id="cb3-658"><a href="#cb3-658" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-659"><a href="#cb3-659" aria-hidden="true" tabindex="-1"></a>Resources:</span>
-<span id="cb3-660"><a href="#cb3-660" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-661"><a href="#cb3-661" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Documentation: https://developers.google.com/earth-engine/</span>
-<span id="cb3-662"><a href="#cb3-662" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Code Archive: https://earthengine.google.com/</span>
-<span id="cb3-663"><a href="#cb3-663" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Community Tutorials: https://developers.google.com/earth-engine/tutorials/</span>
-<span id="cb3-664"><a href="#cb3-664" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-665"><a href="#cb3-665" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb3-666"><a href="#cb3-666" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-667"><a href="#cb3-667" aria-hidden="true" tabindex="-1"></a><span class="ot">[^index-1]: </span>Note to self: 2025 wishlist</span>
-<span id="cb3-668"><a href="#cb3-668" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-669"><a href="#cb3-669" aria-hidden="true" tabindex="-1"></a><span class="ot">[^index-2]: </span>Direct Page Link: <span class="ot">&lt;https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf#page=71&gt;</span></span>
-<span id="cb3-670"><a href="#cb3-670" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-671"><a href="#cb3-671" aria-hidden="true" tabindex="-1"></a><span class="ot">[^index-3]: </span>Code chunks provided in both Python, Javascript, and R for use in either Google Colaboratory, Earth Engine Codespace, or using <span class="in">`rgee`</span> and <span class="in">`reticulate`</span> dependencies.</span>
+<span id="cb3-654"><a href="#cb3-654" aria-hidden="true" tabindex="-1"></a><span class="ot">[^index-1]: </span>Note to self: 2025 wishlist</span>
+<span id="cb3-655"><a href="#cb3-655" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-656"><a href="#cb3-656" aria-hidden="true" tabindex="-1"></a><span class="ot">[^index-2]: </span>Direct Page Link: <span class="ot">&lt;https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf#page=71&gt;</span></span>
+<span id="cb3-657"><a href="#cb3-657" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-658"><a href="#cb3-658" aria-hidden="true" tabindex="-1"></a><span class="ot">[^index-3]: </span>Code provided Python and R, with some cells in Java for use natively in Earth Engine Codespace</span>
 </code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

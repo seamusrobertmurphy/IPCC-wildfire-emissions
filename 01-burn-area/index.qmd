@@ -471,15 +471,15 @@ activeFire <- ee$ImageCollection("MODIS/061/MOD14A1")$
   filterDate("2010-01-01", "2010-12-31")$
   select("FireMask")
 
+
 # Extract fire pixels (values 7-9 indicate fire)
 firePixels <- activeFire$map(function(img) {
   img$gte(7L)$selfMask()})
 annualFireMask <- firePixels$max()
 
-
-# Burned area mask from MCD64A1 (2010)
-burnedMask <- mcd64_filtered$
-  filterDate("2010-01-01", "2010-12-31")$
+# Burned area mask from MCD64A1 (2010) 
+burnedMask <- burned_2010$
+  map(faostat_filter)$
   select("BurnDate")$max()$gt(0L)$selfMask()
 
 # Agreement statistics
@@ -500,8 +500,8 @@ stats <- ee$Image$cat(
 
 cat("Honduras 2010 — Active Fires\n")
 cat("  Overlaps:", stats$agree, "pixels\n")
-cat("  MCD64A1 burned areas:", stats$ba_only, "pixels\n")
-cat("  MOD14A1 active fires:", stats$af_only, "pixels\n")
+#cat("  MCD64A1 burned areas:", stats$ba_only, "pixels\n")
+#cat("  MOD14A1 active fires:", stats$af_only, "pixels\n")
 
 # Visualize
 tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd =1.5) +
@@ -590,8 +590,7 @@ cat("Honduras 2010 burned pixels (annual max):", n_burned[["burned"]], "\n")
 
 # Visualize
 tile_2010 <- ee_tile_url(annual_burned_2010, 
-	list(palette=c("yellow", "orange", "red"),
-			 min=0L, max=1L))
+	list(palette=c("yellow", "orange", "red"),min=0L, max=1L)) 
 
 tmap::tm_shape(aoi_country_sf) + 
 	tmap::tm_borders(col = "white", lwd=1.5) +
@@ -877,7 +876,7 @@ during GEE setup, then produce a choropleth map.
 :::
 
 ```{r}
-#| label: subnational-ireland
+#| label: subnational-honduras
 #| code-summary: "2010 Burned area by Honduras Jurisdictions"
 
 # Use the peak fire year for a meaningful map
@@ -951,7 +950,7 @@ ggplot(county_sf) +
 Latitude correction for pixel area:
 
 ```{r}
-#| eval: false
+#| eval: true
 #| label: area-correction
 #| code-summary: "Correct pixel area for latitude"
 
@@ -995,7 +994,7 @@ Using `forestdata` package for complementary validation:
 
 
 ```{r}
-#| eval: false
+#| eval: true
 #| cache: true
 #| warning: false
 #| message: false
@@ -1041,7 +1040,7 @@ cat("  GLAD loss only:", stats$glad_only, "pixels\n")
 #### Visualize Chunk (Longer Runtime)
 
 ```{r}
-#| eval: false
+#| eval: true
 #| echo: true
 
 # Visualize
