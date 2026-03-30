@@ -69,7 +69,7 @@ div.column {
   display: block;
   height:200px;
   width: 200px;
-  background-image: url('https://raw.githubusercontent.com/seamusrobertmurphy/map-templates/refs/heads/main/assets/outputs/01-site-map.png');
+  background-image: url('https://raw.githubusercontent.com/seamusrobertmurphy/IPCC-wildfire-emissions/refs/heads/main/01-burn-area/AOI/aoi_burn_aa.png');
   background-size: contain;
   background-position: 50% 50%;
   padding-top: 80px !important;
@@ -245,46 +245,6 @@ Historical Period (1990–2000): Values backfilled using two approaches:
 
 This approach ensures complete temporal coverage required for UNFCCC reporting while acknowledging higher uncertainty in pre-MODIS years.
 
-#### Disseminated Data Products
-
-Activity Data:
-
--   Burned Area (hectares) by vegetation type and country
--   Burned Biomass (tonnes dry matter) by vegetation type and country
-
-Emission Estimates:
-
--   CH₄ emissions (kilotonnes)
--   N₂O emissions (kilotonnes)
--   CO₂ emissions (kilotonnes, for organic soils only)
-
-Spatial Aggregations:
-
--   203 countries and territories (FAO Tier 1 coverage)
--   Standard FAOSTAT regional groupings (Annex I / non-Annex I country groups)
-
-Quality Indicators:
-
--   Uncertainty metrics (\< 20% threshold applied)
--   Data completeness flags
--   Gap-filling methodology documentation
-
-#### Interoperability and Access
-
-Data Formats:
-
--   CSV files for bulk download
--   Web API for programmatic access
--   Interactive visualization platform
--   Google Earth Engine assets for geospatial analysis
-
-Citation and Licensing:
-
--   FAO Open Data Licensing Policy
--   Standard citation: *FAO, 2024. FAOSTAT Climate Change: Agrifood systems emissions, Emissions from Fires, Rome, Italy.*
-
-------------------------------------------------------------------------
-
 ## QA/QC and Validation
 
 #### National GHG Inventories
@@ -373,14 +333,14 @@ MODIS MCD12Q1 accuracy:
 -   Temporal lag in land-use change detection
 -   Mixed pixels in heterogeneous landscapes
 
-Impact on emissions: Misclassification affects fuel consumption values (Table 2.4 ranges: 2.6 to 163.6 t ha⁻¹). For instances, Forest vs. Grassland assignment determines whether CO₂ is reported
+Impact on emissions: Misclassification affects fuel consumption values (Table 2.4 ranges: 2.6 to 163.6 t ha⁻¹).
 
 ### 3. Fuel Consumption Uncertainty
 
 IPCC default values (Table 2.4) reflect:
 
--   High natural variability: Standard errors often 30-50% of mean
--   Limited empirical data: Some vegetation types have sparse measurements
+-   High natural variability: Standard errors 30-50% of mean
+-   Limited data for some vegetation types
 -   Climate dependency: Values vary by FAO-FRA Ecological Zones, but within-zone heterogeneity remains
 
 Example uncertainties (Mean ± SE):
@@ -748,11 +708,6 @@ Resources:
 -   Documentation: https://developers.google.com/earth-engine/
 -   Code Archive: https://earthengine.google.com/
 -   Community Tutorials: https://developers.google.com/earth-engine/tutorials/
-
-------------------------------------------------------------------------
-
-Last Updated: 2025-11-10\
-Suggested Citation: Murphy, S (2025). IPCC Forest Fire Activity Data & Emissions Factors: Methodological Guide for Deriving Burned Area and Emissions Estimates.
 
 ------------------------------------------------------------------------
 

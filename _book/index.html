@@ -300,7 +300,7 @@ div.column {
   display: block;
   height:200px;
   width: 200px;
-  background-image: url('https://raw.githubusercontent.com/seamusrobertmurphy/map-templates/refs/heads/main/assets/outputs/01-site-map.png');
+  background-image: url('https://raw.githubusercontent.com/seamusrobertmurphy/IPCC-wildfire-emissions/refs/heads/main/01-burn-area/AOI/aoi_burn_aa.png');
   background-size: contain;
   background-position: 50% 50%;
   padding-top: 80px !important;
@@ -441,43 +441,7 @@ Emissions from peat fires identified by overlaying burned area with Histosols cl
 <li>1990–1995: Averaged values from reconstructed time series (1996–2002 mean)</li>
 </ul>
 <p>This approach ensures complete temporal coverage required for UNFCCC reporting while acknowledging higher uncertainty in pre-MODIS years.</p>
-</section><section id="disseminated-data-products" class="level4"><h4 class="anchored" data-anchor-id="disseminated-data-products">Disseminated Data Products</h4>
-<p>Activity Data:</p>
-<ul>
-<li>Burned Area (hectares) by vegetation type and country</li>
-<li>Burned Biomass (tonnes dry matter) by vegetation type and country</li>
-</ul>
-<p>Emission Estimates:</p>
-<ul>
-<li>CH₄ emissions (kilotonnes)</li>
-<li>N₂O emissions (kilotonnes)</li>
-<li>CO₂ emissions (kilotonnes, for organic soils only)</li>
-</ul>
-<p>Spatial Aggregations:</p>
-<ul>
-<li>203 countries and territories (FAO Tier 1 coverage)</li>
-<li>Standard FAOSTAT regional groupings (Annex I / non-Annex I country groups)</li>
-</ul>
-<p>Quality Indicators:</p>
-<ul>
-<li>Uncertainty metrics (&lt; 20% threshold applied)</li>
-<li>Data completeness flags</li>
-<li>Gap-filling methodology documentation</li>
-</ul></section><section id="interoperability-and-access" class="level4"><h4 class="anchored" data-anchor-id="interoperability-and-access">Interoperability and Access</h4>
-<p>Data Formats:</p>
-<ul>
-<li>CSV files for bulk download</li>
-<li>Web API for programmatic access</li>
-<li>Interactive visualization platform</li>
-<li>Google Earth Engine assets for geospatial analysis</li>
-</ul>
-<p>Citation and Licensing:</p>
-<ul>
-<li>FAO Open Data Licensing Policy</li>
-<li>Standard citation: <em>FAO, 2024. FAOSTAT Climate Change: Agrifood systems emissions, Emissions from Fires, Rome, Italy.</em>
-</li>
-</ul>
-<hr></section></section><section id="qaqc-and-validation" class="level2"><h2 class="anchored" data-anchor-id="qaqc-and-validation">QA/QC and Validation</h2>
+</section></section><section id="qaqc-and-validation" class="level2"><h2 class="anchored" data-anchor-id="qaqc-and-validation">QA/QC and Validation</h2>
 <section id="national-ghg-inventories" class="level4"><h4 class="anchored" data-anchor-id="national-ghg-inventories">National GHG Inventories</h4>
 <p>Primary Use: The IPCC explicitly recommends FAOSTAT as a tool for NGHGI QA/QC processes (IPCC 2019). Countries can:</p>
 <ol type="1">
@@ -549,12 +513,12 @@ Emissions from peat fires identified by overlaying burned area with Histosols cl
 <li>Temporal lag in land-use change detection</li>
 <li>Mixed pixels in heterogeneous landscapes</li>
 </ul>
-<p>Impact on emissions: Misclassification affects fuel consumption values (Table 2.4 ranges: 2.6 to 163.6 t ha⁻¹). For instances, Forest vs.&nbsp;Grassland assignment determines whether CO₂ is reported</p>
+<p>Impact on emissions: Misclassification affects fuel consumption values (Table 2.4 ranges: 2.6 to 163.6 t ha⁻¹).</p>
 </section><section id="fuel-consumption-uncertainty" class="level3"><h3 class="anchored" data-anchor-id="fuel-consumption-uncertainty">3. Fuel Consumption Uncertainty</h3>
 <p>IPCC default values (Table 2.4) reflect:</p>
 <ul>
-<li>High natural variability: Standard errors often 30-50% of mean</li>
-<li>Limited empirical data: Some vegetation types have sparse measurements</li>
+<li>High natural variability: Standard errors 30-50% of mean</li>
+<li>Limited data for some vegetation types</li>
 <li>Climate dependency: Values vary by FAO-FRA Ecological Zones, but within-zone heterogeneity remains</li>
 </ul>
 <p>Example uncertainties (Mean ± SE):</p>
@@ -896,9 +860,6 @@ Google Earth Engine is a cloud-based geospatial analysis platform providing:</p>
 <li>Code Archive: https://earthengine.google.com/</li>
 <li>Community Tutorials: https://developers.google.com/earth-engine/tutorials/</li>
 </ul>
-<hr>
-<p>Last Updated: 2025-11-10<br>
-Suggested Citation: Murphy, S (2025). IPCC Forest Fire Activity Data &amp; Emissions Factors: Methodological Guide for Deriving Burned Area and Emissions Estimates.</p>
 <hr>
 
 
@@ -1472,7 +1433,7 @@ Sulla-Menashe, D., Friedl, M. A., et al. (2018). User guide to collection 6 MODI
 <span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>  display<span class="op">:</span> block<span class="op">;</span></span>
 <span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>  height<span class="op">:</span><span class="dv">200</span>px<span class="op">;</span></span>
 <span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>  width<span class="op">:</span> <span class="dv">200</span>px<span class="op">;</span></span>
-<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>  background<span class="op">-</span>image<span class="op">:</span> <span class="fu">url</span><span class="op">(</span>'https<span class="op">:</span><span class="co">//raw.githubusercontent.com/seamusrobertmurphy/map-templates/refs/heads/main/assets/outputs/01-site-map.png');</span></span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>  background<span class="op">-</span>image<span class="op">:</span> <span class="fu">url</span><span class="op">(</span>'https<span class="op">:</span><span class="co">//raw.githubusercontent.com/seamusrobertmurphy/IPCC-wildfire-emissions/refs/heads/main/01-burn-area/AOI/aoi_burn_aa.png');</span></span>
 <span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>  background<span class="op">-</span>size<span class="op">:</span> contain<span class="op">;</span></span>
 <span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>  background<span class="op">-</span>position<span class="op">:</span> <span class="dv">50</span><span class="op">%</span> <span class="dv">50</span><span class="op">%;</span></span>
 <span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>  padding<span class="op">-</span>top<span class="op">:</span> <span class="dv">80</span>px <span class="op">!</span>important<span class="op">;</span></span>
@@ -1648,522 +1609,477 @@ Sulla-Menashe, D., Friedl, M. A., et al. (2018). User guide to collection 6 MODI
 <span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a>This approach ensures complete temporal coverage required for UNFCCC reporting while acknowledging higher uncertainty in pre-MODIS years.</span>
 <span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Disseminated Data Products</span></span>
+<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a><span class="fu">## QA/QC and Validation</span></span>
 <span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a>Activity Data:</span>
+<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a><span class="fu">#### National GHG Inventories</span></span>
 <span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Burned Area (hectares) by vegetation type and country</span>
-<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Burned Biomass (tonnes dry matter) by vegetation type and country</span>
-<span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a>Emission Estimates:</span>
-<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>CH₄ emissions (kilotonnes)</span>
-<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>N₂O emissions (kilotonnes)</span>
-<span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>CO₂ emissions (kilotonnes, for organic soils only)</span>
+<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a>Primary Use: The IPCC explicitly recommends FAOSTAT as a tool for NGHGI QA/QC processes (IPCC 2019). Countries can:</span>
+<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Cross-validate activity data: Compare satellite-derived burned areas against national fire databases</span>
+<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Evaluate emission factors: Test sensitivity to country-specific vs. default IPCC parameters\</span>
+<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Identify data gaps: Detect missing or inconsistent reporting in national systems</span>
+<span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Assess trends: Evaluate whether reported trends align with satellite observations</span>
+<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Comparison Frameworks</span></span>
 <span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a>Spatial Aggregations:</span>
+<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a>Top-Down vs. Bottom-Up Reconciliation:</span>
 <span id="cb3-266"><a href="#cb3-266" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>203 countries and territories (FAO Tier 1 coverage)</span>
-<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Standard FAOSTAT regional groupings (Annex I / non-Annex I country groups)</span>
-<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a>Quality Indicators:</span>
-<span id="cb3-271"><a href="#cb3-271" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Uncertainty metrics (<span class="sc">\&lt;</span> 20% threshold applied)</span>
-<span id="cb3-273"><a href="#cb3-273" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Data completeness flags</span>
-<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Gap-filling methodology documentation</span>
+<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a>FAOSTAT (satellite-based, top-down) <span class="sc">\&lt;\&gt;</span> NGHGI (ground-based, bottom-up)</span>
+<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a>Systematic differences may indicate:</span>
+<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-271"><a href="#cb3-271" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Detection limitations in satellite products (e.g., small fires, smoldering)</span>
+<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Incomplete ground reporting</span>
+<span id="cb3-273"><a href="#cb3-273" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Different definitions of "managed land"</span>
+<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Biomass consumption parameter uncertainties</span>
 <span id="cb3-275"><a href="#cb3-275" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Interoperability and Access</span></span>
+<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a>Multi-Source Fire Validation:</span>
 <span id="cb3-277"><a href="#cb3-277" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-278"><a href="#cb3-278" aria-hidden="true" tabindex="-1"></a>Data Formats:</span>
-<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>CSV files for bulk download</span>
-<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Web API for programmatic access</span>
-<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Interactive visualization platform</span>
-<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Google Earth Engine assets for geospatial analysis</span>
-<span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a>Citation and Licensing:</span>
-<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>FAO Open Data Licensing Policy</span>
-<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Standard citation: *FAO, 2024. FAOSTAT Climate Change: Agrifood systems emissions, Emissions from Fires, Rome, Italy.*</span>
-<span id="cb3-289"><a href="#cb3-289" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-290"><a href="#cb3-290" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb3-278"><a href="#cb3-278" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Fire Detection: MODIS active fire products (MCD14ML, MYD14) vs. burned area (MCD64A1)</span>
+<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Land Cover: MODIS MCD12Q1 vs. national forest inventories</span>
+<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Emission Factors: IPCC defaults ~~vs. regional measurements from literature~~<span class="ot">[^index-1]</span></span>
+<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Tier Advancement Pathways</span></span>
+<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a>Countries may use FAOSTAT as a stepping stone to higher-tier methods:</span>
+<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a>Tier 1 =<span class="sc">\&gt;</span> Tier 2:</span>
+<span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Replace default emission factors with country-specific values</span>
+<span id="cb3-289"><a href="#cb3-289" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Refine fuel consumption parameters using field measurements</span>
+<span id="cb3-290"><a href="#cb3-290" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Improve combustion factor estimates via burn severity mapping</span>
 <span id="cb3-291"><a href="#cb3-291" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a><span class="fu">## QA/QC and Validation</span></span>
+<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a>Tier 2 =<span class="sc">\&gt;</span> Tier 3:</span>
 <span id="cb3-293"><a href="#cb3-293" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-294"><a href="#cb3-294" aria-hidden="true" tabindex="-1"></a><span class="fu">#### National GHG Inventories</span></span>
-<span id="cb3-295"><a href="#cb3-295" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-296"><a href="#cb3-296" aria-hidden="true" tabindex="-1"></a>Primary Use: The IPCC explicitly recommends FAOSTAT as a tool for NGHGI QA/QC processes (IPCC 2019). Countries can:</span>
+<span id="cb3-294"><a href="#cb3-294" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Integrate process-based models (e.g., FOFEM, CONSUME)</span>
+<span id="cb3-295"><a href="#cb3-295" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Develop national fire monitoring systems</span>
+<span id="cb3-296"><a href="#cb3-296" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Implement measurement-based carbon stock change assessments</span>
 <span id="cb3-297"><a href="#cb3-297" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-298"><a href="#cb3-298" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Cross-validate activity data: Compare satellite-derived burned areas against national fire databases</span>
-<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Evaluate emission factors: Test sensitivity to country-specific vs. default IPCC parameters\</span>
-<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Identify data gaps: Detect missing or inconsistent reporting in national systems</span>
-<span id="cb3-301"><a href="#cb3-301" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Assess trends: Evaluate whether reported trends align with satellite observations</span>
-<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-303"><a href="#cb3-303" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Comparison Frameworks</span></span>
-<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-305"><a href="#cb3-305" aria-hidden="true" tabindex="-1"></a>Top-Down vs. Bottom-Up Reconciliation:</span>
+<span id="cb3-298"><a href="#cb3-298" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Mitigation Action Tracking</span></span>
+<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a>FAOSTAT time series enable evaluation of:</span>
+<span id="cb3-301"><a href="#cb3-301" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Prescribed burning programs</span>
+<span id="cb3-303"><a href="#cb3-303" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Fire suppression effectiveness</span>
+<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Land management policy impacts</span>
+<span id="cb3-305"><a href="#cb3-305" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Climate change effects on fire regimes</span>
 <span id="cb3-306"><a href="#cb3-306" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a>FAOSTAT (satellite-based, top-down) <span class="sc">\&lt;\&gt;</span> NGHGI (ground-based, bottom-up)</span>
+<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a>Countries can quantify whether trends in anthropogenic fire emissions diverge from natural disturbance variability, supporting Nationally Determined Contribution (NDC) reporting and verification.</span>
 <span id="cb3-308"><a href="#cb3-308" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-309"><a href="#cb3-309" aria-hidden="true" tabindex="-1"></a>Systematic differences may indicate:</span>
+<span id="cb3-309"><a href="#cb3-309" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
 <span id="cb3-310"><a href="#cb3-310" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Detection limitations in satellite products (e.g., small fires, smoldering)</span>
-<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Incomplete ground reporting</span>
-<span id="cb3-313"><a href="#cb3-313" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Different definitions of "managed land"</span>
-<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Biomass consumption parameter uncertainties</span>
-<span id="cb3-315"><a href="#cb3-315" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a>Multi-Source Fire Validation:</span>
-<span id="cb3-317"><a href="#cb3-317" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-318"><a href="#cb3-318" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Fire Detection: MODIS active fire products (MCD14ML, MYD14) vs. burned area (MCD64A1)</span>
-<span id="cb3-319"><a href="#cb3-319" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Land Cover: MODIS MCD12Q1 vs. national forest inventories</span>
-<span id="cb3-320"><a href="#cb3-320" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Emission Factors: IPCC defaults ~~vs. regional measurements from literature~~<span class="ot">[^index-1]</span></span>
-<span id="cb3-321"><a href="#cb3-321" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-322"><a href="#cb3-322" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Tier Advancement Pathways</span></span>
-<span id="cb3-323"><a href="#cb3-323" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-324"><a href="#cb3-324" aria-hidden="true" tabindex="-1"></a>Countries may use FAOSTAT as a stepping stone to higher-tier methods:</span>
-<span id="cb3-325"><a href="#cb3-325" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-326"><a href="#cb3-326" aria-hidden="true" tabindex="-1"></a>Tier 1 =<span class="sc">\&gt;</span> Tier 2:</span>
-<span id="cb3-327"><a href="#cb3-327" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-328"><a href="#cb3-328" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Replace default emission factors with country-specific values</span>
-<span id="cb3-329"><a href="#cb3-329" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Refine fuel consumption parameters using field measurements</span>
-<span id="cb3-330"><a href="#cb3-330" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Improve combustion factor estimates via burn severity mapping</span>
-<span id="cb3-331"><a href="#cb3-331" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-332"><a href="#cb3-332" aria-hidden="true" tabindex="-1"></a>Tier 2 =<span class="sc">\&gt;</span> Tier 3:</span>
-<span id="cb3-333"><a href="#cb3-333" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-334"><a href="#cb3-334" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Integrate process-based models (e.g., FOFEM, CONSUME)</span>
-<span id="cb3-335"><a href="#cb3-335" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Develop national fire monitoring systems</span>
-<span id="cb3-336"><a href="#cb3-336" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Implement measurement-based carbon stock change assessments</span>
-<span id="cb3-337"><a href="#cb3-337" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-338"><a href="#cb3-338" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Mitigation Action Tracking</span></span>
+<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a><span class="fu">## Uncertainty Considerations</span></span>
+<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-313"><a href="#cb3-313" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Sources of Uncertainty</span></span>
+<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-315"><a href="#cb3-315" aria-hidden="true" tabindex="-1"></a><span class="fu">### 1. Activity Data Uncertainty</span></span>
+<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-317"><a href="#cb3-317" aria-hidden="true" tabindex="-1"></a>Satellite detection limitations:</span>
+<span id="cb3-318"><a href="#cb3-318" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-319"><a href="#cb3-319" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Small fires (<span class="sc">\&lt;</span> 500m): May be missed by MODIS 500m pixels</span>
+<span id="cb3-320"><a href="#cb3-320" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Canopy-obscured fires: Difficult to detect in dense forests</span>
+<span id="cb3-321"><a href="#cb3-321" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Smoldering fires: Peat fires may not produce strong thermal signatures</span>
+<span id="cb3-322"><a href="#cb3-322" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Cloud contamination: Persistent cloud cover reduces observation frequency</span>
+<span id="cb3-323"><a href="#cb3-323" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Rapid vegetation regrowth: Short time lag between fire and regrowth obscures burn scars</span>
+<span id="cb3-324"><a href="#cb3-324" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-325"><a href="#cb3-325" aria-hidden="true" tabindex="-1"></a>MCD64A1 applies quality filters:</span>
+<span id="cb3-326"><a href="#cb3-326" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-327"><a href="#cb3-327" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Only pixels with uncertainty <span class="sc">\&lt;</span> 20% are included</span>
+<span id="cb3-328"><a href="#cb3-328" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Commission/omission errors vary by biome</span>
+<span id="cb3-329"><a href="#cb3-329" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Global burned area may be underestimated by 20-30% <span class="co">[</span><span class="ot">@giglio2010assessing</span><span class="co">]</span></span>
+<span id="cb3-330"><a href="#cb3-330" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-331"><a href="#cb3-331" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2. Land Classification Uncertainty</span></span>
+<span id="cb3-332"><a href="#cb3-332" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-333"><a href="#cb3-333" aria-hidden="true" tabindex="-1"></a>MODIS MCD12Q1 accuracy:</span>
+<span id="cb3-334"><a href="#cb3-334" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-335"><a href="#cb3-335" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Overall accuracy: \~75% globally</span>
+<span id="cb3-336"><a href="#cb3-336" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Confusion between woody savannas and forests</span>
+<span id="cb3-337"><a href="#cb3-337" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Temporal lag in land-use change detection</span>
+<span id="cb3-338"><a href="#cb3-338" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Mixed pixels in heterogeneous landscapes</span>
 <span id="cb3-339"><a href="#cb3-339" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-340"><a href="#cb3-340" aria-hidden="true" tabindex="-1"></a>FAOSTAT time series enable evaluation of:</span>
+<span id="cb3-340"><a href="#cb3-340" aria-hidden="true" tabindex="-1"></a>Impact on emissions: Misclassification affects fuel consumption values (Table 2.4 ranges: 2.6 to 163.6 t ha⁻¹).</span>
 <span id="cb3-341"><a href="#cb3-341" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-342"><a href="#cb3-342" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Prescribed burning programs</span>
-<span id="cb3-343"><a href="#cb3-343" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Fire suppression effectiveness</span>
-<span id="cb3-344"><a href="#cb3-344" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Land management policy impacts</span>
-<span id="cb3-345"><a href="#cb3-345" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Climate change effects on fire regimes</span>
-<span id="cb3-346"><a href="#cb3-346" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-347"><a href="#cb3-347" aria-hidden="true" tabindex="-1"></a>Countries can quantify whether trends in anthropogenic fire emissions diverge from natural disturbance variability, supporting Nationally Determined Contribution (NDC) reporting and verification.</span>
-<span id="cb3-348"><a href="#cb3-348" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-349"><a href="#cb3-349" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb3-350"><a href="#cb3-350" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-351"><a href="#cb3-351" aria-hidden="true" tabindex="-1"></a><span class="fu">## Uncertainty Considerations</span></span>
-<span id="cb3-352"><a href="#cb3-352" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-353"><a href="#cb3-353" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Sources of Uncertainty</span></span>
+<span id="cb3-342"><a href="#cb3-342" aria-hidden="true" tabindex="-1"></a><span class="fu">### 3. Fuel Consumption Uncertainty</span></span>
+<span id="cb3-343"><a href="#cb3-343" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-344"><a href="#cb3-344" aria-hidden="true" tabindex="-1"></a>IPCC default values (Table 2.4) reflect:</span>
+<span id="cb3-345"><a href="#cb3-345" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-346"><a href="#cb3-346" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>High natural variability: Standard errors 30-50% of mean</span>
+<span id="cb3-347"><a href="#cb3-347" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Limited data for some vegetation types</span>
+<span id="cb3-348"><a href="#cb3-348" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Climate dependency: Values vary by FAO-FRA Ecological Zones, but within-zone heterogeneity remains</span>
+<span id="cb3-349"><a href="#cb3-349" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-350"><a href="#cb3-350" aria-hidden="true" tabindex="-1"></a>Example uncertainties (Mean ± SE):</span>
+<span id="cb3-351"><a href="#cb3-351" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-352"><a href="#cb3-352" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Primary Tropical Forest: 119.6 ± (range: 83.9 to 163.6) t ha⁻¹</span>
+<span id="cb3-353"><a href="#cb3-353" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Savanna Woodland: 2.6 ± 0.1 (early dry season) to 4.6 ± 1.5 (late dry season) t ha⁻¹</span>
 <span id="cb3-354"><a href="#cb3-354" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-355"><a href="#cb3-355" aria-hidden="true" tabindex="-1"></a><span class="fu">### 1. Activity Data Uncertainty</span></span>
+<span id="cb3-355"><a href="#cb3-355" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4. Combustion Factor Uncertainty</span></span>
 <span id="cb3-356"><a href="#cb3-356" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-357"><a href="#cb3-357" aria-hidden="true" tabindex="-1"></a>Satellite detection limitations:</span>
+<span id="cb3-357"><a href="#cb3-357" aria-hidden="true" tabindex="-1"></a>Proportion of fuel consumed (Table 2.6):</span>
 <span id="cb3-358"><a href="#cb3-358" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-359"><a href="#cb3-359" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Small fires (<span class="sc">\&lt;</span> 500m): May be missed by MODIS 500m pixels</span>
-<span id="cb3-360"><a href="#cb3-360" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Canopy-obscured fires: Difficult to detect in dense forests</span>
-<span id="cb3-361"><a href="#cb3-361" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Smoldering fires: Peat fires may not produce strong thermal signatures</span>
-<span id="cb3-362"><a href="#cb3-362" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Cloud contamination: Persistent cloud cover reduces observation frequency</span>
-<span id="cb3-363"><a href="#cb3-363" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Rapid vegetation regrowth: Short time lag between fire and regrowth obscures burn scars</span>
+<span id="cb3-359"><a href="#cb3-359" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Influenced by fire intensity, fuel moisture, weather conditions</span>
+<span id="cb3-360"><a href="#cb3-360" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Variability within vegetation types: SD often 0.1-0.2 (for factors ranging 0.2-0.9)</span>
+<span id="cb3-361"><a href="#cb3-361" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Incomplete combustion of coarse woody debris vs. near-complete combustion of grasses</span>
+<span id="cb3-362"><a href="#cb3-362" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-363"><a href="#cb3-363" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5. Emission Factor Uncertainty</span></span>
 <span id="cb3-364"><a href="#cb3-364" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-365"><a href="#cb3-365" aria-hidden="true" tabindex="-1"></a>MCD64A1 applies quality filters:</span>
+<span id="cb3-365"><a href="#cb3-365" aria-hidden="true" tabindex="-1"></a>IPCC defaults (Table 2.5) based on <span class="co">[</span><span class="ot">@andreae2001emission</span><span class="co">]</span>:</span>
 <span id="cb3-366"><a href="#cb3-366" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-367"><a href="#cb3-367" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Only pixels with uncertainty <span class="sc">\&lt;</span> 20% are included</span>
-<span id="cb3-368"><a href="#cb3-368" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Commission/omission errors vary by biome</span>
-<span id="cb3-369"><a href="#cb3-369" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Global burned area may be underestimated by 20-30% <span class="co">[</span><span class="ot">@giglio2010assessing</span><span class="co">]</span></span>
+<span id="cb3-367"><a href="#cb3-367" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Values represent global averages across fire types</span>
+<span id="cb3-368"><a href="#cb3-368" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Standard deviations: 20-60% of mean values</span>
+<span id="cb3-369"><a href="#cb3-369" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Influenced by combustion efficiency (flaming vs. smoldering)</span>
 <span id="cb3-370"><a href="#cb3-370" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-371"><a href="#cb3-371" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2. Land Classification Uncertainty</span></span>
+<span id="cb3-371"><a href="#cb3-371" aria-hidden="true" tabindex="-1"></a>Example (Savanna fires): - CO₂: 1613 ± 95 g kg⁻¹ - CH₄: 2.3 ± 0.9 g kg⁻¹ - N₂O: 0.21 ± 0.10 g kg⁻¹</span>
 <span id="cb3-372"><a href="#cb3-372" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-373"><a href="#cb3-373" aria-hidden="true" tabindex="-1"></a>MODIS MCD12Q1 accuracy:</span>
+<span id="cb3-373"><a href="#cb3-373" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Uncertainty Aggregation</span></span>
 <span id="cb3-374"><a href="#cb3-374" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-375"><a href="#cb3-375" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Overall accuracy: \~75% globally</span>
-<span id="cb3-376"><a href="#cb3-376" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Confusion between woody savannas and forests</span>
-<span id="cb3-377"><a href="#cb3-377" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Temporal lag in land-use change detection</span>
-<span id="cb3-378"><a href="#cb3-378" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Mixed pixels in heterogeneous landscapes</span>
+<span id="cb3-375"><a href="#cb3-375" aria-hidden="true" tabindex="-1"></a>For IPCC Tier 1, cumulative uncertainty typically:</span>
+<span id="cb3-376"><a href="#cb3-376" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-377"><a href="#cb3-377" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Activity data: ±30% for burned area</span>
+<span id="cb3-378"><a href="#cb3-378" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Emission estimates: ±50% for CH₄ and N₂O, ±30-40% for CO₂</span>
 <span id="cb3-379"><a href="#cb3-379" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-380"><a href="#cb3-380" aria-hidden="true" tabindex="-1"></a>Impact on emissions: Misclassification affects fuel consumption values (Table 2.4 ranges: 2.6 to 163.6 t ha⁻¹). For instances, Forest vs. Grassland assignment determines whether CO₂ is reported</span>
+<span id="cb3-380"><a href="#cb3-380" aria-hidden="true" tabindex="-1"></a>Organic soil fires have particularly high uncertainty:</span>
 <span id="cb3-381"><a href="#cb3-381" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-382"><a href="#cb3-382" aria-hidden="true" tabindex="-1"></a><span class="fu">### 3. Fuel Consumption Uncertainty</span></span>
-<span id="cb3-383"><a href="#cb3-383" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-384"><a href="#cb3-384" aria-hidden="true" tabindex="-1"></a>IPCC default values (Table 2.4) reflect:</span>
-<span id="cb3-385"><a href="#cb3-385" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-386"><a href="#cb3-386" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>High natural variability: Standard errors often 30-50% of mean</span>
-<span id="cb3-387"><a href="#cb3-387" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Limited empirical data: Some vegetation types have sparse measurements</span>
-<span id="cb3-388"><a href="#cb3-388" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Climate dependency: Values vary by FAO-FRA Ecological Zones, but within-zone heterogeneity remains</span>
-<span id="cb3-389"><a href="#cb3-389" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-390"><a href="#cb3-390" aria-hidden="true" tabindex="-1"></a>Example uncertainties (Mean ± SE):</span>
-<span id="cb3-391"><a href="#cb3-391" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-392"><a href="#cb3-392" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Primary Tropical Forest: 119.6 ± (range: 83.9 to 163.6) t ha⁻¹</span>
-<span id="cb3-393"><a href="#cb3-393" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Savanna Woodland: 2.6 ± 0.1 (early dry season) to 4.6 ± 1.5 (late dry season) t ha⁻¹</span>
-<span id="cb3-394"><a href="#cb3-394" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-395"><a href="#cb3-395" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4. Combustion Factor Uncertainty</span></span>
-<span id="cb3-396"><a href="#cb3-396" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-397"><a href="#cb3-397" aria-hidden="true" tabindex="-1"></a>Proportion of fuel consumed (Table 2.6):</span>
-<span id="cb3-398"><a href="#cb3-398" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-399"><a href="#cb3-399" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Influenced by fire intensity, fuel moisture, weather conditions</span>
-<span id="cb3-400"><a href="#cb3-400" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Variability within vegetation types: SD often 0.1-0.2 (for factors ranging 0.2-0.9)</span>
-<span id="cb3-401"><a href="#cb3-401" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Incomplete combustion of coarse woody debris vs. near-complete combustion of grasses</span>
+<span id="cb3-382"><a href="#cb3-382" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Remote sensing detection challenges</span>
+<span id="cb3-383"><a href="#cb3-383" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Limited field validation outside Southeast Asia</span>
+<span id="cb3-384"><a href="#cb3-384" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Difficulty distinguishing surface fires from subsurface peat combustion</span>
+<span id="cb3-385"><a href="#cb3-385" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Unknown proportion of fires on drained vs. undrained peatlands</span>
+<span id="cb3-386"><a href="#cb3-386" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-387"><a href="#cb3-387" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Uncertainty Reduction</span></span>
+<span id="cb3-388"><a href="#cb3-388" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-389"><a href="#cb3-389" aria-hidden="true" tabindex="-1"></a>Country-Specific Improvements:</span>
+<span id="cb3-390"><a href="#cb3-390" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-391"><a href="#cb3-391" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Integrate national fire databases with satellite observations</span>
+<span id="cb3-392"><a href="#cb3-392" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Conduct field campaigns to measure fuel loads and combustion factors</span>
+<span id="cb3-393"><a href="#cb3-393" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Develop regional emission factors from smoke sampling</span>
+<span id="cb3-394"><a href="#cb3-394" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Implement Tier 2/3 methods in high-emission areas</span>
+<span id="cb3-395"><a href="#cb3-395" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-396"><a href="#cb3-396" aria-hidden="true" tabindex="-1"></a>Methodological Enhancements:</span>
+<span id="cb3-397"><a href="#cb3-397" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-398"><a href="#cb3-398" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Multi-sensor fusion (MODIS + VIIRS + Sentinel)</span>
+<span id="cb3-399"><a href="#cb3-399" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Sub-pixel burned area algorithms</span>
+<span id="cb3-400"><a href="#cb3-400" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Burn severity mapping for combustion factors</span>
+<span id="cb3-401"><a href="#cb3-401" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Seasonal stratification of fuel moisture</span>
 <span id="cb3-402"><a href="#cb3-402" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-403"><a href="#cb3-403" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5. Emission Factor Uncertainty</span></span>
+<span id="cb3-403"><a href="#cb3-403" aria-hidden="true" tabindex="-1"></a>Transparent Reporting:</span>
 <span id="cb3-404"><a href="#cb3-404" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-405"><a href="#cb3-405" aria-hidden="true" tabindex="-1"></a>IPCC defaults (Table 2.5) based on <span class="co">[</span><span class="ot">@andreae2001emission</span><span class="co">]</span>:</span>
-<span id="cb3-406"><a href="#cb3-406" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-407"><a href="#cb3-407" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Values represent global averages across fire types</span>
-<span id="cb3-408"><a href="#cb3-408" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Standard deviations: 20-60% of mean values</span>
-<span id="cb3-409"><a href="#cb3-409" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Influenced by combustion efficiency (flaming vs. smoldering)</span>
-<span id="cb3-410"><a href="#cb3-410" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-411"><a href="#cb3-411" aria-hidden="true" tabindex="-1"></a>Example (Savanna fires): - CO₂: 1613 ± 95 g kg⁻¹ - CH₄: 2.3 ± 0.9 g kg⁻¹ - N₂O: 0.21 ± 0.10 g kg⁻¹</span>
-<span id="cb3-412"><a href="#cb3-412" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-413"><a href="#cb3-413" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Uncertainty Aggregation</span></span>
-<span id="cb3-414"><a href="#cb3-414" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-415"><a href="#cb3-415" aria-hidden="true" tabindex="-1"></a>For IPCC Tier 1, cumulative uncertainty typically:</span>
-<span id="cb3-416"><a href="#cb3-416" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-417"><a href="#cb3-417" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Activity data: ±30% for burned area</span>
-<span id="cb3-418"><a href="#cb3-418" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Emission estimates: ±50% for CH₄ and N₂O, ±30-40% for CO₂</span>
+<span id="cb3-405"><a href="#cb3-405" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Document all assumptions and parameter choices</span>
+<span id="cb3-406"><a href="#cb3-406" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Report uncertainty ranges alongside emission estimates</span>
+<span id="cb3-407"><a href="#cb3-407" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Conduct sensitivity analyses for key parameters</span>
+<span id="cb3-408"><a href="#cb3-408" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Compare with independent data sources where available</span>
+<span id="cb3-409"><a href="#cb3-409" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-410"><a href="#cb3-410" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Treatment of Inter-Annual Variability</span></span>
+<span id="cb3-411"><a href="#cb3-411" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-412"><a href="#cb3-412" aria-hidden="true" tabindex="-1"></a>High IAV from natural disturbances complicates trend analysis:</span>
+<span id="cb3-413"><a href="#cb3-413" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-414"><a href="#cb3-414" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Wildfires can cause 2-3 orders of magnitude annual variation</span>
+<span id="cb3-415"><a href="#cb3-415" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Obscures anthropogenic emission trends</span>
+<span id="cb3-416"><a href="#cb3-416" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Challenges mitigation policy evaluation</span>
+<span id="cb3-417"><a href="#cb3-417" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-418"><a href="#cb3-418" aria-hidden="true" tabindex="-1"></a>Optional Disaggregation Approach <span class="co">[</span><span class="ot">@ipccChapter2Generic2019</span><span class="co">][^index-2]</span>:</span>
 <span id="cb3-419"><a href="#cb3-419" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-420"><a href="#cb3-420" aria-hidden="true" tabindex="-1"></a>Organic soil fires have particularly high uncertainty:</span>
+<span id="cb3-420"><a href="#cb3-420" aria-hidden="true" tabindex="-1"></a>Countries may separate:</span>
 <span id="cb3-421"><a href="#cb3-421" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-422"><a href="#cb3-422" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Remote sensing detection challenges</span>
-<span id="cb3-423"><a href="#cb3-423" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Limited field validation outside Southeast Asia</span>
-<span id="cb3-424"><a href="#cb3-424" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Difficulty distinguishing surface fires from subsurface peat combustion</span>
-<span id="cb3-425"><a href="#cb3-425" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Unknown proportion of fires on drained vs. undrained peatlands</span>
+<span id="cb3-422"><a href="#cb3-422" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Natural disturbance component: Emissions/removals beyond normal variability (e.g., <span class="sc">\&gt;</span> 95th percentile)</span>
+<span id="cb3-423"><a href="#cb3-423" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Anthropogenic component: Remaining managed land fluxes</span>
+<span id="cb3-424"><a href="#cb3-424" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-425"><a href="#cb3-425" aria-hidden="true" tabindex="-1"></a>This disaggregation:</span>
 <span id="cb3-426"><a href="#cb3-426" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-427"><a href="#cb3-427" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Uncertainty Reduction</span></span>
-<span id="cb3-428"><a href="#cb3-428" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-429"><a href="#cb3-429" aria-hidden="true" tabindex="-1"></a>Country-Specific Improvements:</span>
-<span id="cb3-430"><a href="#cb3-430" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-431"><a href="#cb3-431" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Integrate national fire databases with satellite observations</span>
-<span id="cb3-432"><a href="#cb3-432" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Conduct field campaigns to measure fuel loads and combustion factors</span>
-<span id="cb3-433"><a href="#cb3-433" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Develop regional emission factors from smoke sampling</span>
-<span id="cb3-434"><a href="#cb3-434" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Implement Tier 2/3 methods in high-emission areas</span>
+<span id="cb3-427"><a href="#cb3-427" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Improves clarity of human activity impacts</span>
+<span id="cb3-428"><a href="#cb3-428" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Maintains MLP total for official reporting</span>
+<span id="cb3-429"><a href="#cb3-429" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Requires documentation of methods and thresholds</span>
+<span id="cb3-430"><a href="#cb3-430" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Assumes eventual balance between disturbance emissions and regrowth</span>
+<span id="cb3-431"><a href="#cb3-431" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-432"><a href="#cb3-432" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb3-433"><a href="#cb3-433" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-434"><a href="#cb3-434" aria-hidden="true" tabindex="-1"></a><span class="fu">## Data Sources</span></span>
 <span id="cb3-435"><a href="#cb3-435" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-436"><a href="#cb3-436" aria-hidden="true" tabindex="-1"></a>Methodological Enhancements:</span>
+<span id="cb3-436"><a href="#cb3-436" aria-hidden="true" tabindex="-1"></a><span class="fu">#### MCD64A1.061: Burn Areas</span></span>
 <span id="cb3-437"><a href="#cb3-437" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-438"><a href="#cb3-438" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Multi-sensor fusion (MODIS + VIIRS + Sentinel)</span>
-<span id="cb3-439"><a href="#cb3-439" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Sub-pixel burned area algorithms</span>
-<span id="cb3-440"><a href="#cb3-440" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Burn severity mapping for combustion factors</span>
-<span id="cb3-441"><a href="#cb3-441" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Seasonal stratification of fuel moisture</span>
-<span id="cb3-442"><a href="#cb3-442" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-443"><a href="#cb3-443" aria-hidden="true" tabindex="-1"></a>Transparent Reporting:</span>
-<span id="cb3-444"><a href="#cb3-444" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-445"><a href="#cb3-445" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Document all assumptions and parameter choices</span>
-<span id="cb3-446"><a href="#cb3-446" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Report uncertainty ranges alongside emission estimates</span>
-<span id="cb3-447"><a href="#cb3-447" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Conduct sensitivity analyses for key parameters</span>
-<span id="cb3-448"><a href="#cb3-448" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Compare with independent data sources where available</span>
-<span id="cb3-449"><a href="#cb3-449" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-450"><a href="#cb3-450" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Treatment of Inter-Annual Variability</span></span>
-<span id="cb3-451"><a href="#cb3-451" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-452"><a href="#cb3-452" aria-hidden="true" tabindex="-1"></a>High IAV from natural disturbances complicates trend analysis:</span>
-<span id="cb3-453"><a href="#cb3-453" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-454"><a href="#cb3-454" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Wildfires can cause 2-3 orders of magnitude annual variation</span>
-<span id="cb3-455"><a href="#cb3-455" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Obscures anthropogenic emission trends</span>
-<span id="cb3-456"><a href="#cb3-456" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Challenges mitigation policy evaluation</span>
-<span id="cb3-457"><a href="#cb3-457" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-458"><a href="#cb3-458" aria-hidden="true" tabindex="-1"></a>Optional Disaggregation Approach <span class="co">[</span><span class="ot">@ipccChapter2Generic2019</span><span class="co">][^index-2]</span>:</span>
-<span id="cb3-459"><a href="#cb3-459" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-460"><a href="#cb3-460" aria-hidden="true" tabindex="-1"></a>Countries may separate:</span>
-<span id="cb3-461"><a href="#cb3-461" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-462"><a href="#cb3-462" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Natural disturbance component: Emissions/removals beyond normal variability (e.g., <span class="sc">\&gt;</span> 95th percentile)</span>
-<span id="cb3-463"><a href="#cb3-463" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Anthropogenic component: Remaining managed land fluxes</span>
+<span id="cb3-438"><a href="#cb3-438" aria-hidden="true" tabindex="-1"></a>Product Overview: The MCD64A1 Version 6.1 Burned Area product provides monthly, global gridded burned area at 500m spatial resolution, derived from combined Terra and Aqua MODIS observations.</span>
+<span id="cb3-439"><a href="#cb3-439" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-440"><a href="#cb3-440" aria-hidden="true" tabindex="-1"></a>Key Features:</span>
+<span id="cb3-441"><a href="#cb3-441" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-442"><a href="#cb3-442" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Temporal Resolution: Monthly composites, 2001–present</span>
+<span id="cb3-443"><a href="#cb3-443" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Spatial Resolution: 500m nominal pixel size</span>
+<span id="cb3-444"><a href="#cb3-444" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Algorithm: Decision tree classifier using surface reflectance time series</span>
+<span id="cb3-445"><a href="#cb3-445" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Output: Burn date encoded as ordinal day of year, with quality indicators</span>
+<span id="cb3-446"><a href="#cb3-446" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-447"><a href="#cb3-447" aria-hidden="true" tabindex="-1"></a>Data Layers:</span>
+<span id="cb3-448"><a href="#cb3-448" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-449"><a href="#cb3-449" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Burn Date (day of year when burn detected)</span>
+<span id="cb3-450"><a href="#cb3-450" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Burn Data Uncertainty (percentage uncertainty, 0-100%)</span>
+<span id="cb3-451"><a href="#cb3-451" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Quality Assurance flags</span>
+<span id="cb3-452"><a href="#cb3-452" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-453"><a href="#cb3-453" aria-hidden="true" tabindex="-1"></a>FAOSTAT Implementation:</span>
+<span id="cb3-454"><a href="#cb3-454" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-455"><a href="#cb3-455" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Quality filter applied: Only pixels with uncertainty <span class="sc">\&lt;</span> 20% are retained</span>
+<span id="cb3-456"><a href="#cb3-456" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Aggregation: Pixel-level burn dates accumulated to annual country totals</span>
+<span id="cb3-457"><a href="#cb3-457" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>GEE Asset: <span class="in">`MODIS/061/MCD64A1`</span></span>
+<span id="cb3-458"><a href="#cb3-458" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-459"><a href="#cb3-459" aria-hidden="true" tabindex="-1"></a>Access:</span>
+<span id="cb3-460"><a href="#cb3-460" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-461"><a href="#cb3-461" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>NASA LP DAAC: https://lpdaac.usgs.gov/products/mcd64a1v061/</span>
+<span id="cb3-462"><a href="#cb3-462" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Google Earth Engine: <span class="in">`ee.ImageCollection("MODIS/061/MCD64A1")`</span></span>
+<span id="cb3-463"><a href="#cb3-463" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>User Guide: <span class="co">[</span><span class="ot">@giglio2024collection</span><span class="co">]</span></span>
 <span id="cb3-464"><a href="#cb3-464" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-465"><a href="#cb3-465" aria-hidden="true" tabindex="-1"></a>This disaggregation:</span>
+<span id="cb3-465"><a href="#cb3-465" aria-hidden="true" tabindex="-1"></a>Limitations:</span>
 <span id="cb3-466"><a href="#cb3-466" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-467"><a href="#cb3-467" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Improves clarity of human activity impacts</span>
-<span id="cb3-468"><a href="#cb3-468" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Maintains MLP total for official reporting</span>
-<span id="cb3-469"><a href="#cb3-469" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Requires documentation of methods and thresholds</span>
-<span id="cb3-470"><a href="#cb3-470" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Assumes eventual balance between disturbance emissions and regrowth</span>
+<span id="cb3-467"><a href="#cb3-467" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>May miss small fires (<span class="sc">\&lt;</span> 500m²)</span>
+<span id="cb3-468"><a href="#cb3-468" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Reduced accuracy in densely forested areas</span>
+<span id="cb3-469"><a href="#cb3-469" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Cloud obscuration limits temporal coverage in some regions</span>
+<span id="cb3-470"><a href="#cb3-470" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Detection lag in slow-spreading fires</span>
 <span id="cb3-471"><a href="#cb3-471" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-472"><a href="#cb3-472" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
 <span id="cb3-473"><a href="#cb3-473" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-474"><a href="#cb3-474" aria-hidden="true" tabindex="-1"></a><span class="fu">## Data Sources</span></span>
+<span id="cb3-474"><a href="#cb3-474" aria-hidden="true" tabindex="-1"></a><span class="fu">#### MCD12Q1.061: IGBP Land Cover</span></span>
 <span id="cb3-475"><a href="#cb3-475" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-476"><a href="#cb3-476" aria-hidden="true" tabindex="-1"></a><span class="fu">#### MCD64A1.061: Burn Areas</span></span>
+<span id="cb3-476"><a href="#cb3-476" aria-hidden="true" tabindex="-1"></a>Product Overview: MCD12Q1 provides annual global land cover classification at 500m resolution using supervised classification of MODIS reflectance data.</span>
 <span id="cb3-477"><a href="#cb3-477" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-478"><a href="#cb3-478" aria-hidden="true" tabindex="-1"></a>Product Overview: The MCD64A1 Version 6.1 Burned Area product provides monthly, global gridded burned area at 500m spatial resolution, derived from combined Terra and Aqua MODIS observations.</span>
+<span id="cb3-478"><a href="#cb3-478" aria-hidden="true" tabindex="-1"></a>Classification Scheme: FAOSTAT uses Land Cover Type 1 (IGBP 17-class legend):</span>
 <span id="cb3-479"><a href="#cb3-479" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-480"><a href="#cb3-480" aria-hidden="true" tabindex="-1"></a>Key Features:</span>
+<span id="cb3-480"><a href="#cb3-480" aria-hidden="true" tabindex="-1"></a>Forest Types (used for Forest Fire category):</span>
 <span id="cb3-481"><a href="#cb3-481" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-482"><a href="#cb3-482" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Temporal Resolution: Monthly composites, 2001–present</span>
-<span id="cb3-483"><a href="#cb3-483" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Spatial Resolution: 500m nominal pixel size</span>
-<span id="cb3-484"><a href="#cb3-484" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Algorithm: Decision tree classifier using surface reflectance time series</span>
-<span id="cb3-485"><a href="#cb3-485" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Output: Burn date encoded as ordinal day of year, with quality indicators</span>
-<span id="cb3-486"><a href="#cb3-486" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-487"><a href="#cb3-487" aria-hidden="true" tabindex="-1"></a>Data Layers:</span>
-<span id="cb3-488"><a href="#cb3-488" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-489"><a href="#cb3-489" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Burn Date (day of year when burn detected)</span>
-<span id="cb3-490"><a href="#cb3-490" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Burn Data Uncertainty (percentage uncertainty, 0-100%)</span>
-<span id="cb3-491"><a href="#cb3-491" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Quality Assurance flags</span>
-<span id="cb3-492"><a href="#cb3-492" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-493"><a href="#cb3-493" aria-hidden="true" tabindex="-1"></a>FAOSTAT Implementation:</span>
-<span id="cb3-494"><a href="#cb3-494" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-495"><a href="#cb3-495" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Quality filter applied: Only pixels with uncertainty <span class="sc">\&lt;</span> 20% are retained</span>
-<span id="cb3-496"><a href="#cb3-496" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Aggregation: Pixel-level burn dates accumulated to annual country totals</span>
-<span id="cb3-497"><a href="#cb3-497" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>GEE Asset: <span class="in">`MODIS/061/MCD64A1`</span></span>
-<span id="cb3-498"><a href="#cb3-498" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-499"><a href="#cb3-499" aria-hidden="true" tabindex="-1"></a>Access:</span>
-<span id="cb3-500"><a href="#cb3-500" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-501"><a href="#cb3-501" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>NASA LP DAAC: https://lpdaac.usgs.gov/products/mcd64a1v061/</span>
-<span id="cb3-502"><a href="#cb3-502" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Google Earth Engine: <span class="in">`ee.ImageCollection("MODIS/061/MCD64A1")`</span></span>
-<span id="cb3-503"><a href="#cb3-503" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>User Guide: <span class="co">[</span><span class="ot">@giglio2024collection</span><span class="co">]</span></span>
+<span id="cb3-482"><a href="#cb3-482" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 1: Evergreen Needleleaf Forests</span>
+<span id="cb3-483"><a href="#cb3-483" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 2: Evergreen Broadleaf Forests</span>
+<span id="cb3-484"><a href="#cb3-484" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 3: Deciduous Needleleaf Forests</span>
+<span id="cb3-485"><a href="#cb3-485" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 4: Deciduous Broadleaf Forests</span>
+<span id="cb3-486"><a href="#cb3-486" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 5: Mixed Forests</span>
+<span id="cb3-487"><a href="#cb3-487" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-488"><a href="#cb3-488" aria-hidden="true" tabindex="-1"></a>Grassland/Savanna Types (used for Savanna Fire category):</span>
+<span id="cb3-489"><a href="#cb3-489" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-490"><a href="#cb3-490" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 6: Closed Shrublands</span>
+<span id="cb3-491"><a href="#cb3-491" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 7: Open Shrublands - Class 8: Woody Savannas</span>
+<span id="cb3-492"><a href="#cb3-492" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 9: Savannas</span>
+<span id="cb3-493"><a href="#cb3-493" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 10: Grasslands</span>
+<span id="cb3-494"><a href="#cb3-494" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Other Classes: Croplands, Urban, Wetlands, etc. (Classes 11-17)</span>
+<span id="cb3-495"><a href="#cb3-495" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-496"><a href="#cb3-496" aria-hidden="true" tabindex="-1"></a>FAOSTAT Implementation:</span>
+<span id="cb3-497"><a href="#cb3-497" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-498"><a href="#cb3-498" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Annual land cover maps matched to fire detection year</span>
+<span id="cb3-499"><a href="#cb3-499" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Overlay burned pixels with contemporaneous land cover</span>
+<span id="cb3-500"><a href="#cb3-500" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Exclude built-up, barren, and water bodies</span>
+<span id="cb3-501"><a href="#cb3-501" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>GEE Asset: <span class="in">`MODIS/061/MCD12Q1`</span></span>
+<span id="cb3-502"><a href="#cb3-502" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-503"><a href="#cb3-503" aria-hidden="true" tabindex="-1"></a>Access:</span>
 <span id="cb3-504"><a href="#cb3-504" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-505"><a href="#cb3-505" aria-hidden="true" tabindex="-1"></a>Limitations:</span>
-<span id="cb3-506"><a href="#cb3-506" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-507"><a href="#cb3-507" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>May miss small fires (<span class="sc">\&lt;</span> 500m²)</span>
-<span id="cb3-508"><a href="#cb3-508" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Reduced accuracy in densely forested areas</span>
-<span id="cb3-509"><a href="#cb3-509" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Cloud obscuration limits temporal coverage in some regions</span>
-<span id="cb3-510"><a href="#cb3-510" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Detection lag in slow-spreading fires</span>
-<span id="cb3-511"><a href="#cb3-511" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-512"><a href="#cb3-512" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb3-513"><a href="#cb3-513" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-514"><a href="#cb3-514" aria-hidden="true" tabindex="-1"></a><span class="fu">#### MCD12Q1.061: IGBP Land Cover</span></span>
-<span id="cb3-515"><a href="#cb3-515" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-516"><a href="#cb3-516" aria-hidden="true" tabindex="-1"></a>Product Overview: MCD12Q1 provides annual global land cover classification at 500m resolution using supervised classification of MODIS reflectance data.</span>
-<span id="cb3-517"><a href="#cb3-517" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-518"><a href="#cb3-518" aria-hidden="true" tabindex="-1"></a>Classification Scheme: FAOSTAT uses Land Cover Type 1 (IGBP 17-class legend):</span>
-<span id="cb3-519"><a href="#cb3-519" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-520"><a href="#cb3-520" aria-hidden="true" tabindex="-1"></a>Forest Types (used for Forest Fire category):</span>
+<span id="cb3-505"><a href="#cb3-505" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>NASA LP DAAC: https://lpdaac.usgs.gov/products/mcd12q1v061/</span>
+<span id="cb3-506"><a href="#cb3-506" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Google Earth Engine: <span class="in">`ee.ImageCollection("MODIS/061/MCD12Q1")`</span></span>
+<span id="cb3-507"><a href="#cb3-507" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>User Guide: <span class="co">[</span><span class="ot">@sulla2018user</span><span class="co">]</span></span>
+<span id="cb3-508"><a href="#cb3-508" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-509"><a href="#cb3-509" aria-hidden="true" tabindex="-1"></a>Accuracy:</span>
+<span id="cb3-510"><a href="#cb3-510" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-511"><a href="#cb3-511" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Overall accuracy: \~75% globally</span>
+<span id="cb3-512"><a href="#cb3-512" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Higher accuracy in homogeneous landscapes</span>
+<span id="cb3-513"><a href="#cb3-513" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>sConfusion common between woody savannas and open forests</span>
+<span id="cb3-514"><a href="#cb3-514" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-515"><a href="#cb3-515" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb3-516"><a href="#cb3-516" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-517"><a href="#cb3-517" aria-hidden="true" tabindex="-1"></a><span class="fu">#### FAO Global Administrative Unit Layers (GAUL)</span></span>
+<span id="cb3-518"><a href="#cb3-518" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-519"><a href="#cb3-519" aria-hidden="true" tabindex="-1"></a>Dataset Overview:\</span>
+<span id="cb3-520"><a href="#cb3-520" aria-hidden="true" tabindex="-1"></a>GAUL provides standardized national and sub-national administrative boundaries for all countries and territories.</span>
 <span id="cb3-521"><a href="#cb3-521" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-522"><a href="#cb3-522" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 1: Evergreen Needleleaf Forests</span>
-<span id="cb3-523"><a href="#cb3-523" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 2: Evergreen Broadleaf Forests</span>
-<span id="cb3-524"><a href="#cb3-524" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 3: Deciduous Needleleaf Forests</span>
-<span id="cb3-525"><a href="#cb3-525" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 4: Deciduous Broadleaf Forests</span>
-<span id="cb3-526"><a href="#cb3-526" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 5: Mixed Forests</span>
+<span id="cb3-522"><a href="#cb3-522" aria-hidden="true" tabindex="-1"></a>Coverage:</span>
+<span id="cb3-523"><a href="#cb3-523" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-524"><a href="#cb3-524" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>203 countries and 2 territories (FAO Tier 1 coverage)</span>
+<span id="cb3-525"><a href="#cb3-525" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Multi-level hierarchy (admin level 0, 1, 2)</span>
+<span id="cb3-526"><a href="#cb3-526" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Harmonized with FAOSTAT country classifications</span>
 <span id="cb3-527"><a href="#cb3-527" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-528"><a href="#cb3-528" aria-hidden="true" tabindex="-1"></a>Grassland/Savanna Types (used for Savanna Fire category):</span>
+<span id="cb3-528"><a href="#cb3-528" aria-hidden="true" tabindex="-1"></a>FAOSTAT Implementation:</span>
 <span id="cb3-529"><a href="#cb3-529" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-530"><a href="#cb3-530" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 6: Closed Shrublands</span>
-<span id="cb3-531"><a href="#cb3-531" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 7: Open Shrublands - Class 8: Woody Savannas</span>
-<span id="cb3-532"><a href="#cb3-532" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 9: Savannas</span>
-<span id="cb3-533"><a href="#cb3-533" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 10: Grasslands</span>
-<span id="cb3-534"><a href="#cb3-534" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Other Classes: Croplands, Urban, Wetlands, etc. (Classes 11-17)</span>
-<span id="cb3-535"><a href="#cb3-535" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-536"><a href="#cb3-536" aria-hidden="true" tabindex="-1"></a>FAOSTAT Implementation:</span>
-<span id="cb3-537"><a href="#cb3-537" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-538"><a href="#cb3-538" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Annual land cover maps matched to fire detection year</span>
-<span id="cb3-539"><a href="#cb3-539" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Overlay burned pixels with contemporaneous land cover</span>
-<span id="cb3-540"><a href="#cb3-540" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Exclude built-up, barren, and water bodies</span>
-<span id="cb3-541"><a href="#cb3-541" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>GEE Asset: <span class="in">`MODIS/061/MCD12Q1`</span></span>
-<span id="cb3-542"><a href="#cb3-542" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-543"><a href="#cb3-543" aria-hidden="true" tabindex="-1"></a>Access:</span>
+<span id="cb3-530"><a href="#cb3-530" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Admin Level 0 used for country-level aggregation</span>
+<span id="cb3-531"><a href="#cb3-531" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>All pixel-level fire data summed within national boundaries</span>
+<span id="cb3-532"><a href="#cb3-532" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-533"><a href="#cb3-533" aria-hidden="true" tabindex="-1"></a>Ensures consistency with other FAOSTAT domains</span>
+<span id="cb3-534"><a href="#cb3-534" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-535"><a href="#cb3-535" aria-hidden="true" tabindex="-1"></a>Version:</span>
+<span id="cb3-536"><a href="#cb3-536" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-537"><a href="#cb3-537" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>GAUL 2015 (last available comprehensive update)</span>
+<span id="cb3-538"><a href="#cb3-538" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Note: Some recent boundary changes not reflected</span>
+<span id="cb3-539"><a href="#cb3-539" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-540"><a href="#cb3-540" aria-hidden="true" tabindex="-1"></a>Access:</span>
+<span id="cb3-541"><a href="#cb3-541" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-542"><a href="#cb3-542" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>FAO GeoNetwork: http://www.fao.org/geonetwork/</span>
+<span id="cb3-543"><a href="#cb3-543" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Google Earth Engine: <span class="in">`FAO/GAUL/2015/level0`</span></span>
 <span id="cb3-544"><a href="#cb3-544" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-545"><a href="#cb3-545" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>NASA LP DAAC: https://lpdaac.usgs.gov/products/mcd12q1v061/</span>
-<span id="cb3-546"><a href="#cb3-546" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Google Earth Engine: <span class="in">`ee.ImageCollection("MODIS/061/MCD12Q1")`</span></span>
-<span id="cb3-547"><a href="#cb3-547" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>User Guide: <span class="co">[</span><span class="ot">@sulla2018user</span><span class="co">]</span></span>
-<span id="cb3-548"><a href="#cb3-548" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-549"><a href="#cb3-549" aria-hidden="true" tabindex="-1"></a>Accuracy:</span>
+<span id="cb3-545"><a href="#cb3-545" aria-hidden="true" tabindex="-1"></a>Considerations:</span>
+<span id="cb3-546"><a href="#cb3-546" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-547"><a href="#cb3-547" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Disputed boundaries handled per UN conventions</span>
+<span id="cb3-548"><a href="#cb3-548" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Some coastal zone definitions may differ from national claims</span>
+<span id="cb3-549"><a href="#cb3-549" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Small island territories aggregated into parent countries in some cases</span>
 <span id="cb3-550"><a href="#cb3-550" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-551"><a href="#cb3-551" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Overall accuracy: \~75% globally</span>
-<span id="cb3-552"><a href="#cb3-552" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Higher accuracy in homogeneous landscapes</span>
-<span id="cb3-553"><a href="#cb3-553" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>sConfusion common between woody savannas and open forests</span>
+<span id="cb3-551"><a href="#cb3-551" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb3-552"><a href="#cb3-552" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-553"><a href="#cb3-553" aria-hidden="true" tabindex="-1"></a><span class="fu">#### FAO Global Ecological Zones</span></span>
 <span id="cb3-554"><a href="#cb3-554" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-555"><a href="#cb3-555" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb3-556"><a href="#cb3-556" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-557"><a href="#cb3-557" aria-hidden="true" tabindex="-1"></a><span class="fu">#### FAO Global Administrative Unit Layers (GAUL)</span></span>
-<span id="cb3-558"><a href="#cb3-558" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-559"><a href="#cb3-559" aria-hidden="true" tabindex="-1"></a>Dataset Overview:\</span>
-<span id="cb3-560"><a href="#cb3-560" aria-hidden="true" tabindex="-1"></a>GAUL provides standardized national and sub-national administrative boundaries for all countries and territories.</span>
-<span id="cb3-561"><a href="#cb3-561" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-562"><a href="#cb3-562" aria-hidden="true" tabindex="-1"></a>Coverage:</span>
-<span id="cb3-563"><a href="#cb3-563" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-564"><a href="#cb3-564" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>203 countries and 2 territories (FAO Tier 1 coverage)</span>
-<span id="cb3-565"><a href="#cb3-565" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Multi-level hierarchy (admin level 0, 1, 2)</span>
-<span id="cb3-566"><a href="#cb3-566" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Harmonized with FAOSTAT country classifications</span>
-<span id="cb3-567"><a href="#cb3-567" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-568"><a href="#cb3-568" aria-hidden="true" tabindex="-1"></a>FAOSTAT Implementation:</span>
+<span id="cb3-555"><a href="#cb3-555" aria-hidden="true" tabindex="-1"></a>Dataset Overview:\</span>
+<span id="cb3-556"><a href="#cb3-556" aria-hidden="true" tabindex="-1"></a>The Global Ecological Zones (GEZ) classification provides a climate-vegetation framework for stratifying fuel consumption parameters.</span>
+<span id="cb3-557"><a href="#cb3-557" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-558"><a href="#cb3-558" aria-hidden="true" tabindex="-1"></a>Classification System Combines:</span>
+<span id="cb3-559"><a href="#cb3-559" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-560"><a href="#cb3-560" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Climate domains (Polar, Boreal, Temperate, Subtropical, Tropical)</span>
+<span id="cb3-561"><a href="#cb3-561" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Ecological zones (e.g., Tropical moist forest, Tropical dry forest, Subtropical steppe)</span>
+<span id="cb3-562"><a href="#cb3-562" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-563"><a href="#cb3-563" aria-hidden="true" tabindex="-1"></a>FAOSTAT Implementation:</span>
+<span id="cb3-564"><a href="#cb3-564" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-565"><a href="#cb3-565" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Overlay burned forest pixels with GEZ to distinguish:</span>
+<span id="cb3-566"><a href="#cb3-566" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Humid Tropical Forest: Tropical moist ecological zones</span>
+<span id="cb3-567"><a href="#cb3-567" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Other Forest: All remaining forest types</span>
+<span id="cb3-568"><a href="#cb3-568" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Assign climate-dependent fuel consumption values from IPCC Table 2.4</span>
 <span id="cb3-569"><a href="#cb3-569" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-570"><a href="#cb3-570" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Admin Level 0 used for country-level aggregation</span>
-<span id="cb3-571"><a href="#cb3-571" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>All pixel-level fire data summed within national boundaries</span>
-<span id="cb3-572"><a href="#cb3-572" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-573"><a href="#cb3-573" aria-hidden="true" tabindex="-1"></a>Ensures consistency with other FAOSTAT domains</span>
+<span id="cb3-570"><a href="#cb3-570" aria-hidden="true" tabindex="-1"></a>Access:</span>
+<span id="cb3-571"><a href="#cb3-571" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-572"><a href="#cb3-572" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>FAO Forestry: http://www.fao.org/forest-resources-assessment/</span>
+<span id="cb3-573"><a href="#cb3-573" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Document: FAO Global Ecological Zones for FAO forest reporting 2010 Update <span class="co">[</span><span class="ot">@fao2012global</span><span class="co">]</span></span>
 <span id="cb3-574"><a href="#cb3-574" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-575"><a href="#cb3-575" aria-hidden="true" tabindex="-1"></a>Version:</span>
+<span id="cb3-575"><a href="#cb3-575" aria-hidden="true" tabindex="-1"></a>Application:</span>
 <span id="cb3-576"><a href="#cb3-576" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-577"><a href="#cb3-577" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>GAUL 2015 (last available comprehensive update)</span>
-<span id="cb3-578"><a href="#cb3-578" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Note: Some recent boundary changes not reflected</span>
-<span id="cb3-579"><a href="#cb3-579" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-580"><a href="#cb3-580" aria-hidden="true" tabindex="-1"></a>Access:</span>
-<span id="cb3-581"><a href="#cb3-581" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-582"><a href="#cb3-582" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>FAO GeoNetwork: http://www.fao.org/geonetwork/</span>
-<span id="cb3-583"><a href="#cb3-583" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Google Earth Engine: <span class="in">`FAO/GAUL/2015/level0`</span></span>
+<span id="cb3-577"><a href="#cb3-577" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Determines fuel biomass consumption parameters</span>
+<span id="cb3-578"><a href="#cb3-578" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Stratifies emission factors where climate-sensitive</span>
+<span id="cb3-579"><a href="#cb3-579" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Links to FAO Forest Resources Assessment (FRA) reporting categories</span>
+<span id="cb3-580"><a href="#cb3-580" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-581"><a href="#cb3-581" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb3-582"><a href="#cb3-582" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-583"><a href="#cb3-583" aria-hidden="true" tabindex="-1"></a><span class="fu">#### IPCC Soil Zones Layer</span></span>
 <span id="cb3-584"><a href="#cb3-584" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-585"><a href="#cb3-585" aria-hidden="true" tabindex="-1"></a>Considerations:</span>
-<span id="cb3-586"><a href="#cb3-586" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-587"><a href="#cb3-587" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Disputed boundaries handled per UN conventions</span>
-<span id="cb3-588"><a href="#cb3-588" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Some coastal zone definitions may differ from national claims</span>
-<span id="cb3-589"><a href="#cb3-589" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Small island territories aggregated into parent countries in some cases</span>
+<span id="cb3-585"><a href="#cb3-585" aria-hidden="true" tabindex="-1"></a>Dataset Overview:\</span>
+<span id="cb3-586"><a href="#cb3-586" aria-hidden="true" tabindex="-1"></a>The Harmonized World Soil Database (HWSD v1.2) provides global soil type classifications at 30 arc-second (\~1 km) resolution.</span>
+<span id="cb3-587"><a href="#cb3-587" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-588"><a href="#cb3-588" aria-hidden="true" tabindex="-1"></a>Histosols Class:\</span>
+<span id="cb3-589"><a href="#cb3-589" aria-hidden="true" tabindex="-1"></a>Organic soils characterized by:</span>
 <span id="cb3-590"><a href="#cb3-590" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-591"><a href="#cb3-591" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb3-592"><a href="#cb3-592" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-593"><a href="#cb3-593" aria-hidden="true" tabindex="-1"></a><span class="fu">#### FAO Global Ecological Zones</span></span>
+<span id="cb3-591"><a href="#cb3-591" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>High organic matter content (<span class="sc">\&gt;</span> 20-30% by weight)</span>
+<span id="cb3-592"><a href="#cb3-592" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Formed in waterlogged conditions</span>
+<span id="cb3-593"><a href="#cb3-593" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Includes peatlands, bogs, fens</span>
 <span id="cb3-594"><a href="#cb3-594" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-595"><a href="#cb3-595" aria-hidden="true" tabindex="-1"></a>Dataset Overview:\</span>
-<span id="cb3-596"><a href="#cb3-596" aria-hidden="true" tabindex="-1"></a>The Global Ecological Zones (GEZ) classification provides a climate-vegetation framework for stratifying fuel consumption parameters.</span>
-<span id="cb3-597"><a href="#cb3-597" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-598"><a href="#cb3-598" aria-hidden="true" tabindex="-1"></a>Classification System Combines:</span>
-<span id="cb3-599"><a href="#cb3-599" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-600"><a href="#cb3-600" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Climate domains (Polar, Boreal, Temperate, Subtropical, Tropical)</span>
-<span id="cb3-601"><a href="#cb3-601" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Ecological zones (e.g., Tropical moist forest, Tropical dry forest, Subtropical steppe)</span>
+<span id="cb3-595"><a href="#cb3-595" aria-hidden="true" tabindex="-1"></a>FAOSTAT Implementation:</span>
+<span id="cb3-596"><a href="#cb3-596" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-597"><a href="#cb3-597" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Burned area pixels overlaid with Histosols spatial layer</span>
+<span id="cb3-598"><a href="#cb3-598" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Fires in organic soils identified independently of land cover (except excluding built-up, barren, water)</span>
+<span id="cb3-599"><a href="#cb3-599" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Different fuel consumption and emission factors applied (IPCC Wetlands Supplement 2014)</span>
+<span id="cb3-600"><a href="#cb3-600" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-601"><a href="#cb3-601" aria-hidden="true" tabindex="-1"></a>Access:</span>
 <span id="cb3-602"><a href="#cb3-602" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-603"><a href="#cb3-603" aria-hidden="true" tabindex="-1"></a>FAOSTAT Implementation:</span>
-<span id="cb3-604"><a href="#cb3-604" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-605"><a href="#cb3-605" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Overlay burned forest pixels with GEZ to distinguish:</span>
-<span id="cb3-606"><a href="#cb3-606" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Humid Tropical Forest: Tropical moist ecological zones</span>
-<span id="cb3-607"><a href="#cb3-607" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Other Forest: All remaining forest types</span>
-<span id="cb3-608"><a href="#cb3-608" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Assign climate-dependent fuel consumption values from IPCC Table 2.4</span>
-<span id="cb3-609"><a href="#cb3-609" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-610"><a href="#cb3-610" aria-hidden="true" tabindex="-1"></a>Access:</span>
-<span id="cb3-611"><a href="#cb3-611" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-612"><a href="#cb3-612" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>FAO Forestry: http://www.fao.org/forest-resources-assessment/</span>
-<span id="cb3-613"><a href="#cb3-613" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Document: FAO Global Ecological Zones for FAO forest reporting 2010 Update <span class="co">[</span><span class="ot">@fao2012global</span><span class="co">]</span></span>
+<span id="cb3-603"><a href="#cb3-603" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>FAO Soils Portal: http://www.fao.org/soils-portal/</span>
+<span id="cb3-604"><a href="#cb3-604" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>IIASA: https://iiasa.ac.at/models-and-data/hwsd</span>
+<span id="cb3-605"><a href="#cb3-605" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-606"><a href="#cb3-606" aria-hidden="true" tabindex="-1"></a>Critical Limitation:</span>
+<span id="cb3-607"><a href="#cb3-607" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-608"><a href="#cb3-608" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>FAOSTAT organic soil fire emissions set to zero outside Southeast Asia due to:</span>
+<span id="cb3-609"><a href="#cb3-609" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>High uncertainty in peat fire detection</span>
+<span id="cb3-610"><a href="#cb3-610" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Limited validation data - Difficulty distinguishing drained vs. undrained peatlands</span>
+<span id="cb3-611"><a href="#cb3-611" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Uncertainty in human influence on fire occurrence</span>
+<span id="cb3-612"><a href="#cb3-612" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-613"><a href="#cb3-613" aria-hidden="true" tabindex="-1"></a>Supplementary file <span class="in">`AllFires_OrganicSoils.csv`</span> contains global estimates for research purposes.</span>
 <span id="cb3-614"><a href="#cb3-614" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-615"><a href="#cb3-615" aria-hidden="true" tabindex="-1"></a>Application:</span>
+<span id="cb3-615"><a href="#cb3-615" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
 <span id="cb3-616"><a href="#cb3-616" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-617"><a href="#cb3-617" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Determines fuel biomass consumption parameters</span>
-<span id="cb3-618"><a href="#cb3-618" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Stratifies emission factors where climate-sensitive</span>
-<span id="cb3-619"><a href="#cb3-619" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Links to FAO Forest Resources Assessment (FRA) reporting categories</span>
-<span id="cb3-620"><a href="#cb3-620" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-621"><a href="#cb3-621" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb3-622"><a href="#cb3-622" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-623"><a href="#cb3-623" aria-hidden="true" tabindex="-1"></a><span class="fu">#### IPCC Soil Zones Layer</span></span>
-<span id="cb3-624"><a href="#cb3-624" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-625"><a href="#cb3-625" aria-hidden="true" tabindex="-1"></a>Dataset Overview:\</span>
-<span id="cb3-626"><a href="#cb3-626" aria-hidden="true" tabindex="-1"></a>The Harmonized World Soil Database (HWSD v1.2) provides global soil type classifications at 30 arc-second (\~1 km) resolution.</span>
-<span id="cb3-627"><a href="#cb3-627" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-628"><a href="#cb3-628" aria-hidden="true" tabindex="-1"></a>Histosols Class:\</span>
-<span id="cb3-629"><a href="#cb3-629" aria-hidden="true" tabindex="-1"></a>Organic soils characterized by:</span>
+<span id="cb3-617"><a href="#cb3-617" aria-hidden="true" tabindex="-1"></a><span class="fu">#### IPCC Climate Zones Layer</span></span>
+<span id="cb3-618"><a href="#cb3-618" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-619"><a href="#cb3-619" aria-hidden="true" tabindex="-1"></a>Dataset Overview:\</span>
+<span id="cb3-620"><a href="#cb3-620" aria-hidden="true" tabindex="-1"></a>IPCC Climate Zones classify global climate into categories used for stratifying biomass growth rates, decomposition rates, and fire parameters.</span>
+<span id="cb3-621"><a href="#cb3-621" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-622"><a href="#cb3-622" aria-hidden="true" tabindex="-1"></a>Classification:</span>
+<span id="cb3-623"><a href="#cb3-623" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-624"><a href="#cb3-624" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Polar</span>
+<span id="cb3-625"><a href="#cb3-625" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Boreal (Cold)</span>
+<span id="cb3-626"><a href="#cb3-626" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Temperate (Warm temperate, Cool temperate)</span>
+<span id="cb3-627"><a href="#cb3-627" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Tropical (Tropical wet, Tropical moist, Tropical dry, Tropical montane)</span>
+<span id="cb3-628"><a href="#cb3-628" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-629"><a href="#cb3-629" aria-hidden="true" tabindex="-1"></a>Source:</span>
 <span id="cb3-630"><a href="#cb3-630" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-631"><a href="#cb3-631" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>High organic matter content (<span class="sc">\&gt;</span> 20-30% by weight)</span>
-<span id="cb3-632"><a href="#cb3-632" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Formed in waterlogged conditions</span>
-<span id="cb3-633"><a href="#cb3-633" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Includes peatlands, bogs, fens</span>
-<span id="cb3-634"><a href="#cb3-634" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-635"><a href="#cb3-635" aria-hidden="true" tabindex="-1"></a>FAOSTAT Implementation:</span>
-<span id="cb3-636"><a href="#cb3-636" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-637"><a href="#cb3-637" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Burned area pixels overlaid with Histosols spatial layer</span>
-<span id="cb3-638"><a href="#cb3-638" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Fires in organic soils identified independently of land cover (except excluding built-up, barren, water)</span>
-<span id="cb3-639"><a href="#cb3-639" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Different fuel consumption and emission factors applied (IPCC Wetlands Supplement 2014)</span>
-<span id="cb3-640"><a href="#cb3-640" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-641"><a href="#cb3-641" aria-hidden="true" tabindex="-1"></a>Access:</span>
-<span id="cb3-642"><a href="#cb3-642" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-643"><a href="#cb3-643" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>FAO Soils Portal: http://www.fao.org/soils-portal/</span>
-<span id="cb3-644"><a href="#cb3-644" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>IIASA: https://iiasa.ac.at/models-and-data/hwsd</span>
-<span id="cb3-645"><a href="#cb3-645" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-646"><a href="#cb3-646" aria-hidden="true" tabindex="-1"></a>Critical Limitation:</span>
-<span id="cb3-647"><a href="#cb3-647" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-648"><a href="#cb3-648" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>FAOSTAT organic soil fire emissions set to zero outside Southeast Asia due to:</span>
-<span id="cb3-649"><a href="#cb3-649" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>High uncertainty in peat fire detection</span>
-<span id="cb3-650"><a href="#cb3-650" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Limited validation data - Difficulty distinguishing drained vs. undrained peatlands</span>
-<span id="cb3-651"><a href="#cb3-651" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Uncertainty in human influence on fire occurrence</span>
-<span id="cb3-652"><a href="#cb3-652" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-653"><a href="#cb3-653" aria-hidden="true" tabindex="-1"></a>Supplementary file <span class="in">`AllFires_OrganicSoils.csv`</span> contains global estimates for research purposes.</span>
-<span id="cb3-654"><a href="#cb3-654" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-655"><a href="#cb3-655" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb3-631"><a href="#cb3-631" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Joint Research Centre (JRC) Climate Zones layer</span>
+<span id="cb3-632"><a href="#cb3-632" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Based on IPCC climatic zone definitions <span class="co">[</span><span class="ot">@ipccChapter3Consistent2006</span><span class="co">]</span></span>
+<span id="cb3-633"><a href="#cb3-633" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-634"><a href="#cb3-634" aria-hidden="true" tabindex="-1"></a>FAOSTAT Implementation:</span>
+<span id="cb3-635"><a href="#cb3-635" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-636"><a href="#cb3-636" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Savanna fire fuel consumption values vary by climate zone (Table 2.4)</span>
+<span id="cb3-637"><a href="#cb3-637" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Organic soil emission factors stratified by climate <span class="co">[</span><span class="ot">@ipcc2013RevisedSupplementary2014</span><span class="co">]</span></span>
+<span id="cb3-638"><a href="#cb3-638" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Links IPCC methodology to geographic reality</span>
+<span id="cb3-639"><a href="#cb3-639" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-640"><a href="#cb3-640" aria-hidden="true" tabindex="-1"></a>Access:</span>
+<span id="cb3-641"><a href="#cb3-641" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-642"><a href="#cb3-642" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>JRC European Soil Data Centre (ESDAC): https://esdac.jrc.ec.europa.eu/</span>
+<span id="cb3-643"><a href="#cb3-643" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Reference: JRC (2010) Climatic Zone layer</span>
+<span id="cb3-644"><a href="#cb3-644" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-645"><a href="#cb3-645" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb3-646"><a href="#cb3-646" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-647"><a href="#cb3-647" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Google Earth Engine Setup</span></span>
+<span id="cb3-648"><a href="#cb3-648" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-649"><a href="#cb3-649" aria-hidden="true" tabindex="-1"></a>Platform Overview:\</span>
+<span id="cb3-650"><a href="#cb3-650" aria-hidden="true" tabindex="-1"></a>Google Earth Engine is a cloud-based geospatial analysis platform providing:</span>
+<span id="cb3-651"><a href="#cb3-651" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-652"><a href="#cb3-652" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Petabyte-scale satellite imagery archives</span>
+<span id="cb3-653"><a href="#cb3-653" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Planetary-scale computational infrastructure</span>
+<span id="cb3-654"><a href="#cb3-654" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>JavaScript and Python APIs</span>
+<span id="cb3-655"><a href="#cb3-655" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Web-based Code Editor</span>
 <span id="cb3-656"><a href="#cb3-656" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-657"><a href="#cb3-657" aria-hidden="true" tabindex="-1"></a><span class="fu">#### IPCC Climate Zones Layer</span></span>
+<span id="cb3-657"><a href="#cb3-657" aria-hidden="true" tabindex="-1"></a>FAOSTAT Workflow Architecture:</span>
 <span id="cb3-658"><a href="#cb3-658" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-659"><a href="#cb3-659" aria-hidden="true" tabindex="-1"></a>Dataset Overview:\</span>
-<span id="cb3-660"><a href="#cb3-660" aria-hidden="true" tabindex="-1"></a>IPCC Climate Zones classify global climate into categories used for stratifying biomass growth rates, decomposition rates, and fire parameters.</span>
-<span id="cb3-661"><a href="#cb3-661" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-662"><a href="#cb3-662" aria-hidden="true" tabindex="-1"></a>Classification:</span>
+<span id="cb3-659"><a href="#cb3-659" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Data Ingestion: All datasets (MCD64A1, MCD12Q1, GAUL, etc.) available as pre-processed GEE assets</span>
+<span id="cb3-660"><a href="#cb3-660" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Pixel-Level Processing: Fire algorithm applied to all global pixels</span>
+<span id="cb3-661"><a href="#cb3-661" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Zonal Statistics: Country-level aggregation via GAUL boundaries</span>
+<span id="cb3-662"><a href="#cb3-662" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Export: Results exported as CSV tables for FAOSTAT database</span>
 <span id="cb3-663"><a href="#cb3-663" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-664"><a href="#cb3-664" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Polar</span>
-<span id="cb3-665"><a href="#cb3-665" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Boreal (Cold)</span>
-<span id="cb3-666"><a href="#cb3-666" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Temperate (Warm temperate, Cool temperate)</span>
-<span id="cb3-667"><a href="#cb3-667" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Tropical (Tropical wet, Tropical moist, Tropical dry, Tropical montane)</span>
-<span id="cb3-668"><a href="#cb3-668" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-669"><a href="#cb3-669" aria-hidden="true" tabindex="-1"></a>Source:</span>
+<span id="cb3-664"><a href="#cb3-664" aria-hidden="true" tabindex="-1"></a>Getting Started:</span>
+<span id="cb3-665"><a href="#cb3-665" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-666"><a href="#cb3-666" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Account Registration:</span>
+<span id="cb3-667"><a href="#cb3-667" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-668"><a href="#cb3-668" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Sign up at https://earthengine.google.com/signup/</span>
+<span id="cb3-669"><a href="#cb3-669" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Academic/NGO accounts typically approved within 1-2 days</span>
 <span id="cb3-670"><a href="#cb3-670" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-671"><a href="#cb3-671" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Joint Research Centre (JRC) Climate Zones layer</span>
-<span id="cb3-672"><a href="#cb3-672" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Based on IPCC climatic zone definitions <span class="co">[</span><span class="ot">@ipccChapter3Consistent2006</span><span class="co">]</span></span>
-<span id="cb3-673"><a href="#cb3-673" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-674"><a href="#cb3-674" aria-hidden="true" tabindex="-1"></a>FAOSTAT Implementation:</span>
+<span id="cb3-671"><a href="#cb3-671" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Code Editor Access:</span>
+<span id="cb3-672"><a href="#cb3-672" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-673"><a href="#cb3-673" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Navigate to https://code.earthengine.google.com/</span>
+<span id="cb3-674"><a href="#cb3-674" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>JavaScript environment for interactive analysis</span>
 <span id="cb3-675"><a href="#cb3-675" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-676"><a href="#cb3-676" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Savanna fire fuel consumption values vary by climate zone (Table 2.4)</span>
-<span id="cb3-677"><a href="#cb3-677" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Organic soil emission factors stratified by climate <span class="co">[</span><span class="ot">@ipcc2013RevisedSupplementary2014</span><span class="co">]</span></span>
-<span id="cb3-678"><a href="#cb3-678" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Links IPCC methodology to geographic reality</span>
-<span id="cb3-679"><a href="#cb3-679" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-680"><a href="#cb3-680" aria-hidden="true" tabindex="-1"></a>Access:</span>
-<span id="cb3-681"><a href="#cb3-681" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-682"><a href="#cb3-682" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>JRC European Soil Data Centre (ESDAC): https://esdac.jrc.ec.europa.eu/</span>
-<span id="cb3-683"><a href="#cb3-683" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Reference: JRC (2010) Climatic Zone layer</span>
+<span id="cb3-676"><a href="#cb3-676" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Python API Setup (optional):</span>
+<span id="cb3-677"><a href="#cb3-677" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-678"><a href="#cb3-678" aria-hidden="true" tabindex="-1"></a>    <span class="in">``` python</span></span>
+<span id="cb3-679"><a href="#cb3-679" aria-hidden="true" tabindex="-1"></a>    pip install earthengine<span class="op">-</span>api</span>
+<span id="cb3-680"><a href="#cb3-680" aria-hidden="true" tabindex="-1"></a>    earthengine authenticate</span>
+<span id="cb3-681"><a href="#cb3-681" aria-hidden="true" tabindex="-1"></a>    <span class="in">```</span></span>
+<span id="cb3-682"><a href="#cb3-682" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-683"><a href="#cb3-683" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Key GEE Concepts:</span>
 <span id="cb3-684"><a href="#cb3-684" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-685"><a href="#cb3-685" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb3-686"><a href="#cb3-686" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-687"><a href="#cb3-687" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Google Earth Engine Setup</span></span>
-<span id="cb3-688"><a href="#cb3-688" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-689"><a href="#cb3-689" aria-hidden="true" tabindex="-1"></a>Platform Overview:\</span>
-<span id="cb3-690"><a href="#cb3-690" aria-hidden="true" tabindex="-1"></a>Google Earth Engine is a cloud-based geospatial analysis platform providing:</span>
+<span id="cb3-685"><a href="#cb3-685" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span><span class="in">`ImageCollection`</span>: Time series of raster images</span>
+<span id="cb3-686"><a href="#cb3-686" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span><span class="in">`Image`</span>: Single raster dataset</span>
+<span id="cb3-687"><a href="#cb3-687" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span><span class="in">`FeatureCollection`</span>: Vector dataset (e.g., country boundaries)</span>
+<span id="cb3-688"><a href="#cb3-688" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span><span class="in">`Reducer`</span>: Aggregation functions (sum, mean, etc.)</span>
+<span id="cb3-689"><a href="#cb3-689" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-690"><a href="#cb3-690" aria-hidden="true" tabindex="-1"></a>FAOSTAT-Relevant GEE Assets:<span class="ot">[^index-3]</span></span>
 <span id="cb3-691"><a href="#cb3-691" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-692"><a href="#cb3-692" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Petabyte-scale satellite imagery archives</span>
-<span id="cb3-693"><a href="#cb3-693" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Planetary-scale computational infrastructure</span>
-<span id="cb3-694"><a href="#cb3-694" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>JavaScript and Python APIs</span>
-<span id="cb3-695"><a href="#cb3-695" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Web-based Code Editor</span>
-<span id="cb3-696"><a href="#cb3-696" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-697"><a href="#cb3-697" aria-hidden="true" tabindex="-1"></a>FAOSTAT Workflow Architecture:</span>
+<span id="cb3-692"><a href="#cb3-692" aria-hidden="true" tabindex="-1"></a><span class="in">``` javascript</span></span>
+<span id="cb3-693"><a href="#cb3-693" aria-hidden="true" tabindex="-1"></a><span class="co">// Burned Area</span></span>
+<span id="cb3-694"><a href="#cb3-694" aria-hidden="true" tabindex="-1"></a><span class="dt">var</span> burnedArea <span class="op">=</span> ee<span class="op">.</span><span class="fu">ImageCollection</span><span class="op">(</span><span class="st">"MODIS/061/MCD64A1"</span><span class="op">);</span></span>
+<span id="cb3-695"><a href="#cb3-695" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-696"><a href="#cb3-696" aria-hidden="true" tabindex="-1"></a><span class="co">// Land Cover</span></span>
+<span id="cb3-697"><a href="#cb3-697" aria-hidden="true" tabindex="-1"></a><span class="dt">var</span> landCover <span class="op">=</span> ee<span class="op">.</span><span class="fu">ImageCollection</span><span class="op">(</span><span class="st">"MODIS/061/MCD12Q1"</span><span class="op">);</span></span>
 <span id="cb3-698"><a href="#cb3-698" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-699"><a href="#cb3-699" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Data Ingestion: All datasets (MCD64A1, MCD12Q1, GAUL, etc.) available as pre-processed GEE assets</span>
-<span id="cb3-700"><a href="#cb3-700" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Pixel-Level Processing: Fire algorithm applied to all global pixels</span>
-<span id="cb3-701"><a href="#cb3-701" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Zonal Statistics: Country-level aggregation via GAUL boundaries</span>
-<span id="cb3-702"><a href="#cb3-702" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Export: Results exported as CSV tables for FAOSTAT database</span>
-<span id="cb3-703"><a href="#cb3-703" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-704"><a href="#cb3-704" aria-hidden="true" tabindex="-1"></a>Getting Started:</span>
-<span id="cb3-705"><a href="#cb3-705" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-706"><a href="#cb3-706" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Account Registration:</span>
-<span id="cb3-707"><a href="#cb3-707" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-708"><a href="#cb3-708" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Sign up at https://earthengine.google.com/signup/</span>
-<span id="cb3-709"><a href="#cb3-709" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Academic/NGO accounts typically approved within 1-2 days</span>
-<span id="cb3-710"><a href="#cb3-710" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-711"><a href="#cb3-711" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Code Editor Access:</span>
-<span id="cb3-712"><a href="#cb3-712" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-713"><a href="#cb3-713" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Navigate to https://code.earthengine.google.com/</span>
-<span id="cb3-714"><a href="#cb3-714" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>JavaScript environment for interactive analysis</span>
+<span id="cb3-699"><a href="#cb3-699" aria-hidden="true" tabindex="-1"></a><span class="co">// Country Boundaries</span></span>
+<span id="cb3-700"><a href="#cb3-700" aria-hidden="true" tabindex="-1"></a><span class="dt">var</span> countries <span class="op">=</span> ee<span class="op">.</span><span class="fu">FeatureCollection</span><span class="op">(</span><span class="st">"FAO/GAUL/2015/level0"</span><span class="op">);</span></span>
+<span id="cb3-701"><a href="#cb3-701" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-702"><a href="#cb3-702" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-703"><a href="#cb3-703" aria-hidden="true" tabindex="-1"></a>Computational Considerations:</span>
+<span id="cb3-704"><a href="#cb3-704" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-705"><a href="#cb3-705" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Global annual processing requires substantial compute resources</span>
+<span id="cb3-706"><a href="#cb3-706" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Batch processing via Earth Engine Tasks for large exports</span>
+<span id="cb3-707"><a href="#cb3-707" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Memory and timeout limits apply (user-specific quotas)</span>
+<span id="cb3-708"><a href="#cb3-708" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Tiling strategies may be needed for very large analyses</span>
+<span id="cb3-709"><a href="#cb3-709" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-710"><a href="#cb3-710" aria-hidden="true" tabindex="-1"></a>Resources:</span>
+<span id="cb3-711"><a href="#cb3-711" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-712"><a href="#cb3-712" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Documentation: https://developers.google.com/earth-engine/</span>
+<span id="cb3-713"><a href="#cb3-713" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Code Archive: https://earthengine.google.com/</span>
+<span id="cb3-714"><a href="#cb3-714" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Community Tutorials: https://developers.google.com/earth-engine/tutorials/</span>
 <span id="cb3-715"><a href="#cb3-715" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-716"><a href="#cb3-716" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Python API Setup (optional):</span>
+<span id="cb3-716"><a href="#cb3-716" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
 <span id="cb3-717"><a href="#cb3-717" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-718"><a href="#cb3-718" aria-hidden="true" tabindex="-1"></a>    <span class="in">``` python</span></span>
-<span id="cb3-719"><a href="#cb3-719" aria-hidden="true" tabindex="-1"></a>    pip install earthengine<span class="op">-</span>api</span>
-<span id="cb3-720"><a href="#cb3-720" aria-hidden="true" tabindex="-1"></a>    earthengine authenticate</span>
-<span id="cb3-721"><a href="#cb3-721" aria-hidden="true" tabindex="-1"></a>    <span class="in">```</span></span>
-<span id="cb3-722"><a href="#cb3-722" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-723"><a href="#cb3-723" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Key GEE Concepts:</span>
-<span id="cb3-724"><a href="#cb3-724" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-725"><a href="#cb3-725" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span><span class="in">`ImageCollection`</span>: Time series of raster images</span>
-<span id="cb3-726"><a href="#cb3-726" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span><span class="in">`Image`</span>: Single raster dataset</span>
-<span id="cb3-727"><a href="#cb3-727" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span><span class="in">`FeatureCollection`</span>: Vector dataset (e.g., country boundaries)</span>
-<span id="cb3-728"><a href="#cb3-728" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span><span class="in">`Reducer`</span>: Aggregation functions (sum, mean, etc.)</span>
-<span id="cb3-729"><a href="#cb3-729" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-730"><a href="#cb3-730" aria-hidden="true" tabindex="-1"></a>FAOSTAT-Relevant GEE Assets:<span class="ot">[^index-3]</span></span>
-<span id="cb3-731"><a href="#cb3-731" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-732"><a href="#cb3-732" aria-hidden="true" tabindex="-1"></a><span class="in">``` javascript</span></span>
-<span id="cb3-733"><a href="#cb3-733" aria-hidden="true" tabindex="-1"></a><span class="co">// Burned Area</span></span>
-<span id="cb3-734"><a href="#cb3-734" aria-hidden="true" tabindex="-1"></a><span class="dt">var</span> burnedArea <span class="op">=</span> ee<span class="op">.</span><span class="fu">ImageCollection</span><span class="op">(</span><span class="st">"MODIS/061/MCD64A1"</span><span class="op">);</span></span>
-<span id="cb3-735"><a href="#cb3-735" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-736"><a href="#cb3-736" aria-hidden="true" tabindex="-1"></a><span class="co">// Land Cover</span></span>
-<span id="cb3-737"><a href="#cb3-737" aria-hidden="true" tabindex="-1"></a><span class="dt">var</span> landCover <span class="op">=</span> ee<span class="op">.</span><span class="fu">ImageCollection</span><span class="op">(</span><span class="st">"MODIS/061/MCD12Q1"</span><span class="op">);</span></span>
-<span id="cb3-738"><a href="#cb3-738" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-739"><a href="#cb3-739" aria-hidden="true" tabindex="-1"></a><span class="co">// Country Boundaries</span></span>
-<span id="cb3-740"><a href="#cb3-740" aria-hidden="true" tabindex="-1"></a><span class="dt">var</span> countries <span class="op">=</span> ee<span class="op">.</span><span class="fu">FeatureCollection</span><span class="op">(</span><span class="st">"FAO/GAUL/2015/level0"</span><span class="op">);</span></span>
-<span id="cb3-741"><a href="#cb3-741" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-742"><a href="#cb3-742" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-743"><a href="#cb3-743" aria-hidden="true" tabindex="-1"></a>Computational Considerations:</span>
-<span id="cb3-744"><a href="#cb3-744" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-745"><a href="#cb3-745" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Global annual processing requires substantial compute resources</span>
-<span id="cb3-746"><a href="#cb3-746" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Batch processing via Earth Engine Tasks for large exports</span>
-<span id="cb3-747"><a href="#cb3-747" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Memory and timeout limits apply (user-specific quotas)</span>
-<span id="cb3-748"><a href="#cb3-748" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Tiling strategies may be needed for very large analyses</span>
-<span id="cb3-749"><a href="#cb3-749" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-750"><a href="#cb3-750" aria-hidden="true" tabindex="-1"></a>Resources:</span>
-<span id="cb3-751"><a href="#cb3-751" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-752"><a href="#cb3-752" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Documentation: https://developers.google.com/earth-engine/</span>
-<span id="cb3-753"><a href="#cb3-753" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Code Archive: https://earthengine.google.com/</span>
-<span id="cb3-754"><a href="#cb3-754" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Community Tutorials: https://developers.google.com/earth-engine/tutorials/</span>
-<span id="cb3-755"><a href="#cb3-755" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-756"><a href="#cb3-756" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb3-757"><a href="#cb3-757" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-758"><a href="#cb3-758" aria-hidden="true" tabindex="-1"></a>Last Updated: 2025-11-10\</span>
-<span id="cb3-759"><a href="#cb3-759" aria-hidden="true" tabindex="-1"></a>Suggested Citation: Murphy, S (2025). IPCC Forest Fire Activity Data &amp; Emissions Factors: Methodological Guide for Deriving Burned Area and Emissions Estimates.</span>
-<span id="cb3-760"><a href="#cb3-760" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-761"><a href="#cb3-761" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
-<span id="cb3-762"><a href="#cb3-762" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-763"><a href="#cb3-763" aria-hidden="true" tabindex="-1"></a><span class="ot">[^index-1]: </span>Note to self: 2025 wishlist</span>
-<span id="cb3-764"><a href="#cb3-764" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-765"><a href="#cb3-765" aria-hidden="true" tabindex="-1"></a><span class="ot">[^index-2]: </span>Direct Page Link: <span class="ot">&lt;https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf#page=71&gt;</span></span>
-<span id="cb3-766"><a href="#cb3-766" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-767"><a href="#cb3-767" aria-hidden="true" tabindex="-1"></a><span class="ot">[^index-3]: </span>Code chunks provided in both Python, Javascript, and R for use in either Google Colaboratory, Earth Engine Codespace, or using <span class="in">`rgee`</span> and <span class="in">`reticulate`</span> dependencies.</span>
+<span id="cb3-718"><a href="#cb3-718" aria-hidden="true" tabindex="-1"></a><span class="ot">[^index-1]: </span>Note to self: 2025 wishlist</span>
+<span id="cb3-719"><a href="#cb3-719" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-720"><a href="#cb3-720" aria-hidden="true" tabindex="-1"></a><span class="ot">[^index-2]: </span>Direct Page Link: <span class="ot">&lt;https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf#page=71&gt;</span></span>
+<span id="cb3-721"><a href="#cb3-721" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-722"><a href="#cb3-722" aria-hidden="true" tabindex="-1"></a><span class="ot">[^index-3]: </span>Code chunks provided in both Python, Javascript, and R for use in either Google Colaboratory, Earth Engine Codespace, or using <span class="in">`rgee`</span> and <span class="in">`reticulate`</span> dependencies.</span>
 </code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

@@ -98,14 +98,13 @@ div.column {
   display: block;
   height:200px;
   width: 200px;
-  background-image: url('https://raw.githubusercontent.com/seamusrobertmurphy/map-templates/refs/heads/main/assets/outputs/01-site-map.png');
+  background-image: url('https://raw.githubusercontent.com/seamusrobertmurphy/IPCC-wildfire-emissions/refs/heads/main/01-burn-area/AOI/aoi_burn_aa.png');
   background-size: contain;
   background-position: 50% 50%;
   padding-top: 80px !important;
   background-repeat: no-repeat;
 }
 ```
-
 
 ## FAOSTAT Framework {#sec-ba-framework}
 
@@ -198,9 +197,9 @@ earthengine authenticate --auth_mode localhost
 earthengine set_project <YOUR-PROJECT-ID>
 ```
 
-Using FAO's dataset of administrative boundaries sourced from the Earth 
-Engine Catalog, we derive an example AOI polygon used in all 
-downstream operations. 
+Using FAO's dataset of administrative boundaries sourced
+from the Earth Engine Catalog, we derive an example AOI
+polygon used in all downstream operations.
 
 ```{r}
 #| label: gee-python-setup
@@ -229,7 +228,6 @@ aoi_country_ee <- ee$FeatureCollection("FAO/GAUL/2015/level0")$
 	filter(ee$Filter$eq("ADM0_NAME", "Honduras"))
 aoi_states_ee  <- ee$FeatureCollection("FAO/GAUL/2015/level1")$
   filter(ee$Filter$eq("ADM0_NAME", "Honduras"))
-
 aoi_country_sf <- ee_to_sf(aoi_country_ee)
 aoi_states_sf  <- ee_to_sf(aoi_states_ee)
 
@@ -238,7 +236,6 @@ mcd64 <- ee$ImageCollection("MODIS/061/MCD64A1")
 burned_area <- mcd64$
   filterBounds(aoi_country_ee$geometry())$
   filterDate("2000-01-01", "2025-12-31")
-
 cat("MCD64A1 images:", burned_area$size()$getInfo(), "\n")
 cat("Bands:", paste(burned_area$first()$bandNames()$getInfo(),
     collapse = ", "), "\n")
@@ -255,7 +252,6 @@ tmap::tm_basemap("Esri.WorldImagery") +
 	tmap::tm_tiles(ee_tile_url(all_years_burn, list(palette = c("orange", "red"), min = 0L, max = 1L)), group = "Burn Areas (2000–2025)") +
 	tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5)
 ```
-
 
 #### Multi-Criteria Filtering {#sec-ba-gee-advanced}
 
@@ -286,7 +282,6 @@ mcd64_filtered <- burned_area$map(filterQuality)
 cat("Images after quality filter:",
     mcd64_filtered$size()$getInfo(), "\n")
 ```
-
 
 ### Quality Assurance Flags {#sec-ba-qa-flags}
 
@@ -355,7 +350,7 @@ cat("FAOSTAT-filtered collection size:",
 ```
 
 ::: {.callout-tip collapse="false"}
-## Worked Example: Quality Filtering 
+## Example: Quality Filtering
 
 Apply the FAOSTAT uncertainty threshold to the Honduras
 collection and compare pre- vs. post-filter pixel counts.
@@ -422,7 +417,6 @@ pre_burn <- burned_2010$
   map(function(img) img$gt(0L)$selfMask())$
   max()$
   clip(aoi_country_ee$geometry())
-
 post_burn <- burned_2010$
   map(faostat_filter)$
   select("BurnDate")$max()$gt(0L)$selfMask()$
@@ -430,16 +424,12 @@ post_burn <- burned_2010$
 
 tmap::tmap_mode("view")
 tmap::tm_basemap("Esri.WorldImagery") +
-tmap::tm_tiles(
-  ee_tile_url(pre_burn, list(palette = "red", min = 0L, max = 1L)),
-  group = "Before Filter") +
-tmap::tm_tiles(
-  ee_tile_url(post_burn, list(palette = "yellow", min = 0L, max = 1L)),
-  group = "After Filter (<20%)") +
-tmap::tm_shape(aoi_country_sf) +
-  tmap::tm_borders(col = "white", lwd = 1.5) +
-tmap::tm_scalebar(
-  position = c("RIGHT", "BOTTOM"), text.size = 0.5)
+tmap::tm_tiles(ee_tile_url(pre_burn, list(
+  	palette = "red", min = 0L, max = 1L)),group = "Before Filter") +
+tmap::tm_tiles(ee_tile_url(post_burn, list(
+	palette="yellow", min = 0L, max = 1L)), group = "After Filter (<20%)") +
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col="white", lwd=1.5) +
+tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size=0.5)
 ```
 
 ### Uncertainty Quantification {#sec-ba-uncertainty-quant}
@@ -473,39 +463,53 @@ tmap::tm_scalebar(
 Active Fire Products (MCD14ML, MYD14):
 
 ```{r}
-#| eval: false
 #| label: active-fire-comparison
-#| code-summary: "Compare with active fire detections"
+#| code-summary: "Compare with active fire detections — Honduras 2010"
 
-# Load MODIS active fire product
+# Use peak fire year for meaningful comparison
 activeFire <- ee$ImageCollection("MODIS/061/MOD14A1")$
-  filterBounds(aoi)$
-  filterDate("2023-01-01", "2023-12-31")$
+  filterBounds(aoi_country_ee$geometry())$
+  filterDate("2010-01-01", "2010-12-31")$
   select("FireMask")
 
 # Extract fire pixels (values 7-9 indicate fire)
 firePixels <- activeFire$map(function(img) {
-  return(img$gte(7)$selfMask())
-})
-
-# Reduce to annual maximum (any fire detection)
+  img$gte(7L)$selfMask()})
 annualFireMask <- firePixels$max()
 
-# Compare with burned area
+# Burned area mask from MCD64A1 (2010)
 burnedMask <- mcd64_faostat$
-  select("BurnDate")$
-  max()$
-  gt(0)
+  filterDate("2010-01-01", "2010-12-31")$
+  select("BurnDate")$max()$gt(0L)
 
-# Calculate agreement
-agreement <- burnedMask$And(annualFireMask)
-baOnly <- burnedMask$And(annualFireMask$Not())
-afOnly <- annualFireMask$And(burnedMask$Not())
+# Agreement statistics
+agreement <- burnedMask$And(annualFireMask)$clip(aoi_country_ee$geometry())
+baOnly    <- burnedMask$And(annualFireMask$Not())$clip(aoi_country_ee$geometry())
+afOnly    <- annualFireMask$And(burnedMask$Not())$clip(aoi_country_ee$geometry())
 
-# Export for analysis
-Map$addLayer(agreement, list(palette = "green"), "Agreement")
-Map$addLayer(baOnly, list(palette = "blue"), "BA only")
-Map$addLayer(afOnly, list(palette = "red"), "AF only")
+stats <- ee$Image$cat(
+  agreement$rename("agree"),
+  baOnly$rename("ba_only"),
+  afOnly$rename("af_only")
+)$reduceRegion(
+  reducer   = ee$Reducer$sum(),
+  geometry  = aoi_country_ee$geometry(),
+  scale     = 500L,
+  maxPixels = 1e9
+)$getInfo()
+
+cat("Honduras 2010 — Active Fires\n")
+cat("  Overlaps:", stats$agree, "pixels\n")
+cat("  MCD64A1 burned areas:", stats$ba_only, "pixels\n")
+cat("  MOD14A1 active fires:", stats$af_only, "pixels\n")
+
+# Visualize
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd =1.5) +
+	tmap::tm_tiles(ee_tile_url(agreement,list(palette = "green", min=0L, max = 1L)),group="Overlaps") +
+	tmap::tm_tiles(ee_tile_url(baOnly,list(palette = "blue", min=0L, max =1L)),group = "MCD64A1 burned areas") +
+	tmap::tm_tiles(ee_tile_url(afOnly,list(palette="red",min=0L, max=1L)),group="MOD14A1 active fires") +
+	tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size=0.5) +
+	tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 Landsat-based Products (30m resolution): Higher resolution
@@ -515,47 +519,41 @@ coverage.
 ```{r}
 #| eval: false
 #| label: landsat-validation
-#| code-summary: "Landsat burned area for validation"
+#| code-summary: "Landsat dNBR burned area for validation — Ireland"
 
-# Example: Landsat 8 NBR differencing
-# (Note: Requires custom burn severity calculation)
-
-# Load pre-fire Landsat image
+# Pre-fire composite (March–April)
 prefire <- ee$ImageCollection("LANDSAT/LC08/C02/T1_L2")$
-  filterBounds(aoi)$
-  filterDate("2023-06-01", "2023-06-30")$
+  filterBounds(aoi_country_ee$geometry())$
+  filterDate("2010-03-01", "2010-04-30")$
   median()
 
-# Load post-fire Landsat image  
+# Post-fire composite (August–September)
 postfire <- ee$ImageCollection("LANDSAT/LC08/C02/T1_L2")$
-  filterBounds(aoi)$
-  filterDate("2023-08-01", "2023-08-31")$
+  filterBounds(aoi_country_ee$geometry())$
+  filterDate("2010-08-01", "2010-09-30")$
   median()
 
 # Calculate NBR (Normalized Burn Ratio)
 calculateNBR <- function(img) {
-  nir <- img$select("SR_B5")
+  nir  <- img$select("SR_B5")
   swir <- img$select("SR_B7")
-  nbr <- nir$subtract(swir)$divide(nir$add(swir))$rename("NBR")
-  return(nbr)
-}
-
-nbr_pre <- calculateNBR(prefire)
+  nir$subtract(swir)$divide(nir$add(swir))$rename("NBR")}
+nbr_pre  <- calculateNBR(prefire)
 nbr_post <- calculateNBR(postfire)
 
-# Calculate dNBR (difference)
+# dNBR > 0.1 indicates likely burn
 dnbr <- nbr_pre$subtract(nbr_post)
-
-# Threshold for burned areas (dNBR > 0.1 indicates likely burn)
 landsat_burn <- dnbr$gt(0.1)
 
-# Resample MODIS to Landsat resolution for comparison
+# For ease, pseudomercator used to align with
 modis_burn_resampled <- burnedMask$
-  reproject(crs = "EPSG:32629", scale = 30)  # Adjust CRS for AOI
+  reproject(crs = "EPSG:3857", scale = 30L)
 
-# Calculate confusion matrix
-# (Export both layers and analyze in R)
+# Count agreement at 30 m resolution, leave comment 
+cat("MODIS omission rate is expected to be higher vs. Landsat.\n")
 ```
+
+------------------------------------------------------------
 
 ------------------------------------------------------------
 
@@ -564,48 +562,54 @@ modis_burn_resampled <- burnedMask$
 ### Annualization {#sec-ba-monthly-annual}
 
 ```{r}
-#| eval: false
 #| label: annual-summation
-#| code-summary: "Aggregate monthly burned area to annual"
+#| code-summary: "Aggregate monthly burned area to annual — Honduras"
 
 # Function to create binary burned/unburned
 binaryBurn <- function(image) {
-  burned <- image$select("BurnDate")$gt(0)
-  return(burned$
-    rename("burned")$
-    copyProperties(image, list("system:time_start"))
-  )
-}
+  image$select("BurnDate")$gt(0L)$rename("burned")$
+    copyProperties(image, list("system:time_start"))}
 
-# Convert to binary
 mcd64_binary <- mcd64_faostat$map(binaryBurn)
 
-# Reduce to annual maximum (any pixel burned at any time = burned)
-annual_burned_2023 <- mcd64_binary$
-  filterDate("2023-01-01", "2023-12-31")$
+# Annual burned area for 2010 
+annual_burned_2010 <- mcd64_binary$
+  filterDate("2010-01-01", "2010-12-31")$
   max()$
-  selfMask()
+  selfMask()$
+  clip(aoi_country_ee$geometry())
+
+# Count burned pixels
+n_burned <- annual_burned_2010$
+  reduceRegion(
+    reducer   = ee$Reducer$count(),
+    geometry  = aoi_country_ee$geometry(),
+    scale     = 500L,
+    maxPixels = 1e9
+  )$getInfo()
+
+cat("Honduras 2010 burned pixels (annual max):", n_burned[["burned"]], "\n")
 
 # Visualize
-vis_params <- list(
-  palette = c("yellow", "orange", "red"),
-  min = 0,
-  max = 1
-)
+tile_2010 <- ee_tile_url(annual_burned_2010, 
+	list(palette=c("yellow", "orange", "red"),
+			 min=0L, max=1L))
 
-Map$centerObject(aoi, zoom = 7)
-Map$addLayer(annual_burned_2023, vis_params, "2023 Burned Area")
+tmap::tm_shape(aoi_country_sf) + 
+	tmap::tm_borders(col = "white", lwd=1.5) +
+	tmap::tm_tiles(tile_2010, group = "Burned 2010") +
+	tmap::tm_basemap("Esri.WorldImagery")
 ```
 
-#### Multiple Burns Accounting {#sec-ba-multiple-burns}
+#### Multiple Burns Accounting
 
 ::: {.callout-caution collapse="false"}
-## Challenge: A pixel can burn multiple times per year.
+## A pixel can burn multiple times per year.
 
 FAOSTAT approach: Count pixel as burned once per year
 (conservative).
 
-Alternative: Track number of burns per pixel:
+Alternative approach: Track number of burns per pixel.
 :::
 
 ```{r}
@@ -631,8 +635,6 @@ Map$addLayer(
   "Burn Frequency"
 )
 
-# For IPCC Tier 1: Use binary (burned/not burned)
-# For Tier 2+: Consider multiple burns in fuel consumption
 ```
 
 ### Time Series Construction {#sec-ba-timeseries}
