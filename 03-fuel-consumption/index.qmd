@@ -22,7 +22,12 @@ citeproc: true
 
 ## Overview {.unnumbered}
 
-This chapter describes the estimation of fuel mass available for combustion (M~B~) and combustion factors (C~f~) following IPCC Tier 1 default values. These parameters, combined with burned area and vegetation classifications from Chapters 1-2, determine the total biomass burned in fire events.
+This chapter describes the estimation of fuel mass available
+for combustion (M~B~) and combustion factors (C~f~)
+following IPCC Tier 1 default values. These parameters,
+combined with burned area and vegetation classifications
+from Chapters 1-2, determine the total biomass burned in
+fire events.
 
 ### Environment Setup
 
@@ -107,53 +112,57 @@ IPCC Fuel Biomass
 
 ### Component in Equation 2.27 {#sec-fuel-equation}
 
-Fuel biomass consumption represents two components of the IPCC fire emissions equation:
+Fuel biomass consumption represents two components of the
+IPCC fire emissions equation:
 
 $$
 L_{fire} = A \times M_B \times C_f \times G_{ef} \times 10^{-3}
 $$
 
-Where:
--   **M~B~** = Mass of fuel available for combustion (tonnes dry matter ha⁻¹)
--   **C~f~** = Combustion factor (dimensionless, 0-1)
--   **M~B~ × C~f~** = Actual biomass consumed per unit area (tonnes DM ha⁻¹)
+Where: - M~B~ = Mass of fuel available for combustion
+(tonnes dry matter ha⁻¹) - C~f~ = Combustion factor
+(dimensionless, 0-1) - M~B~ × C~f~ = Actual biomass consumed
+per unit area (tonnes DM ha⁻¹)
 
-**Tier 1 Approach**: Use IPCC default values stratified by:
-1. Vegetation type (Forest, Savanna, Organic Soil)
-2. Climate zone (Tropical, Temperate, Boreal)
-3. Forest type (Humid Tropical vs. Other)
-4. Season (Early vs. Late dry season for savannas)
+Tier 1 Approach: Use IPCC default values stratified by:
+
+1.  Vegetation type (Forest, Savanna, Organic Soil)
+2.   Climate zone (Tropical, Temperate, Boreal)
+3.  Forest type (Humid Tropical vs. Other)
+4.  Season (Early vs. Late dry season for savannas)
 
 ### IPCC Default Values - Quick Reference {#sec-fuel-defaults}
 
-**Forest Fires** (IPCC 2019 Table 2.4):
+Forest Fires (IPCC 2019 Table 2.4):
 
 | Forest Type | M~B~ (t DM ha⁻¹) | C~f~ | M~B~ × C~f~ |
-|-------------|------------------|------|-------------|
+|----|----|----|----|
 | Humid Tropical Forest | 119.6 ± 52.4 | 0.36 ± 0.09 | 43.1 |
 | Other Forest (Boreal) | 41.0 ± 25.3 | 0.45 ± 0.15 | 18.5 |
 | Other Forest (Temperate) | 50.4 ± 30.8 | 0.47 ± 0.14 | 23.7 |
 | Other Forest (Tropical) | 69.4 ± 44.3 | 0.47 ± 0.14 | 32.6 |
 
-**Savanna Fires** (IPCC 2019 Table 2.4):
+Savanna Fires (IPCC 2019 Table 2.4):
 
 | Vegetation Type | Season | M~B~ (t DM ha⁻¹) | C~f~ | M~B~ × C~f~ |
-|----------------|--------|------------------|------|-------------|
+|----|----|----|----|----|
 | Savanna Woodland | Early | 9.0 ± 7.5 | 0.29 ± 0.09 | 2.6 |
 | Savanna Woodland | Late | 9.0 ± 7.5 | 0.51 ± 0.15 | 4.6 |
 | Savanna Grassland | Early | 6.8 ± 6.0 | 0.31 ± 0.09 | 2.1 |
 | Savanna Grassland | Late | 6.8 ± 6.0 | 0.83 ± 0.15 | 5.6 |
-| Other Grassland | - | 13.4 ± 8.8 | 0.52 ± 0.15 | 7.0 |
+| Other Grassland | \- | 13.4 ± 8.8 | 0.52 ± 0.15 | 7.0 |
 
-**Organic Soil Fires** (IPCC 2014 Wetlands Supplement Table 2.6):
+Organic Soil Fires (IPCC 2014 Wetlands Supplement Table
+2.6):
 
-| Soil Type | M~B~ (t DM ha⁻¹) | C~f~ | M~B~ × C~f~ |
-|-----------|------------------|------|-------------|
-| Tropical Peatland | 41.2 ± 1.4 | 1.0 | 41.2 |
+| Soil Type         | M~B~ (t DM ha⁻¹) | C~f~ | M~B~ × C~f~ |
+|-------------------|------------------|------|-------------|
+| Tropical Peatland | 41.2 ± 1.4       | 1.0  | 41.2        |
 
-**Note**: Organic soil combustion factor = 1.0 assumes complete consumption of affected layer.
+Note: Organic soil combustion factor = 1.0 assumes complete
+consumption of affected layer.
 
-------------------------------------------------------------------------
+------------------------------------------------------------
 
 ## Fuel Available for Combustion (M~B~) {#sec-fuel-available}
 
@@ -163,67 +172,81 @@ Where:
 
 Forest fuel includes multiple strata burned during fire:
 
-**Surface Fuels**:
+Surface Fuels:
+
 -   Litter (freshly fallen leaves, needles)
 -   Duff (decomposed organic layer)
 -   Herbaceous vegetation
--   Woody debris (< 7.5 cm diameter)
+-   Woody debris (\< 7.5 cm diameter)
 
-**Ground Fuels**:
+Ground Fuels:
+
 -   Organic soil horizons (O and A)
 -   Roots (fine and coarse)
 -   Stumps and buried wood
 
-**Crown Fuels** (stand-replacing fires only):
+Crown Fuels (stand-replacing fires only):
+
 -   Foliage
 -   Fine branches
 -   Bark
 -   Lichen and epiphytes
 
-**Tier 1 Simplification**: M~B~ represents **average fuel consumed across fire severity gradient**, from surface fires (low M~B~) to crown fires (high M~B~).
+Tier 1 Simplification: M~B~ represents average fuel consumed
+across fire severity gradient, from surface fires (low M~B~)
+to crown fires (high M~B~).
 
 #### Climate-Dependent Forest Fuel Loads {#sec-fuel-forest-climate}
 
-**Boreal Forests** (41.0 t DM ha⁻¹):
--   Slow decomposition → thick organic layers
+Boreal Forests (41.0 t DM ha⁻¹):
+
+-   Slow decomposition
+-   thick organic layers
 -   Coniferous litter high in lignin
 -   Permafrost limits root depth
 -   Fire-adapted species (e.g., Pinus sylvestris)
 
-**Temperate Forests** (50.4 t DM ha⁻¹):
+Temperate Forests (50.4 t DM ha⁻¹):
+
 -   Moderate decomposition rates
 -   Mixed deciduous/coniferous litter
 -   Seasonal accumulation patterns
 -   Variable fire regimes
 
-**Tropical Forests** (69.4 t DM ha⁻¹):
--   Rapid decomposition → less litter
--   BUT: high biomass density
+Tropical Forests (69.4 t DM ha⁻¹):
+
+-   Rapid decomposition → less litter, but high biomass
+    density
 -   Fire-sensitive under natural conditions
 -   Droughts enable fire spread
 
-**Humid Tropical Forests** (119.6 t DM ha⁻¹):
--   **Highest fuel loads** due to:
-    -   Dense canopy biomass
-    -   Multi-story structure
-    -   Epiphytes, vines, and bamboo
-    -   Deep root systems
--   Primarily **deforestation fires** (slash-and-burn)
+Humid Tropical Forests (119.6 t DM ha⁻¹):
+
+-   Highest fuel loads due to:
+-   Dense canopy biomass
+-   Multi-story structure
+-   Epiphytes, vines, and bamboo
+-   Deep root systems
+-   Primarily deforestation fires (slash-and-burn)
 -   Stand-replacing events
 
 ### Savanna Fuel Loads {#sec-fuel-savanna}
 
 #### Savanna Fuel Characteristics {#sec-fuel-savanna-chars}
 
-**Dominant fuel type**: **Herbaceous grass** (70-90% of fuel consumed)
+Dominant fuel type: Herbaceous grass (70-90% of fuel
+consumed)
 
-**Key determinants of fuel load**:
-1. **Annual precipitation**: Grass productivity increases with rainfall
-2. **Season**: Fuel cures (dries) during dry season
-3. **Fire frequency**: Frequent fires → lower woody component
-4. **Grazing pressure**: Reduces available fuel
+Key determinants of fuel load:
 
-**Spatial heterogeneity**: Fuel patchy due to:
+1.  Annual precipitation: Grass productivity increases with
+    rainfall
+2.  Season: Fuel cures (dries) during dry season
+3.  Fire frequency: Frequent fires -\> lower woody component
+4.  Grazing pressure: Reduces available fuel
+
+Spatial heterogeneity: Fuel patchy due to:
+
 -   Termite mounds (fuel-free zones)
 -   Tree shade (reduced grass growth)
 -   Grazing concentration around water
@@ -231,146 +254,166 @@ Forest fuel includes multiple strata burned during fire:
 
 #### Climate-Dependent Savanna Fuel Loads {#sec-fuel-savanna-climate}
 
-**Tropical Savannas** (500-1500 mm rainfall):
+Tropical Savannas (500-1500 mm rainfall):
+
 -   High grass productivity
 -   Distinct wet/dry seasons
 -   Fuel curing rapid
--   **M~B~**: 6.8-9.0 t DM ha⁻¹
+-   M~B~: 6.8-9.0 t DM ha⁻¹
 
-**Temperate Grasslands** (250-750 mm rainfall):
+Temperate Grasslands (250-750 mm rainfall):
+
 -   Lower productivity than tropical
 -   Variable seasonality
 -   Mixed grass/forb composition
--   **M~B~**: 13.4 t DM ha⁻¹ (includes crop residues)
+-   M~B~: 13.4 t DM ha⁻¹ (includes crop residues)
 
-**Woody Savannas** vs. **Open Savannas**:
--   Woody component adds coarse fuels
--   BUT: tree canopy reduces grass fuel
+Woody Savannas vs. Open Savannas:
+
+-   Woody component adds coarse fuels, but canopy reduces
+    grass fuel
 -   Net effect: Similar M~B~ to open savanna
 -   Combustion factor varies more than fuel load
 
 #### Seasonal Dynamics {#sec-fuel-seasonal-dynamics}
 
-**Early Dry Season**:
+Early Dry Season:
+
 -   Fuel partially cured (50-70% dry matter)
 -   Lower combustion efficiency
--   **Lower C~f~**: 0.29-0.31
--   **Total consumption**: 2.1-2.6 t DM ha⁻¹
+-   Lower C~f~: 0.29-0.31
+-   Total consumption: 2.1-2.6 t DM ha⁻¹
 
-**Late Dry Season**:
--   Fuel fully cured (>90% dry matter)
+Late Dry Season:
+
+-   Fuel fully cured (\>90% dry matter)
 -   Complete combustion of grass layer
--   **Higher C~f~**: 0.51-0.83
--   **Total consumption**: 4.6-5.6 t DM ha⁻¹
+-   Higher C~f~: 0.51-0.83
+-   Total consumption: 4.6-5.6 t DM ha⁻¹
 
 ### Organic Soil Fuel Loads {#sec-fuel-organic}
 
 #### Peat Fuel Characteristics {#sec-fuel-peat-chars}
 
-**Definition**: Organic soils (Histosols) with >30 cm organic layer
+Definition: Organic soils (Histosols) with \>30 cm organic
+layer
 
-**Fuel properties**:
--   **High carbon content**: 50-60% C by dry weight
--   **Variable bulk density**: 0.05-0.20 g cm⁻³
--   **High moisture retention**: 200-1000% (dry weight basis)
--   **Smoldering combustion**: Can burn for months
+Fuel properties:
 
-**Fire behavior**:
--   **Surface fires**: Consume litter and upper peat (10-30 cm)
--   **Deep burns**: Consume entire peat layer to mineral soil (>100 cm)
--   **Drainage amplifies risk**: Drained peat extremely flammable
+-   High carbon content: 50-60% C by dry weight
+-   Variable bulk density: 0.05-0.20 g cm⁻³
+-   High moisture retention: 200-1000% (dry weight basis)
+-   Smoldering combustion: Can burn for months
+
+Fire behavior:
+
+-   Surface fires: Consume litter and upper peat (10-30 cm)
+-   Deep burns: Consume entire peat layer to mineral soil
+    (\>100 cm)
+-   Drainage amplifies risk: Drained peat extremely
+    flammable
 
 #### Fuel Load Calculation {#sec-fuel-peat-calculation}
 
-**IPCC Wetlands Supplement Approach**:
+IPCC Wetlands Supplement Approach:
 
 $$
 M_B = D_{burn} \times BD \times 10
 $$
 
 Where:
+
 -   $D_{burn}$ = Depth of burn (cm)
 -   $BD$ = Bulk density of peat (g cm⁻³)
--   10 = Conversion factor (cm → m, g cm⁻³ → t ha⁻¹)
+-   10 = Conversion factor (cm = m, g cm⁻³ = t ha⁻¹)
 
-**IPCC Default** (Southeast Asia):
--   **Depth of burn**: 41 cm (range: 18-65 cm)
--   **Bulk density**: 0.10 g cm⁻³ (range: 0.05-0.15)
--   **M~B~**: 41.2 t DM ha⁻¹
+IPCC Default (Southeast Asia):
 
-**High uncertainty**: Coefficient of variation ~50%
+-   Depth of burn: 41 cm (range: 18-65 cm)
+-   Bulk density: 0.10 g cm⁻³ (range: 0.05-0.15)
+-   M~B~: 41.2 t DM ha⁻¹
 
-------------------------------------------------------------------------
+High uncertainty: Coefficient of variation \~50%
+
+------------------------------------------------------------
 
 ## Combustion Factor (C~f~) {#sec-combustion-factor}
 
 ### Definition and Interpretation {#sec-cf-definition}
 
-**Combustion Factor** (C~f~) = Proportion of available fuel actually consumed by fire
+Combustion Factor (C~f~) = Proportion of available fuel
+actually consumed by fire
 
 $$
 C_f = \frac{\text{Mass of fuel consumed}}{\text{Mass of fuel available}} \quad (0 \leq C_f \leq 1)
 $$
 
-**Determinants**:
-1. **Fuel moisture**: Higher moisture → lower C~f~
-2. **Fire intensity**: Hotter fires → higher C~f~
-3. **Fire type**: Surface vs. crown fire
-4. **Fuel particle size**: Fine fuels (< 0.6 cm) burn more completely
-5. **Weather conditions**: Wind, humidity, temperature
+Determinants:
+
+1.  Fuel moisture: Higher moisture = lower C~f~
+2.  Fire intensity: Hotter fires → higher C~f~
+3.  Fire type: Surface vs. crown fire
+4.  Fuel particle size: Fine fuels (\< 0.6 cm) burn more
+    completely
+5.  Weather conditions: Wind, humidity, temperature
 
 ### Forest Combustion Factors {#sec-cf-forest}
 
-**Low C~f~ for Humid Tropical Forests** (0.36):
+Low C~f~ for Humid Tropical Forests (0.36):
+
 -   High ambient moisture
--   Rapid fuel accumulation → green fuels mixed with dead
+-   Rapid fuel accumulation = green fuels mixed with dead
 -   Incomplete combustion of large woody debris
 -   Char and partially burned material remain
 
-**Moderate C~f~ for Other Forests** (0.45-0.47):
--   Drier climates → lower fuel moisture
+Moderate C~f~ for Other Forests (0.45-0.47):
+
+-   Drier climates = lower fuel moisture
 -   More complete consumption of surface fuels
 -   Variability based on fire severity:
-    -   Surface fires: C~f~ ~ 0.20-0.40
-    -   Crown fires: C~f~ ~ 0.60-0.80
-    -   Default represents average across severities
+-    Surface fires: C~f~ \~ 0.20-0.40
+-   Crown fires: C~f~ \~ 0.60-0.80
+-   Default represents average across severities
 
 ### Savanna Combustion Factors {#sec-cf-savanna}
 
-**Early Dry Season** (0.29-0.31):
+Early Dry Season (0.29-0.31):
+
 -   Fuel partially cured
 -   High moisture content in live grass (30-50%)
--   Incomplete combustion
--   Patchy fire spread
+-   Incomplete combustion - Patchy fire spread
 -   Much grass left standing
 
-**Late Dry Season** (0.51-0.83):
--   Fuel fully cured (<10% moisture)
+Late Dry Season (0.51-0.83):
+
+-   Fuel fully cured (\<10% moisture)
 -   Complete consumption of grass layer
 -   Only woody stems and char remain
 -   Higher C~f~ for grasslands vs. woody savannas:
-    -   **Grassland**: C~f~ = 0.83 (almost complete)
-    -   **Woody Savanna**: C~f~ = 0.51 (trees create shade/barriers)
+-   Grassland: C~f~ = 0.83 (almost complete)
+-   Woody Savanna: C~f~ = 0.51 (trees create shade/barriers)
 
-**Physical explanation**:
-$$
+Physical explanation: $$
 C_f \propto \frac{1}{\text{Fuel Moisture}} \times \text{Fire Intensity}
 $$
 
-Late season → Lower moisture × Higher intensity → Higher C~f~
+Late season = Lower moisture × Higher intensity = Higher
+C~f~
 
 ### Organic Soil Combustion Factors {#sec-cf-organic}
 
-**Complete Consumption** (C~f~ = 1.0):
--  Once peat ignites, burns to completion within affected depth
+Complete Consumption (C~f~ = 1.0):
+
+-   Once peat ignites, burns to completion within affected
+    depth
 -   Smoldering combustion eliminates unburned fuel
 -   Char production minimal
-
-**Caveat**: C~f~ = 1.0 applies to **depth of burn**, not total peat column
+-   Caveat: C~f~ = 1.0 applies to depth of burn, not total
+    peat column
 -   If burn depth = 41 cm, that 41 cm is fully consumed
 -   Deeper peat layers remain intact (if fire extinguished)
 
-------------------------------------------------------------------------
+------------------------------------------------------------
 
 ## Applying Fuel Consumption Parameters {#sec-fuel-application}
 
@@ -501,7 +544,7 @@ print(portugal_summary)
 # Savanna             12,450              57
 ```
 
-------------------------------------------------------------------------
+------------------------------------------------------------
 
 ## Spatial Implementation in Google Earth Engine {#sec-fuel-gee}
 
@@ -702,39 +745,45 @@ print(paste("Forest biomass burned:", round(forest_Gg, 1), "Gg DM"))
 print(paste("Savanna biomass burned:", round(savanna_Gg, 1), "Gg DM"))
 ```
 
-------------------------------------------------------------------------
+------------------------------------------------------------
 
 ## Uncertainty in Fuel Consumption Estimates {#sec-fuel-uncertainty}
 
 ### Sources of Uncertainty {#sec-fuel-uncertainty-sources}
 
-**1. IPCC Default Value Uncertainty**:
+1\. IPCC Default Value Uncertainty:
 
-IPCC provides 95% confidence intervals for all default values:
+IPCC provides 95% confidence intervals for all default
+values:
 
-| Parameter | Relative Uncertainty |
-|-----------|---------------------|
-| M~B~ (Forest) | ±40-60% |
-| M~B~ (Savanna) | ±60-90% |
-| C~f~ (Forest) | ±20-30% |
-| C~f~ (Savanna) | ±30-40% |
-| M~B~×C~f~ (combined) | ±50-70% |
+| Parameter            | Relative Uncertainty |
+|----------------------|----------------------|
+| M~B~ (Forest)        | ±40-60%              |
+| M~B~ (Savanna)       | ±60-90%              |
+| C~f~ (Forest)        | ±20-30%              |
+| C~f~ (Savanna)       | ±30-40%              |
+| M~B~×C~f~ (combined) | ±50-70%              |
 
-**2. Spatial Extrapolation Uncertainty**:
+2\. Spatial Extrapolation Uncertainty:
+
 -   IPCC values derived from limited field studies
--   Geographic bias toward well-studied regions (North America, Australia)
+-   Geographic bias toward well-studied regions (North
+    America, Australia)
 -   Underrepresentation of tropical systems
 
-**3. Fire Severity Variability**:
--   Default values represent averages across fire severity spectrum
+3\. Fire Severity Variability:
+
+-   Default values represent averages across fire severity
+    spectrum
 -   Individual fires may have 2-3× higher/lower consumption
 -   No severity stratification in Tier 1
 
-**4. Temporal Variability**:
+4\. Temporal Variability:
+
 -   Fuel accumulation varies with:
-    -   Time since last fire
-    -   Precipitation anomalies (ENSO, droughts)
-    -   Forest management (fuel reduction treatments)
+-   Time since last fire
+-   Precipitation anomalies (ENSO, droughts)
+-   Forest management (fuel reduction treatments)
 -   Tier 1 assumes constant fuel loads
 
 ### Quantifying Combined Uncertainty {#sec-fuel-uncertainty-quantify}
@@ -745,29 +794,31 @@ $$
 U_{total}^2 = U_A^2 + U_{MB}^2 + U_{Cf}^2 + U_{Gef}^2
 $$
 
-**For Tier 1 Forest Fires**:
+For Tier 1 Forest Fires:
+
 -   $U_A$ = ±30% (from Chapter 1 - burned area)
 -   $U_{MB}$ = ±50% (IPCC Table 2.4)
 -   $U_{Cf}$ = ±25% (IPCC Table 2.4)
 -   $U_{Gef}$ = ±30% (Chapter 4 - emission factors)
 
-**Combined uncertainty** (quadrature):
-$$
+Combined uncertainty (quadrature): $$
 U_{total} = \sqrt{30^2 + 50^2 + 25^2 + 30^2} = \sqrt{4350} \approx 66\%
 $$
 
-**For Tier 1 Savanna Fires**:
+For Tier 1 Savanna Fires:
+
 -   $U_A$ = ±30%
 -   $U_{MB}$ = ±80% (higher variability)
 -   $U_{Cf}$ = ±35%
 -   $U_{Gef}$ = ±30%
 
-**Combined uncertainty**:
-$$
+Combined uncertainty: $$
 U_{total} = \sqrt{30^2 + 80^2 + 35^2 + 30^2} = \sqrt{9925} \approx 100\%
 $$
 
-**Interpretation**: Tier 1 uncertainties are large but expected given coarse default values. Tier 2/3 approaches reduce uncertainty through country-specific data.
+Interpretation: Tier 1 uncertainties are large but expected
+given coarse default values. Tier 2/3 approaches reduce
+uncertainty through country-specific data.
 
 ### Sensitivity Analysis {#sec-fuel-sensitivity}
 
@@ -811,21 +862,24 @@ cv_biomass <- sd(fuel_params$biomass_Gg) / mean(fuel_params$biomass_Gg) * 100
 print(paste("Coefficient of Variation:", round(cv_biomass, 1), "%"))
 ```
 
-------------------------------------------------------------------------
+------------------------------------------------------------
 
 ## Advanced Topics {#sec-fuel-advanced}
 
 ### Country-Specific Fuel Data (Tier 2) {#sec-fuel-tier2}
 
-**Moving beyond defaults**:
+Moving beyond defaults:
 
 When available, countries can use:
-1. **National forest inventory data**: Standing biomass, litter depths
-2. **Fire behavior models**: BEHAVE, FuelCalc, FCCS
-3. **Field measurements**: Post-fire fuel consumption studies
-4. **Remote sensing**: LiDAR for 3D fuel structure
 
-**Example: Portugal**:
+1.  National forest inventory data: Standing biomass, litter
+    depths
+2.   Fire behavior models: BEHAVE, FuelCalc, FCCS
+3.  Field measurements: Post-fire fuel consumption studies
+4.  Remote sensing: LiDAR for 3D fuel structure
+
+Example: Portugal:
+
 ```{r}
 #| eval: false
 #| label: fuel-tier2-example
@@ -845,14 +899,14 @@ portugal_fuel_data <- tribble(
 
 ### Fire Severity Stratification (Tier 2+) {#sec-fuel-severity}
 
-**Fire severity classes** (from satellite indices):
+Fire severity classes (from satellite indices):
 
-| Severity | dNBR Range | C~f~ Multiplier |
-|----------|------------|-----------------|
-| Unburned | < 0.1 | 0 |
-| Low | 0.1 - 0.27 | 0.5× |
-| Moderate | 0.27 - 0.44 | 1.0× (default) |
-| High | > 0.44 | 1.5× |
+| Severity | dNBR Range  | C~f~ Multiplier |
+|----------|-------------|-----------------|
+| Unburned | \< 0.1      | 0               |
+| Low      | 0.1 - 0.27  | 0.5×            |
+| Moderate | 0.27 - 0.44 | 1.0× (default)  |
+| High     | \> 0.44     | 1.5×            |
 
 ```{r}
 #| eval: false
@@ -886,16 +940,17 @@ fuel_consumption_adjusted <- ee$Image(MB)$multiply(Cf_adjusted)
 
 ### Fuel Moisture Effects {#sec-fuel-moisture}
 
-**Fuel moisture reduces combustion efficiency**:
+Fuel moisture reduces combustion efficiency:
 
 $$
 C_f = C_{f,dry} \times e^{-k \times MC}
 $$
 
 Where:
+
 -   $C_{f,dry}$ = Combustion factor at 0% moisture
 -   $MC$ = Moisture content (%)
--   $k$ = Decay constant (~0.02 for grass, ~0.01 for wood)
+-   $k$ = Decay constant (\~0.02 for grass, \~0.01 for wood)
 
 ```{r}
 #| eval: false
@@ -926,13 +981,13 @@ precip_annual <- precip_monthly$
 # This is TIER 3 level - requires significant data and validation
 ```
 
-------------------------------------------------------------------------
+------------------------------------------------------------
 
 ## Integration with Emissions Calculation {#sec-fuel-integration}
 
 ### Preparing Outputs for Chapter 4 {#sec-fuel-to-chapter4}
 
-**Required data structure**:
+Required data structure:
 
 ```{r}
 #| eval: false
@@ -966,62 +1021,78 @@ print(fuel_output)
 
 ### Quality Control Checklist {#sec-fuel-qc-checklist}
 
-**Pre-calculation**:
-- [ ] Vegetation classifications complete (from Chapter 2)
-- [ ] Climate zones assigned correctly
-- [ ] Seasonal stratification applied (savannas only)
-- [ ] IPCC fuel consumption table loaded correctly
+Pre-calculation:
 
-**Calculation**:
-- [ ] Fuel values matched to vegetation types
-- [ ] Units consistent (t DM ha⁻¹, Gg)
-- [ ] Biomass = Area × M~B~ × C~f~
-- [ ] No missing values (all vegetation types have fuel values)
+-   Vegetation classifications complete (from Chapter 2)
+-   Climate zones assigned correctly
+-   Seasonal stratification applied (savannas only)
+-   IPCC fuel consumption table loaded correctly
 
-**Post-calculation**:
-- [ ] Biomass totals reasonable (order of magnitude check)
-- [ ] Sum of vegetation-specific biomass = total biomass
-- [ ] Uncertainty quantified and documented
-- [ ] Results comparable to previous years (if available)
+Calculation:
 
-**Validation**:
-- [ ] Compare with published values (if available)
-- [ ] Check extreme values (outliers)
-- [ ] Sensitivity analysis completed
-- [ ] Documentation complete
+1.  Fuel values matched to vegetation types
+2.  Units consistent (t DM ha⁻¹, Gg)
+3.  Biomass = Area × M~B~ × C~f~
+4.  No missing values (all vegetation types have fuel
+    values)
 
-------------------------------------------------------------------------
+Post-calculation:
 
-## Chapter Summary and Next Steps {#sec-fuel-summary}
+1.  Biomass totals reasonable (order of magnitude check)
+2.  Sum of vegetation-specific biomass = total biomass
+3.  Uncertainty quantified and documented
+4.  Results comparable to previous years (if available)
 
-### Key Takeaways {#sec-fuel-takeaways}
+Validation:
 
-1. **Fuel consumption** (M~B~ × C~f~) varies by:
-   -   **Vegetation type**: Forest (18-43 t ha⁻¹) vs. Savanna (2-7 t ha⁻¹)
-   -   **Climate zone**: Boreal < Temperate < Tropical < Humid Tropical
-   -   **Season**: Early (lower) vs. Late (higher) dry season for savannas
+-   Compare with published values (if available)
+-   Check extreme values (outliers)
+-   Sensitivity analysis completed
+-   Documentation complete
 
-2. **IPCC Tier 1 defaults** provide globally consistent estimates but have **high uncertainty** (±50-100%)
+------------------------------------------------------------
 
-3. **Combustion factor** (C~f~) represents proportion of fuel consumed, ranging from 0.29 (early season savanna) to 1.0 (organic soils)
+## Notes and Next Steps {#sec-fuel-summary}
 
-4. **Total biomass burned** calculated as: **Area (ha) × M~B~ (t ha⁻¹) × C~f~**
+### Key Takaways {#sec-fuel-takeaways}
 
-5. **Tier 2/3 improvements** possible through country-specific data, fire severity mapping, and fuel moisture modeling
+1.  Fuel consumption (M~B~ × C~f~) varies by:
 
-### Progression to Chapter 4 {#sec-fuel-to-chapter4-summary}
+    -   Vegetation type: Forest (18-43 t ha⁻¹) vs. Savanna
+        (2-7 t ha⁻¹)
+    -   Climate zone: Boreal \< Temperate \< Tropical \<
+        Humid Tropical
+    -   Season: Early (lower) vs. Late (higher) dry season
+        for savannas
 
-**Chapter 4: Emission Factors and GHG Calculations** will use fuel consumption estimates to:
+2.  IPCC Tier 1 defaults provide globally consistent
+    estimates but have high uncertainty (±50-100%)
 
-1. Apply IPCC emission factors (G~ef~) by gas (CO₂, CH₄, N₂O)
-2. Calculate trace gas emissions: **Biomass Burned × G~ef~**
-3. Report emissions by IPCC category (Forest, Savanna, Organic Soils)
-4. Convert to CO₂-equivalents for aggregate reporting
+3.  Combustion factor (C~f~) represents proportion of fuel
+    consumed, ranging from 0.29 (early season savanna) to
+    1.0 (organic soils)
 
-**Critical linkage**: Each fire event carries forward:
--   **Biomass burned** (Gg DM) by vegetation type
--   **Fire category** (Forest/Savanna/Organic Soil) for emission factor selection
--   **Climate zone** (for organic soil CH₄ emission factors)
--   **Uncertainty estimates** for error propagation
+4.  Total biomass burned calculated as: Area (ha) × M~B~ (t
+    ha⁻¹) × C~f~
 
-------------------------------------------------------------------------
+5.  Tier 2/3 improvements possible through country-specific
+    data, fire severity mapping, and fuel moisture modeling
+
+### Chapter 4: {#sec-fuel-to-chapter4-summary}
+
+1.  Apply IPCC emission factors (G~ef~) by gas (CO₂, CH₄,
+    N₂O)
+2.  Calculate trace gas emissions: Biomass Burned × G~ef~
+3.  Report emissions by IPCC category (Forest, Savanna,
+    Organic Soils)
+4.  Convert to CO₂-equivalents for aggregate reporting
+
+Critical linkage: Each fire event carries forward:
+
+-   Biomass burned (Gg DM) by vegetation type
+-   Fire category (Forest/Savanna/Organic Soil) for emission
+    factor selection
+-   Climate zone (for organic soil CH₄ emission factors)
+-   Uncertainty estimates for error propagation
+
+------------------------------------------------------------

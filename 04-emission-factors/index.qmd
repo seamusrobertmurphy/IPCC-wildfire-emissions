@@ -140,17 +140,6 @@ Key IPCC sources:
 -   Table 5.6: CO₂ emission factors for carbon stock changes
     (forests only)
 
-Gases reported by vegetation type:
-
-| Fire Category      | CO₂  | CH₄ | N₂O | CO       | NO~x~    |
-|--------------------|------|-----|-----|----------|----------|
-| Forest Fires       | ❌\* | ✅  | ✅  | Optional | Optional |
-| Savanna Fires      | ❌\* | ✅  | ✅  | Optional | Optional |
-| Organic Soil Fires | ✅   | ✅  | ❌  | Optional | Optional |
-
-\*CO₂ excluded from forest/savanna fires (captured in carbon
-stock changes or assumed balanced by regrowth)
-
 ### IPCC Default Emission Factors - Quick Reference {#sec-emissions-defaults}
 
 Forest Fires (IPCC 2019 Table 2.5):
@@ -195,12 +184,12 @@ $$
 Key factors affecting CH₄ emissions:
 
 1.  Fire intensity:
-    -   Low-intensity fires → More smoldering → Higher CH₄
-    -   High-intensity fires → More flaming → Lower CH₄
+    -   Low-intensity fires = More smoldering = Higher CH₄
+    -   High-intensity fires = More flaming = Lower CH₄
 2.  Fuel moisture:
-    -   Wet fuels → Lower combustion temperature → Higher
+    -   Wet fuels = Lower combustion temperature = Higher
         CH₄
-    -   Dry fuels → Higher temperature → Lower CH₄
+    -   Dry fuels = Higher temperature = Lower CH₄
 3.  Fuel type:
     -   Forest: High CH₄ (dense, moist fuels)
     -   Savanna: Low CH₄ (grass cures completely)
@@ -403,9 +392,9 @@ Key factors:
     -   Low temp (400-600°C): High N₂O/NO~x~ ratio
     -   High temp (\>800°C): Low N₂O (converts to N₂)
 3.  Fuel moisture:
-    -   Affects temperature → Affects N₂O production
+    -   Affects temperature = Affects N₂O production
 4.  Fire residency time:
-    -   Long smoldering → More N₂O
+    -   Long smoldering = More N₂O
 
 ### Forest N₂O Emissions {#sec-n2o-forest}
 
@@ -504,7 +493,7 @@ Rationale:
 -   Very few measurements available
 -   Peat nitrogen content highly variable
 -   Smoldering combustion \>\> complex N chemistry
--    Most N released as N₂ or NH₃ rather than N₂O
+-   Most N released as N₂ or NH₃ rather than N₂O
 
 FAOSTAT approach: N₂O = 0 for organic soil fires
 
@@ -1202,7 +1191,7 @@ IPCC Good Practice Guidance requires documentation of:
 
 ------------------------------------------------------------
 
-## Chapter Summary and Next Steps {#sec-emissions-summary}
+## Notes and Next Steps {#sec-emissions-summary}
 
 ### Key Takeaways {#sec-emissions-takeaways}
 
@@ -1227,7 +1216,7 @@ IPCC Good Practice Guidance requires documentation of:
     -   UNFCCC CRF Tables 4.C (Forest) and 4.F (Grassland)
     -   Transparency documentation required
 
-### Progression to Chapter 5 {#sec-emissions-to-chapter5}
+### Chapter 5 {#sec-emissions-to-chapter5}
 
 Chapter 5: Organic Soils and Peatland Fires will expand on:
 

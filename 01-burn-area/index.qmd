@@ -47,7 +47,7 @@ easypackages::packages(
   "ggstats", "ggspatial", "ggmap", "ggplotify", "ggpubr", "ggrepel", "giscoR", 
   "hdf5r", "httr", "httr2", "htmltools", "here",
   "jsonlite", 
-  "kohonen", 
+  "kohonen", "knitr",
   "leaflet.providers", "leafem", "libgeos","luz","lwgeom", "leaflet", "leafgl",
   "mapedit", "mapview", "maptiles", "methods", "mgcv", 
   "ncdf4", "nnet", 
@@ -206,7 +206,7 @@ polygon used in all downstream operations.
 #| warning: false
 #| message: false
 
-
+# Point environment to your configured python
 reticulate::use_python("/opt/local/bin/python", required=T)
 
 # Initialise Earth Engine
@@ -246,11 +246,11 @@ all_years_burn <- burned_area$
   clip(aoi_country_ee$geometry())
 
 tmap::tmap_mode("view")
-tmap::tm_basemap("Esri.WorldImagery") +
-	tmap::tm_shape(aoi_states_sf) + tmap::tm_borders(col="MAP_COLORS", lwd=1) +
+tmap::tm_shape(aoi_states_sf) + tmap::tm_borders(col="MAP_COLORS", lwd=1) +
 	tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col="white", lwd=1.5) +
 	tmap::tm_tiles(ee_tile_url(all_years_burn, list(palette = c("orange", "red"), min = 0L, max = 1L)), group = "Burn Areas (2000–2025)") +
-	tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5)
+	tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+	tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 #### Multi-Criteria Filtering {#sec-ba-gee-advanced}
@@ -283,6 +283,7 @@ cat("Images after quality filter:",
     mcd64_filtered$size()$getInfo(), "\n")
 ```
 
+
 ### Quality Assurance Flags {#sec-ba-qa-flags}
 
 The QA band uses bit flags to encode quality information:
@@ -311,8 +312,7 @@ extractQA <- function(image) {
 
 mcd64_qa <- mcd64_filtered$map(extractQA)
 cat("QA-augmented bands:",
-    paste(mcd64_qa$first()$bandNames()$getInfo(), collapse = ", "),
-    "\n")
+		paste(mcd64_qa$first()$bandNames()$getInfo(), collapse = ", "), "\n")
 ```
 
 ------------------------------------------------------------
@@ -355,6 +355,8 @@ cat("FAOSTAT-filtered collection size:",
 Apply the FAOSTAT uncertainty threshold to the Honduras
 collection and compare pre- vs. post-filter pixel counts.
 :::
+
+
 
 ```{r}
 #| label: faostat-filter-honduras
@@ -422,14 +424,11 @@ post_burn <- burned_2010$
   select("BurnDate")$max()$gt(0L)$selfMask()$
   clip(aoi_country_ee$geometry())
 
-tmap::tmap_mode("view")
-tmap::tm_basemap("Esri.WorldImagery") +
-tmap::tm_tiles(ee_tile_url(pre_burn, list(
-  	palette = "red", min = 0L, max = 1L)),group = "Before Filter") +
-tmap::tm_tiles(ee_tile_url(post_burn, list(
-	palette="yellow", min = 0L, max = 1L)), group = "After Filter (<20%)") +
 tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col="white", lwd=1.5) +
-tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size=0.5)
+	tmap::tm_tiles(ee_tile_url(pre_burn, list(palette="red", min=0L,max = 1L)),group = "Before Filter") +
+	tmap::tm_tiles(ee_tile_url(post_burn, list(palette="yellow", min = 0L, max = 1L)), group = "After Filter (<20%)") +
+	tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size=0.5) +
+	tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 ### Uncertainty Quantification {#sec-ba-uncertainty-quant}
@@ -460,7 +459,7 @@ tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size=0.5)
 
 #### Validation Data {#sec-ba-validation-independent}
 
-Active Fire Products (MCD14ML, MYD14):
+Active Fire Products (MCD14ML, MYD14; Runtime ~10mins):
 
 ```{r}
 #| label: active-fire-comparison
@@ -477,10 +476,11 @@ firePixels <- activeFire$map(function(img) {
   img$gte(7L)$selfMask()})
 annualFireMask <- firePixels$max()
 
+
 # Burned area mask from MCD64A1 (2010)
-burnedMask <- mcd64_faostat$
+burnedMask <- mcd64_filtered$
   filterDate("2010-01-01", "2010-12-31")$
-  select("BurnDate")$max()$gt(0L)
+  select("BurnDate")$max()$gt(0L)$selfMask()
 
 # Agreement statistics
 agreement <- burnedMask$And(annualFireMask)$clip(aoi_country_ee$geometry())
@@ -519,7 +519,7 @@ coverage.
 ```{r}
 #| eval: false
 #| label: landsat-validation
-#| code-summary: "Landsat dNBR burned area for validation — Ireland"
+#| code-summary: "Landsat dNBR burned area for validation — Honduras"
 
 # Pre-fire composite (March–April)
 prefire <- ee$ImageCollection("LANDSAT/LC08/C02/T1_L2")$
@@ -545,15 +545,13 @@ nbr_post <- calculateNBR(postfire)
 dnbr <- nbr_pre$subtract(nbr_post)
 landsat_burn <- dnbr$gt(0.1)
 
-# For ease, pseudomercator used to align with
+# For ease, pseudomercator grid used in aligning stack
 modis_burn_resampled <- burnedMask$
   reproject(crs = "EPSG:3857", scale = 30L)
 
 # Count agreement at 30 m resolution, leave comment 
 cat("MODIS omission rate is expected to be higher vs. Landsat.\n")
 ```
-
-------------------------------------------------------------
 
 ------------------------------------------------------------
 
@@ -609,32 +607,44 @@ tmap::tm_shape(aoi_country_sf) +
 FAOSTAT approach: Count pixel as burned once per year
 (conservative).
 
-Alternative approach: Track number of burns per pixel.
+Alternative approach: Track number of burns per pixel per
+year.
 :::
 
 ```{r}
-#| eval: false
 #| label: multiple-burns
-#| code-summary: "Track multiple burns per pixel"
+#| code-summary: "Track multiple burns per pixel — Honduras 2010"
 
-# Count number of times each pixel burned
+# Count how many months each pixel burned in 2010
 burnCount <- mcd64_binary$
-  filterDate("2023-01-01", "2023-12-31")$
-  sum()$
-  rename("burn_count")
+	filterDate("2010-01-01", "2010-12-31")$
+	sum()$rename("burn_count")$
+	clip(aoi_country_ee$geometry())
 
-# Classify burn frequency
-frequency_classes <- burnCount$
-  where(burnCount$eq(0), 0)$  # Unburned
-  where(burnCount$eq(1), 1)$  # Burned once
-  where(burnCount$gte(2), 2)  # Burned multiple times
+# Summarise within AOI
+freq_stats <- burnCount$selfMask()$
+  reduceRegion(
+    reducer   = ee$Reducer$frequencyHistogram(),
+    geometry  = aoi_country_ee$geometry(),
+    scale     = 500L,
+    maxPixels = 1e9
+  )$getInfo()
 
-Map$addLayer(
-  frequency_classes, 
-  list(min = 0, max = 2, palette = c("white", "orange", "red")),
-  "Burn Frequency"
-)
+cat("Honduras 2010 — Burn frequency histogram:\n")
+hist <- freq_stats[["burn_count"]]
+for (k in names(hist)) {
+  label <- if (as.integer(k) == 1) "once" else paste0(k, " times")
+  cat("  Burned", label, ":", hist[[k]], "pixels\n")
+}
 
+# Visualize
+tile_freq <- ee_tile_url(burnCount$selfMask()$clip(aoi_country_ee$geometry()), list(
+  palette = c("yellow", "orange", "red"),min = 1L, max = 3L))
+
+tmap::tm_shape(aoi_country_sf) + 
+	tmap::tm_borders(col = "white", lwd = 1.5) +
+	tmap::tm_tiles(tile_freq, group = "Burn Frequency 2010") +
+	tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 ### Time Series Construction {#sec-ba-timeseries}
@@ -642,77 +652,134 @@ Map$addLayer(
 #### Burned Area Stack {#sec-ba-annual-stack}
 
 ```{r}
-#| eval: false
 #| label: timeseries-stack
-#| code-summary: "Create multi-year burned area stack"
+#| code-summary: "Create 25-year burned area stack — Honduras"
 
-# Define years of interest
-years <- seq(2001, 2023, 1)
+# 25-year window: 2000–2024
+years <- 2000:2024
 
-# Function to get annual burned area for a given year
 getAnnualBurn <- function(year) {
-  # Filter collection to year
-  year_collection <- mcd64_faostat$
-    filter(ee$Filter$calendarRange(year, year, "year"))
-  
-  # Convert to binary and reduce to max
-  annual_burn <- year_collection$
+  yr <- as.integer(year)
+  mcd64_faostat$
+    filter(ee$Filter$calendarRange(yr, yr, "year"))$
     map(binaryBurn)$
     max()$
-    unmask(0)  # Fill unburned pixels with 0
-  
-  # Set year property
-  return(annual_burn$
-    set("year", year)$
-    set("system:time_start", ee$Date$fromYMD(year, 1, 1)$millis())
-  )
+    unmask(0L)$
+    set("year", yr)$
+    set("system:time_start",
+        ee$Date$fromYMD(yr, 1L, 1L)$millis())
 }
 
-# Create collection of annual burned areas
 annual_collection <- ee$ImageCollection(
-  lapply(years, function(y) getAnnualBurn(y))
+  lapply(years, getAnnualBurn)
 )
 
-# Example: Calculate total area burned per year
-# (Will aggregate spatially in next section)
+cat("Annual burned-area stack:",
+    annual_collection$size()$getInfo(),
+    "images (2000–2024)\n")
+```
+
+::: {.callout-tip collapse="false"}
+## Worked Example: Annual Burned Area — Honduras (25 years)
+
+This block builds a 25-year burned-area time series for
+Honduras, exports it as a data frame, and produces a summary
+table and bar chart.
+:::
+
+```{r}
+#| label: annual-burned-ireland
+#| code-summary: "Annual burned area 2000–2024 (25 years)"
+
+# Helper: annual burned area (ha) for one year 
+get_annual_ba <- function(year) {
+  yr <- as.integer(year)
+  annual <- mcd64$
+    filter(ee$Filter$calendarRange(yr, yr, "year"))$
+    filterBounds(aoi_country_ee$geometry())$
+    map(faostat_filter)$
+    select("BurnDate")$
+    max()$
+    gt(0L)$
+    selfMask()
+
+  ha <- annual$
+    multiply(ee$Image$pixelArea()$divide(10000))$
+    reduceRegion(
+      reducer   = ee$Reducer$sum(),
+      geometry  = aoi_country_ee$geometry(),
+      scale     = 500L,
+      maxPixels = 1e9
+    )$getInfo()
+
+  data.frame(year = yr,
+             burned_area_ha = round(ha[["BurnDate"]] %||% 0, 1))
+}
+
+# Query all 25 years (~3 min runtime)
+years_irl <- 2000:2024
+ba_df <- do.call(rbind, lapply(years_irl, get_annual_ba))
+
+# Summary table
+knitr::kable(
+  ba_df,
+  col.names = c("Year", "Burned Area (ha)"),
+  caption   = "Annual burned area (MODIS MCD64A1, FAOSTAT filter)",
+  align     = c("c", "r")
+)
+
+# Bar chart
+library(ggplot2)
+ggplot(ba_df, aes(x = year, y = burned_area_ha)) +
+  geom_col(fill = "#e45a3a", width = 0.7) +
+  geom_hline(yintercept = mean(ba_df$burned_area_ha),linetype   = "dashed", colour = "grey40") +
+  annotate("text",x = 2002, y = mean(ba_df$burned_area_ha) * 1.15,
+  				 label = paste0("Mean = ",round(mean(ba_df$burned_area_ha), 0), " ha"),
+  				 hjust = 0, size = 3.5, colour = "grey30") +
+  labs(
+    title    = "Annual Burned Area — Honduras",
+    subtitle = "MODIS MCD64A1 C6.1 | FAOSTAT quality filter (<20% uncertainty)",
+    x = "Year", y = "Burned Area (ha)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title    = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 10, colour = "gray40")
+  )
 ```
 
 #### Trend Analysis {#sec-ba-trends}
 
 ```{r}
-#| eval: false
 #| label: trend-analysis
 #| code-summary: "Analyze temporal trends in burned area"
 
-# Linear trend over time series
-# Note: This is a simplified pixel-wise trend
-# For country-level trends, aggregate first (see next section)
+# Country-level trend from the ba_df computed above
+trend_model <- lm(burned_area_ha ~ year, data = ba_df)
+slope  <- coef(trend_model)[["year"]]
+pval   <- summary(trend_model)$coefficients["year", "Pr(>|t|)"]
 
-# Add year band to each image
-addYearBand <- function(image) {
-  year <- ee$Number(image$get("year"))
-  yearBand <- ee$Image$constant(year)$toFloat()$rename("year")
-  return(image$addBands(yearBand))
-}
+cat("Honduras 2000–2024 — Linear trend in burned area\n")
+cat("  Slope:", round(slope, 1), "ha/year\n")
+cat("  p-value:", signif(pval, 3), "\n")
+cat("  Interpretation:",
+    if (pval < 0.05) "statistically significant" else "not significant",
+    "at alpha = 0.05\n")
 
-annual_with_year <- annual_collection$map(addYearBand)
-
-# Linear regression: burned ~ year
-regression <- annual_with_year$
-  select(c("year", "burned"))$
-  reduce(ee$Reducer$linearFit())
-
-# Extract slope (trend)
-trend <- regression$select("scale")
-
-# Visualize increasing/decreasing trends
-trend_vis <- list(
-  min = -0.05,
-  max = 0.05,
-  palette = c("blue", "white", "red")
-)
-
-Map$addLayer(trend, trend_vis, "Burn Trend (2001-2023)")
+# Visualise
+ggplot(ba_df, aes(x = year, y = burned_area_ha)) +
+  geom_col(fill = "#e45a3a", alpha = 0.6, width = 0.7) +
+  geom_smooth(method = "lm", se = TRUE,
+              colour = "grey30", linewidth = 0.6) +
+  labs(
+    title    = "Burned Area Trend — Honduras",
+    subtitle = paste0("2000–2024 | slope = ",
+      round(slope, 1), " ha yr\u207B\u00B9, p = ",
+      signif(pval, 2)),
+    x = "Year", y = "Burned Area (ha)"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(face = "bold", size = 14))
 ```
 
 ------------------------------------------------------------
@@ -724,40 +791,30 @@ Map$addLayer(trend, trend_vis, "Burn Trend (2001-2023)")
 #### Using FAO GAUL Boundaries {#sec-ba-gaul}
 
 ```{r}
-#| eval: false
 #| label: gaul-aggregation
-#| code-summary: "Aggregate burned area by country"
+#| code-summary: "Aggregate burned area by country — Honduras"
 
-# Load FAO GAUL country boundaries (Admin Level 0)
-countries <- ee$FeatureCollection("FAO/GAUL/2015/level0")
+# Zonal sum: burned area (ha) in 2010
+burnedArea_ha <- annual_burned_2010$
+  multiply(ee$Image$pixelArea()$divide(10000))$
+  reduceRegion(
+    reducer   = ee$Reducer$sum(),
+    geometry  = aoi_country_ee$geometry(),
+    scale     = 500L,
+    maxPixels = 1e9
+  )$getInfo()
 
-# Select specific country (example: Portugal)
-portugal <- countries$filter(ee$Filter$eq("ADM0_NAME", "Portugal"))
-
-# Calculate burned area for 2023
-burned_2023 <- annual_burned_2023
-
-# Zonal statistics: sum of burned pixels
-burnedArea_ha <- burned_2023$
-  multiply(ee$Image$pixelArea()$divide(10000))$  # Convert m² to hectares
-  reduceRegions(
-    collection = portugal,
-    reducer = ee$Reducer$sum(),
-    scale = 500,
-    crs = "SR-ORG:6974"  # MCD64A1 native projection
-  )
-
-# Extract result
-result <- burnedArea_ha$getInfo()
-print(paste("Burned area (ha):", result$features[[1]]$properties$sum))
+cat("Honduras 2010 — total burned area:",
+    round(burnedArea_ha[["burned"]], 1), "ha\n")
 ```
 
-#### Batch Processing for All Countries {#sec-ba-batch}
+#### Batch Processing for All Countries (Paused) {#sec-ba-batch}
+
 
 ```{r}
 #| eval: false
 #| label: batch-countries
-#| code-summary: "Process all countries efficiently"
+#| code-summary: "Batch processing multiple countries to Google Drive"
 
 # Function to calculate burned area for a single country
 calculateCountryBA <- function(country_name, year) {
@@ -790,9 +847,7 @@ calculateCountryBA <- function(country_name, year) {
 country_list <- c("Portugal", "Spain", "France", "Greece")
 year_list <- c(2020, 2021, 2022, 2023)
 
-# Create tasks (run in parallel in GEE)
-# Note: For production, export to Google Drive or Asset
-
+# Create tasks to run in parallel in GEE (250GB per task limit)
 for (country in country_list) {
   for (year in year_list) {
     result <- calculateCountryBA(country, year)
@@ -813,37 +868,83 @@ for (country in country_list) {
 
 ### Sub-National Aggregation {#sec-ba-subnational}
 
+::: {.callout-tip collapse="false"}
+## Exercise: Sub-National Aggregation
+
+Aggregate burned area to Honduras's administrative divisions
+(departments) using the FAO GAUL level-1 boundaries loaded
+during GEE setup, then produce a choropleth map.
+:::
+
 ```{r}
-#| eval: false
-#| label: subnational-aggregation
-#| code-summary: "Admin level 1 and 2 aggregation"
+#| label: subnational-ireland
+#| code-summary: "2010 Burned area by Honduras Jurisdictions"
 
-# Load Admin Level 1 (provinces/states)
-admin1 <- ee$FeatureCollection("FAO/GAUL/2015/level1")
+# Use the peak fire year for a meaningful map
+burn_2010 <- mcd64$
+  filter(ee$Filter$calendarRange(2010L, 2010L, "year"))$
+  filterBounds(aoi_country_ee$geometry())$
+  map(faostat_filter)$
+  select("BurnDate")$
+  max()$
+  gt(0L)$
+  selfMask()
 
-# Filter to country
-portugal_admin1 <- admin1$filter(ee$Filter$eq("ADM0_NAME", "Portugal"))
-
-# Calculate burned area by province
-provincial_BA <- burned_2023$
+# Zonal sum: burned area (ha) per county
+county_ba <- burn_2010$
   multiply(ee$Image$pixelArea()$divide(10000))$
   reduceRegions(
-    collection = portugal_admin1,
-    reducer = ee$Reducer$sum(),
-    scale = 500
+    collection = aoi_states_ee,
+    reducer    = ee$Reducer$sum(),
+    scale      = 500L
   )
 
-# Convert to sf object for analysis in R
-provincial_BA_sf <- ee_as_sf(provincial_BA)
+# Pull results into R
+county_list <- county_ba$getInfo()
+county_df <- do.call(rbind, lapply(
+  county_list$features, function(f) {data.frame(
+      county         = f$properties$ADM1_NAME,
+      burned_area_ha = round(f$properties$sum %||% 0, 1))})) |> 
+	dplyr::arrange(dplyr::desc(burned_area_ha))
 
-# Visualize
+# Summary table
+knitr::kable(
+  county_df[county_df$burned_area_ha > 0, ],
+  col.names = c("County", "Burned Area (ha)"),
+  caption   = "Honduras 2010: Burned area by county (non-zero only)",
+  row.names = FALSE
+)
+
+# Choropleth map
+county_sf <- dplyr::left_join(
+  aoi_states_sf,
+  county_df,
+  by = c("ADM1_NAME" = "county")
+)
+
+
+
 library(ggplot2)
-ggplot(provincial_BA_sf) +
-  geom_sf(aes(fill = sum)) +
-  scale_fill_viridis_c(name = "Burned Area (ha)") +
-  labs(title = "Burned Area by Province - Portugal 2023") +
-  theme_minimal()
+ggplot(county_sf) +
+  geom_sf(aes(fill = burned_area_ha),
+          colour = "white", linewidth = 0.3) +
+  scale_fill_viridis_c(
+    name     = "Burned\nArea (ha)",
+    option   = "inferno",
+    na.value = "grey90"
+  ) +
+  labs(
+    title   = "Burned Area by County — Honduras 2010",
+    subtitle = "MODIS MCD64A1 C6.1 | FAOSTAT quality filter",
+    caption = "Source: MODIS MCD64A1; Boundaries: FAO GAUL level-1"
+  ) +
+  theme_void() +
+  theme(
+    plot.title    = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 10, colour = "gray40")
+  )
 ```
+
 
 ### Area Calculation Corrections {#sec-ba-area-correction}
 
@@ -866,11 +967,11 @@ calculatePixelArea <- function(image) {
   lat_rad <- lat$multiply(pi / 180)
   
   # Pixel height (constant in sinusoidal projection)
-  pixel_height_m <- 463.3127  # meters at equator for 500m product
-  
+  pixel_height_m <- ee$Image$constant(463.3127)  # meters at equator for 500m product
+
   # Pixel width varies with latitude
   pixel_width_m <- pixel_height_m$multiply(lat_rad$cos())
-  
+
   # Area in m²
   pixel_area_m2 <- pixel_height_m$multiply(pixel_width_m)
   
@@ -880,11 +981,11 @@ calculatePixelArea <- function(image) {
 # Compare with built-in function
 pixel_area_builtin <- ee$Image$pixelArea()
 pixel_area_manual <- calculatePixelArea()
-
-# They should match (built-in is more accurate)
 ```
 
+
 ------------------------------------------------------------
+
 
 ## Multi-Source Validation {#sec-ba-validation}
 
@@ -892,94 +993,134 @@ pixel_area_manual <- calculatePixelArea()
 
 Using `forestdata` package for complementary validation:
 
+
 ```{r}
 #| eval: false
+#| cache: true
+#| warning: false
+#| message: false
+#| error: false
 #| label: glad-validation
-#| code-summary: "Validate with GLAD land cover change"
+#| code-summary: "Validate with GLAD forest loss — Honduras"
 
-library(forestdata)
-library(terra)
-library(sf)
+# GLAD Global Forest Change (Hansen et al.)
+# GEE asset: UMD/hansen/global_forest_change_2023_v1_11
+glad <- ee$Image("UMD/hansen/global_forest_change_2023_v1_11")
 
-# Define area of interest in R
-portugal_sf <- st_read("path/to/portugal_boundary.gpkg")
-portugal_bbox <- st_bbox(portugal_sf)
+# Forest loss year band: 0 = no loss, 1-23 = loss year (2001-2023)
+# Keep as 0/1 binary (no selfMask) so $Not() works correctly
+glad_loss_2010 <- glad$select("lossyear")$eq(10L)$
+  clip(aoi_country_ee$geometry())
 
-# Download GLAD land cover change (2000-2020)
-glad_change <- fd_forest_glad(
-  lon = mean(c(portugal_bbox["xmin"], portugal_bbox["xmax"])),
-  lat = mean(c(portugal_bbox["ymin"], portugal_bbox["ymax"])),
-  model = "landcover-change",
-  year = 2020  # Ignored for change product
-)
+# Both layers as 0/1 with no masked pixels
+modis_binary <- annual_burned_2010$unmask(0L)
+glad_binary  <- glad_loss_2010$unmask(0L)
 
-# Download MODIS burned area from GEE (from previous sections)
-# Export annual_burned_2023 to R
-modis_burn_2023 <- ee_as_rast(
-  annual_burned_2023,
-  region = aoi,
-  scale = 500
-)
+# Agreement analysis at 500 m
+agreement   <- modis_binary$And(glad_binary)$clip(aoi_country_ee$geometry())
+modis_only  <- modis_binary$And(glad_binary$Not())$clip(aoi_country_ee$geometry())
+glad_only   <- glad_binary$And(modis_binary$Not())$clip(aoi_country_ee$geometry())
 
-# Resample GLAD to MODIS resolution for comparison
-glad_change_500m <- resample(glad_change, modis_burn_2023, method = "near")
+stats <- ee$Image$cat(
+  agreement$rename("agree"),
+  modis_only$rename("modis_only"),
+  glad_only$rename("glad_only")
+)$reduceRegion(
+  reducer   = ee$Reducer$sum(),
+  geometry  = aoi_country_ee$geometry(),
+  scale     = 500L,
+  maxPixels = 1e9
+)$getInfo()
 
-# Crop to same extent
-glad_crop <- crop(glad_change_500m, modis_burn_2023)
-modis_crop <- crop(modis_burn_2023, glad_change_500m)
-
-# Analyze agreement
-# GLAD change codes: Extract relevant change types
-# (Consult GLAD documentation for specific codes)
-
-# Example: Extract forest loss pixels
-glad_forest_loss <- glad_crop == 2  # Adjust code based on GLAD legend
-
-# Calculate confusion matrix
-library(caret)
-confusion <- confusionMatrix(
-  data = as.factor(as.vector(modis_crop)),
-  reference = as.factor(as.vector(glad_forest_loss))
-)
-
-print(confusion)
+cat("Honduras 2010 — GLAD Forest Loss vs MCD64A1\n")
+cat("  Both detect:", stats$agree, "pixels\n")
+cat("  MCD64A1 only:", stats$modis_only, "pixels\n")
+cat("  GLAD loss only:", stats$glad_only, "pixels\n")
 ```
 
-### ESRI-LULC Comparison {#sec-ba-esri-validation}
+#### Visualize Chunk (Longer Runtime)
 
 ```{r}
 #| eval: false
-#| label: esri-validation
-#| code-summary: "Validate with ESRI 10m land cover"
+#| echo: true
 
-library(forestdata)
+# Visualize
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  tmap::tm_tiles(ee_tile_url(agreement, list(palette = "green", min = 0L, max = 1L)), group = "Both") +
+  tmap::tm_tiles(ee_tile_url(modis_only, list(palette = "blue", min = 0L, max = 1L)), group = "MCD64A1 only") +
+  tmap::tm_tiles(ee_tile_url(glad_only, list(palette = "red", min = 0L, max = 1L)), group = "GLAD only") +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+	tmap::tm_basemap("Esri.WorldImagery")
+```
 
-# Portugal is in UTM zone 29N
-esri_2022 <- fd_landcover_esri(utm_code = "29N", year = 2022)
-esri_2023 <- fd_landcover_esri(utm_code = "29N", year = 2023)
 
-# Detect land cover changes between years
-esri_change <- esri_2023 - esri_2022
+### ESA WorldCover Comparison {#sec-ba-esa-validation}
 
-# Focus on transitions to "bare ground" class (potential fire)
-# (Check ESRI legend for bare ground class code)
-bare_ground_code <- 8  # Example - verify from ESRI documentation
+```{r}
+#| eval: false
+#| label: esa-validation
+#| code-summary: "Validate with ESA WorldCover 10m — Honduras"
 
-esri_to_bare <- (esri_2022 != bare_ground_code) & 
-                (esri_2023 == bare_ground_code)
+# ESA WorldCover — single images (not collections), so no empty / bandless risk
+# Classes: 10=Tree, 20=Shrub, 30=Grassland, 40=Cropland, 50=Built, 60=Bare, 70=Snow, 80=Water, 90=Wetland, 95=Mangroves
+esa_2020 <- ee$Image("ESA/WorldCover/v100/2020")$
+  clip(aoi_country_ee$geometry())
+esa_2021 <- ee$Image("ESA/WorldCover/v200/2021")$
+  clip(aoi_country_ee$geometry())
 
-# Resample to MODIS resolution
-esri_change_500m <- aggregate(
-  esri_to_bare, 
-  fact = 50,  # 10m to 500m = factor of 50
-  fun = mean  # Proportion of 10m pixels that changed
-)
+# Detect transitions to bare/sparse vegetation (class 60)
+bare_code <- 60L
+esa_to_bare <- esa_2020$neq(bare_code)$And(esa_2021$eq(bare_code))
 
-# Overlay with MODIS burned area
-# High agreement expected in fire-affected forests
+# Aggregate 10 m binary to 500 m, then threshold
+modis_proj <- burned_area$first()$projection()
+esa_bare_500m <- esa_to_bare$
+  reduceResolution(
+    reducer   = ee$Reducer$mean(),
+    maxPixels = 4096L  # >=(500/10)^2, with margin for projection
+  )$
+  reproject(crs = modis_proj)$
+  gt(0)  # any 10 m pixel transitioned → flag at 500 m
+
+# MODIS burned area for 2020 (matching ESA base year)
+modis_2020 <- burned_area$
+  filterDate("2020-01-01", "2020-12-31")$
+  map(filterQuality)$
+  select("BurnDate")$max()$gt(0L)$
+  clip(aoi_country_ee$geometry())
+
+# Keep images masked (selfMask) so only flagged pixels are counted.
+# unmask(0) at 10 m over Honduras exceeds GEE's 2^31 pixel cap,
+# so we work with sparse masked images and reduce each separately.
+modis_masked <- modis_2020$selfMask()$clip(aoi_country_ee$geometry())
+esa_masked   <- esa_bare_500m$selfMask()$clip(aoi_country_ee$geometry())
+
+reduce_sum <- function(img) {
+  img$reduceRegion(
+    reducer   = ee$Reducer$sum(),
+    geometry  = aoi_country_ee$geometry(),
+    scale     = 500L,
+    maxPixels = 1e9
+  )$getInfo()
+}
+
+# Agreement: pixels where both datasets flag burning / bare transition
+n_modis <- reduce_sum(modis_masked)[[1]]
+n_esa   <- reduce_sum(esa_masked)[[1]]
+
+# Overlap: multiply two binary masks — only 1*1 survives
+overlap_img <- modis_masked$multiply(esa_masked)$selfMask()
+n_agree     <- reduce_sum(overlap_img)[[1]]
+n_modis_only <- n_modis - n_agree
+n_esa_only   <- n_esa   - n_agree
+
+cat("Honduras 2020–2021 — ESA WorldCover Change vs MCD64A1\n")
+cat("  Both detect:", n_agree, "pixels\n")
+cat("  MCD64A1 only:", n_modis_only, "pixels\n")
+cat("  ESA bare transition only:", n_esa_only, "pixels\n")
 # Disagreement may indicate:
-#   - MODIS missed small fires (ESRI detected)
-#   - ESRI detected non-fire disturbances (logging, etc.)
+#   - MODIS missed small fires (ESA detected at 10 m)
+#   - ESA detected non-fire disturbances (logging, clearing)
 ```
 
 ### Country Data Comparison {#sec-ba-country-reports}
@@ -987,51 +1128,64 @@ esri_change_500m <- aggregate(
 ```{r}
 #| eval: false
 #| label: country-comparison
-#| code-summary: "Compare with UNFCCC country reports"
+#| code-summary: "Compare with UNFCCC country reports — Honduras"
+
+# Compute annual burned area from MCD64A1 for multiple years
+years <- 2001:2023
+getAnnualBA <- function(yr) {
+  annual <- mcd64$
+    filter(ee$Filter$calendarRange(yr, yr, "year"))$
+    filterBounds(aoi_country_ee$geometry())$
+    map(filterQuality)$
+    select("BurnDate")$max()$gt(0L)$selfMask()
+
+  area_ha <- annual$
+    multiply(ee$Image$pixelArea()$divide(10000))$
+    reduceRegion(
+      reducer   = ee$Reducer$sum(),
+      geometry  = aoi_country_ee$geometry(),
+      scale     = 500L,
+      maxPixels = 1e9
+    )
+
+  ee$Feature(NULL, list(
+    year = yr,
+    burned_area_ha = area_ha$get("BurnDate")
+  ))
+}
+
+results_fc <- ee$FeatureCollection(lapply(years, getAnnualBA))
+modis_ba <- ee_to_sf(results_fc) |> sf::st_drop_geometry()
 
 # Example: Load country-reported burned area
 # (Would typically come from UNFCCC National Inventory Reports)
-
 country_reported <- data.frame(
-  year = 2020:2023,
-  reported_ba_ha = c(45000, 52000, 38000, 61000),  # Example data
-  source = "National Forest Inventory"
+  year   = c(2010, 2015, 2020),
+  reported_ba_ha = c(25000, 18000, 32000),  # Replace with actual UNFCCC data
+  source = "Honduras NIR"
 )
 
-# Calculate FAOSTAT burned area from GEE results
-# (Assuming you've exported multi-year results)
-faostat_ba <- data.frame(
-  year = 2020:2023,
-  faostat_ba_ha = c(42000, 49000, 36000, 58000)  # From GEE exports
-)
+comparison <- merge(country_reported, modis_ba, by = "year")
+comparison$difference_ha <- comparison$reported_ba_ha - comparison$burned_area_ha
+comparison$percent_diff  <- (comparison$difference_ha / comparison$reported_ba_ha) * 100
 
-# Merge and compare
-comparison <- merge(country_reported, faostat_ba, by = "year")
-comparison$difference_ha <- comparison$reported_ba_ha - comparison$faostat_ba_ha
-comparison$percent_diff <- (comparison$difference_ha / comparison$reported_ba_ha) * 100
-
-# Visualize
-library(ggplot2)
 ggplot(comparison, aes(x = year)) +
   geom_line(aes(y = reported_ba_ha, color = "Country Reported"), linewidth = 1) +
-  geom_line(aes(y = faostat_ba_ha, color = "FAOSTAT"), linewidth = 1) +
+  geom_line(aes(y = burned_area_ha, color = "MODIS MCD64A1"), linewidth = 1) +
   geom_point(aes(y = reported_ba_ha, color = "Country Reported"), size = 3) +
-  geom_point(aes(y = faostat_ba_ha, color = "FAOSTAT"), size = 3) +
-  scale_color_manual(values = c("Country Reported" = "blue", "FAOSTAT" = "red")) +
+  geom_point(aes(y = burned_area_ha, color = "MODIS MCD64A1"), size = 3) +
+  scale_color_manual(values = c("Country Reported" = "blue", "MODIS MCD64A1" = "red")) +
   labs(
-    title = "Burned Area Comparison: Country Reports vs. FAOSTAT",
-    subtitle = "Portugal 2020-2023",
-    x = "Year",
-    y = "Burned Area (hectares)",
-    color = "Source"
+    title = "Burned Area: Country Reports vs MODIS MCD64A1",
+    subtitle = "Honduras",
+    x = "Year", y = "Burned Area (hectares)", color = "Source"
   ) +
   theme_minimal() +
   theme(legend.position = "bottom")
 
-# Statistical assessment
-cor_test <- cor.test(comparison$reported_ba_ha, comparison$faostat_ba_ha)
-print(paste("Correlation:", round(cor_test$estimate, 3)))
-print(paste("P-value:", cor_test$p.value))
+cor_test <- cor.test(comparison$reported_ba_ha, comparison$burned_area_ha)
+cat("Correlation:", round(cor_test$estimate, 3), "\n")
+cat("P-value:", cor_test$p.value, "\n")
 ```
 
 ------------------------------------------------------------
@@ -1068,54 +1222,41 @@ applications
 
 ### Sensitivity Analysis {#sec-ba-sensitivity}
 
+
 ```{r}
-#| eval: false
+#| eval: true
 #| label: sensitivity-analysis
-#| code-summary: "Assess sensitivity to quality threshold"
+#| code-summary: "Assess sensitivity to quality threshold — Honduras 2010"
 
 # Test multiple uncertainty thresholds
-thresholds <- c(10, 15, 20, 25, 30)
+thresholds <- c(10L, 15L, 20L, 25L, 30L)
 
 sensitivity_results <- data.frame(
   threshold = numeric(),
-  burned_area_ha = numeric(),
-  pixel_count = numeric()
-)
+  burned_area_ha = numeric())
 
 for (thresh in thresholds) {
-  # Apply threshold
-  filtered <- mcd64$
-    filterDate("2023-01-01", "2023-12-31")$
+  filtered <- burned_area$
+    filterDate("2010-01-01", "2010-12-31")$
     map(function(img) {
-      mask <- img$select("Burn_Date_Uncertainty")$lt(thresh)$
-        And(img$select("BurnDate")$gt(0))
-      return(img$updateMask(mask))
-    })
-  
-  # Calculate burned area
+      mask <- img$select("Uncertainty")$lt(thresh)$
+        And(img$select("BurnDate")$gt(0L))
+      img$updateMask(mask)})
   result <- filtered$
-    select("BurnDate")$
-    max()$
+    select("BurnDate")$max()$gt(0L)$selfMask()$
     multiply(ee$Image$pixelArea()$divide(10000))$
     reduceRegion(
-      reducer = ee$Reducer$sum(),
-      geometry = aoi,
-      scale = 500,
+      reducer   = ee$Reducer$sum(),
+      geometry  = aoi_country_ee$geometry(),
+      scale     = 500L,
       maxPixels = 1e9
-    )
-  
-  # Store results
+    )$getInfo()
   sensitivity_results <- rbind(
     sensitivity_results,
-    data.frame(
-      threshold = thresh,
-      burned_area_ha = result$getInfo()$BurnDate,
-      pixel_count = NA  # Could calculate separately
-    )
+    data.frame(threshold = thresh, burned_area_ha = result$BurnDate)
   )
 }
 
-# Visualize sensitivity
 ggplot(sensitivity_results, aes(x = threshold, y = burned_area_ha)) +
   geom_line(linewidth = 1, color = "darkred") +
   geom_point(size = 3, color = "darkred") +
@@ -1123,12 +1264,14 @@ ggplot(sensitivity_results, aes(x = threshold, y = burned_area_ha)) +
   annotate("text", x = 20, y = max(sensitivity_results$burned_area_ha) * 0.9,
            label = "FAOSTAT threshold", hjust = -0.1) +
   labs(
-    title = "Sensitivity of Burned Area to Quality Threshold",
+    title = "Sensitivity of Burned Area to Uncertainty Threshold",
+    subtitle = "Honduras 2010 — MCD64A1",
     x = "Uncertainty Threshold (%)",
     y = "Burned Area (hectares)"
   ) +
   theme_minimal()
 ```
+
 
 ### Documenting Uncertainty for NGHGI {#sec-ba-nghgi-uncertainty}
 
@@ -1146,16 +1289,17 @@ Required documentation for Tier 1:
 
 Example uncertainty table for NGHGI report:
 
-```{r}
-#| eval: false
-#| label: uncertainty-table
-#| echo: false
 
-library(knitr)
+```{r}
+#| eval: true
+#| label: uncertainty-table
 
 uncertainty_table <- data.frame(
-  Source = c("Satellite detection", "Land cover classification", 
-             "Area calculation", "Total (quadrature)"),
+  Source = c(
+  	"Satellite detection", 
+  	"Land cover classification", 
+  	"Area calculation", 
+  	"Total (quadrature)"),
   Uncertainty = c("±30%", "±15%", "±5%", "±34%"),
   Method = c(
     "MCD64A1 validation (Giglio et al. 2018)",
@@ -1165,9 +1309,9 @@ uncertainty_table <- data.frame(
   )
 )
 
-kable(
+knitr::kable(
   uncertainty_table,
-  caption = "Uncertainty Components in Burned Area Activity Data (Tier 1)",
+  caption = "Uncertainty of Burned Area Activity Data",
   align = c("l", "c", "l")
 )
 ```
@@ -1181,115 +1325,72 @@ kable(
 ```{r}
 #| eval: false
 #| label: complete-pipeline
-#| code-summary: "End-to-end burned area processing"
+#| code-summary: "End-to-end burned area processing — Honduras"
 
-# ============================================================
+
 # IPCC Tier 1 Burned Area Processing Pipeline
 # MODIS MCD64A1 Collection 6.1
 # ============================================================
 
-library(rgee)
-library(sf)
-library(terra)
-library(tidyverse)
+# 1. Parameters
+year_start <- 2001L
+year_end   <- 2023L
 
-# Initialize
-ee_Initialize()
+# 2. Temporal Aggregation
+getAnnualBurn <- function(yr) {
+  annual <- burned_area$
+    filter(ee$Filter$calendarRange(yr, yr, "year"))$map(filterQuality)$
+    select("BurnDate")$max()$gt(0L)$selfMask()
+  annual$set("year", yr)$set("system:time_start", ee$Date$fromYMD(yr, 1L, 1L)$millis())
+  }
 
-# 1. DEFINE PARAMETERS ----------------------------------------
-country_name <- "Portugal"
-year_start <- 2020
-year_end <- 2023
-uncertainty_threshold <- 20
-
-# 2. LOAD SPATIAL DATA ----------------------------------------
-# Country boundary
-countries <- ee$FeatureCollection("FAO/GAUL/2015/level0")
-aoi <- countries$filter(ee$Filter$eq("ADM0_NAME", country_name))
-
-# Burned area collection
-mcd64 <- ee$ImageCollection("MODIS/061/MCD64A1")
-
-# 3. QUALITY FILTERING ----------------------------------------
-filterQuality <- function(image) {
-  uncertainty <- image$select("Burn_Date_Uncertainty")
-  burnDate <- image$select("BurnDate")
-  mask <- uncertainty$lt(uncertainty_threshold)$And(burnDate$gt(0))
-  return(image$updateMask(mask))
-}
-
-# 4. TEMPORAL AGGREGATION -------------------------------------
-getAnnualBurn <- function(year) {
-  annual <- mcd64$
-    filter(ee$Filter$calendarRange(year, year, "year"))$
-    filterBounds(aoi)$
-    map(filterQuality)$
-    select("BurnDate")$
-    max()$
-    gt(0)$
-    selfMask()
-  
-  return(annual$
-    set("year", year)$
-    set("system:time_start", ee$Date$fromYMD(year, 1, 1)$millis()))
-}
-
-years <- seq(year_start, year_end, 1)
+years <- seq(year_start, year_end, 1L)
 annual_collection <- ee$ImageCollection(lapply(years, getAnnualBurn))
 
-# 5. SPATIAL AGGREGATION --------------------------------------
+# 3. Spatial Aggregation
 calculateBA <- function(image) {
-  year <- image$get("year")
+  yr <- image$get("year")
   area_ha <- image$
     multiply(ee$Image$pixelArea()$divide(10000))$
     reduceRegion(
-      reducer = ee$Reducer$sum(),
-      geometry = aoi,
-      scale = 500,
-      maxPixels = 1e9
-    )
-  
-  return(ee$Feature(NULL, list(
-    year = year,
-    country = country_name,
-    burned_area_ha = area_ha$get("BurnDate")
-  ))
-}
+      reducer   = ee$Reducer$sum(),
+      geometry  = aoi_country_ee$geometry(),
+      scale     = 500L,
+      maxPixels = 1e9)
+  ee$Feature(NULL, list(
+    year = yr,
+    country = "Honduras",
+    burned_area_ha = area_ha$get("BurnDate")))
+  }
 
 results <- annual_collection$map(calculateBA)
 
-# 6. EXPORT RESULTS -------------------------------------------
-# To Google Drive
+# 4. Export Results
 task <- ee$batch$Export$table$toDrive(
-  collection = results,
-  description = paste0(country_name, "_BA_", year_start, "_", year_end),
-  folder = "IPCC_Fire_Emissions",
-  fileFormat = "CSV"
+  collection  = results,
+  description = paste0("Honduras_BA_", year_start, "_", year_end),
+  folder      = "IPCC_Fire_Emissions",
+  fileFormat  = "CSV"
 )
+#task$start()
+#cat("Export started:", task$id, "\n")
 
-task$start()
-print(paste("Export started:", task$id))
-
-# Or get directly in R (for small areas)
-results_df <- ee_as_sf(results) %>%
-  st_drop_geometry() %>%
-  as.data.frame()
-
+# Or pull directly into R
+results_df <- ee_to_sf(results) |> sf::st_drop_geometry()
 print(results_df)
 
-# 7. VISUALIZATION --------------------------------------------
+# 5. Visualization
 ggplot(results_df, aes(x = year, y = burned_area_ha)) +
   geom_line(color = "darkred", linewidth = 1) +
   geom_point(color = "darkred", size = 3) +
   labs(
-    title = paste("Annual Burned Area -", country_name),
-    subtitle = paste("MODIS MCD64A1 Collection 6.1 |", year_start, "-", year_end),
-    x = "Year",
-    y = "Burned Area (hectares)"
+  	title    = "Annual Burned Area — Honduras",
+    subtitle = paste("MODIS MCD64A1 Collection 6.1 |", year_start, "–", year_end),
+    x = "Year", y = "Burned Area (hectares)"
   ) +
   theme_minimal() +
   theme(
-    plot.title = element_text(face = "bold", size = 14),
+    plot.title    = element_text(face = "bold", size = 14),
     plot.subtitle = element_text(size = 10, color = "gray40")
   )
 ```

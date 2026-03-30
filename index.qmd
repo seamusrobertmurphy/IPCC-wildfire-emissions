@@ -645,23 +645,10 @@ var landCover = ee.ImageCollection("MODIS/061/MCD12Q1");
 var countries = ee.FeatureCollection("FAO/GAUL/2015/level0");
 ```
 
-Computational Considerations:
-
--   Global annual processing requires substantial compute resources
--   Batch processing via Earth Engine Tasks for large exports
--   Memory and timeout limits apply (user-specific quotas)
--   Tiling strategies may be needed for very large analyses
-
-Resources:
-
--   Documentation: https://developers.google.com/earth-engine/
--   Code Archive: https://earthengine.google.com/
--   Community Tutorials: https://developers.google.com/earth-engine/tutorials/
-
 ------------------------------------------------------------------------
 
 [^index-1]: Note to self: 2025 wishlist
 
 [^index-2]: Direct Page Link: <https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf#page=71>
 
-[^index-3]: Code chunks provided in both Python, Javascript, and R for use in either Google Colaboratory, Earth Engine Codespace, or using `rgee` and `reticulate` dependencies.
+[^index-3]: Code provided Python and R, with some cells in Java for use natively in Earth Engine Codespace
