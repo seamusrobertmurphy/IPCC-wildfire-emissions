@@ -1078,12 +1078,12 @@ Post-classification:
 # humid_tropical_mask : WorldClim tropical + moist
 # savanna_mask        : IGBP classes 6-10
 
-# 1. CLASSIFY ALL BURNED PIXELS ---------------------------------
+# 1. Classify Burns
 # Unclassified: burned but not forest or savanna
 unclassified_mask <- forest_mask$Or(savanna_mask)$Not()
 unclassified_fires <- annual_burned_2010$updateMask(unclassified_mask)
 
-# 2. CALCULATE ALL AREAS ----------------------------------------
+# 2. Areas Estimates
 calcArea <- function(fire_img, label) {
   result <- fire_img$
     multiply(pixelArea_ha)$
@@ -1102,26 +1102,19 @@ of_ha           <- calcArea(other_fires_2010, "Other Forest")
 sav_ha          <- calcArea(savanna_fires_2010, "Savanna")
 unclass_ha      <- calcArea(unclassified_fires, "Unclassified")
 
-cat("============================================================\n")
 cat("Honduras 2010 — IPCC Vegetation Classification Summary\n")
-cat("============================================================\n")
 cat(sprintf("  %-30s %10.1f ha\n", "Total burned area:", total_burned_ha))
-cat("------------------------------------------------------------\n")
 cat(sprintf("  %-30s %10.1f ha\n", "Humid Tropical Forest fires:", htf_ha))
 cat(sprintf("  %-30s %10.1f ha\n", "Other Forest fires:", of_ha))
 cat(sprintf("  %-30s %10.1f ha\n", "Savanna fires:", sav_ha))
 cat(sprintf("  %-30s %10.1f ha\n", "Organic soil fires:", 0))
 cat(sprintf("  %-30s %10.1f ha\n", "Unclassified (excluded):", unclass_ha))
-cat("------------------------------------------------------------\n")
 classified_ha <- htf_ha + of_ha + sav_ha
 cat(sprintf("  %-30s %10.1f ha\n", "Total classified:", classified_ha))
-if (total_burned_ha > 0) {
-  cat(sprintf("  %-30s %9.1f%%\n", "Classification coverage:",
-      classified_ha / total_burned_ha * 100))
-}
-cat("============================================================\n")
+if (total_burned_ha > 0) {cat(sprintf("  %-30s %9.1f%%\n", "Classification coverage:",
+      classified_ha / total_burned_ha * 100))}
 
-# 3. VISUALIZE COMPLETE STRATIFICATION --------------------------
+# 3. Visualize
 tmap::tm_shape(aoi_states_sf) + tmap::tm_borders(col = "MAP_COLORS", lwd = 1) +
   tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
   tmap::tm_tiles(

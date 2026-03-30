@@ -15,7 +15,7 @@ editor_options:
   markdown: 
     wrap: 60
 engine: knitr
-bibliography: ../references/references.bibx
+bibliography: ../references/references.bib
 csl: ../references/apa.csl
 citeproc: true
 ---
@@ -996,6 +996,7 @@ pixel_area_manual <- calculatePixelArea()
 
 
 ```{r}
+#| eval: false
 #| label: veg-glad-height-validation
 #| code-summary: "Validate forest classification with GLAD canopy height"
 

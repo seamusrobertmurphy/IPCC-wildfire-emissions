@@ -98,7 +98,7 @@ div.column {
   display: block;
   height:200px;
   width: 200px;
-  background-image: url('https://raw.githubusercontent.com/seamusrobertmurphy/map-templates/refs/heads/main/assets/outputs/01-site-map.png');
+  background-image: url('https://raw.githubusercontent.com/seamusrobertmurphy/IPCC-wildfire-emissions/refs/heads/main/02-fuel-stratification/assets/aa_burn_trend.png');
   background-size: contain;
   background-position: 50% 50%;
   padding-top: 80px !important;
@@ -127,7 +127,7 @@ per unit area (tonnes DM ha⁻¹)
 Tier 1 Approach: Use IPCC default values stratified by:
 
 1.  Vegetation type (Forest, Savanna, Organic Soil)
-2.   Climate zone (Tropical, Temperate, Boreal)
+2.  Climate zone (Tropical, Temperate, Boreal)
 3.  Forest type (Humid Tropical vs. Other)
 4.  Season (Early vs. Late dry season for savannas)
 
@@ -371,7 +371,7 @@ Moderate C~f~ for Other Forests (0.45-0.47):
 -   Drier climates = lower fuel moisture
 -   More complete consumption of surface fuels
 -   Variability based on fire severity:
--    Surface fires: C~f~ \~ 0.20-0.40
+-   Surface fires: C~f~ \~ 0.20-0.40
 -   Crown fires: C~f~ \~ 0.60-0.80
 -   Default represents average across severities
 
@@ -874,7 +874,7 @@ When available, countries can use:
 
 1.  National forest inventory data: Standing biomass, litter
     depths
-2.   Fire behavior models: BEHAVE, FuelCalc, FCCS
+2.  Fire behavior models: BEHAVE, FuelCalc, FCCS
 3.  Field measurements: Post-fire fuel consumption studies
 4.  Remote sensing: LiDAR for 3D fuel structure
 
