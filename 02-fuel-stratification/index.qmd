@@ -98,7 +98,7 @@ div.column {
   display: block;
   height:200px;
   width: 200px;
-  background-image: url('https://raw.githubusercontent.com/seamusrobertmurphy/map-templates/refs/heads/main/assets/outputs/01-site-map.png');
+  background-image: url('https://raw.githubusercontent.com/seamusrobertmurphy/IPCC-wildfire-emissions/refs/heads/main/02-fuel-stratification/assets/aoi_veg_classes.png');
   background-size: contain;
   background-position: 50% 50%;
   padding-top: 80px !important;
@@ -210,16 +210,15 @@ cat("AOI loaded:", aoi_country_ee$size()$getInfo(), "country,",
 -   Temporal Resolution: Annual (2001-present)
 -   Classification System: Land Cover Type 1 - IGBP
     (International Geosphere-Biosphere Programme)
-    -   Algorithm: Supervised classification using Random
-        Forest trained on reference sites
-    -   Overall Accuracy: \~75% globally [@sulla2018user]
+-   Algorithm: Supervised classification using Random Forest
+    trained on reference sites
 
 ### IGBP Burnable Classes
 
 Forest Classes (1-5):
 
 | Class | Name | IPCC Category | Fuel Consumption (t ha⁻¹) |
-|---------------|---------------|---------------|-----------------|
+|-------|----------------------|--------------------------|--------------|
 | 1 | Evergreen Needleleaf Forests | Other Forest | 41.0 (mean) |
 | 2 | Evergreen Broadleaf Forests | Humid Tropical Forest | 119.6 (mean) |
 | 3 | Deciduous Needleleaf Forests | Other Forest | 41.0 (mean) |
@@ -229,7 +228,7 @@ Forest Classes (1-5):
 Grassland/Savanna Classes (6-10):
 
 | Class | Name | IPCC Category | Fuel Consumption (t ha⁻¹) |
-|----|----|----|----|
+|---------|----------------|------------------|---------------------|
 | 6 | Closed Shrublands | Savanna (Shrubland) | 14.3 (mean) |
 | 7 | Open Shrublands | Savanna (Shrubland) | 14.3 (mean) |
 | 8 | Woody Savannas | Savanna (Woody) | 2.6-4.6 (season) |
@@ -239,7 +238,7 @@ Grassland/Savanna Classes (6-10):
 Excluded Classes:
 
 | Class | Name | Reason for Exclusion |
-|----|----|----|
+|----------|-----------------------------|----------------------------|
 | 0 | Water | Not burnable |
 | 11 | Permanent Wetlands | Handled separately if Histosol |
 | 12 | Croplands | Agricultural fires (separate category) |
@@ -302,7 +301,7 @@ Known Classification Issues:
     forest/savanna
 4.  Temporal Lag: Land use changes not immediately reflected
 
-Regional Accuracy (Sulla-Menashe & Friedl, 2022):
+Regional Accuracy [@sulla2018user]:
 
 | Region        | Overall Accuracy | Forest Accuracy | Savanna Accuracy |
 |---------------|---------------|---------------|---------------|
@@ -397,12 +396,8 @@ cat("Forest area (approx):",
 
 # Visualize forest mask
 tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
-  tmap::tm_tiles(
-    ee_tile_url(
-      forest_mask$selfMask()$clip(aoi_country_ee$geometry()),
-      list(palette = "086a10", min = 1L, max = 1L)
-    ), group = "Forest (IGBP 1-5)"
-  ) +
+  tmap::tm_tiles(ee_tile_url(forest_mask$selfMask()$clip(aoi_country_ee$geometry()),
+  	list(palette = "086a10", min = 1L, max = 1L)), group = "Forest (IGBP 1-5)") +
   tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
   tmap::tm_basemap("Esri.WorldImagery")
 ```
@@ -900,11 +895,12 @@ until more validation data available
 ### GLAD Forest Height Validation {#sec-veg-glad-height}
 
 ```{r}
+#| eval: false 
 #| label: veg-glad-height-validation
 #| code-summary: "Validate forest classification with GLAD canopy height"
 
-# GLAD canopy height in GEE (Potapov et al.)
-glad_height <- ee$Image("UMD/hansen/global_forest_change_2023_v1_11")$
+# GLAD canopy height in GEE 
+glad_height <- ee$Image("UMD/hansen/global_forest_change_2024_v1_12")$
   select("treecover2000")$
   clip(aoi_country_ee$geometry())
 
@@ -912,9 +908,6 @@ glad_height <- ee$Image("UMD/hansen/global_forest_change_2023_v1_11")$
 glad_forest <- glad_height$gt(25L)
 
 # Compare with MODIS forest mask
-# Agreement: both say forest
-# MODIS-only: MODIS says forest, GLAD does not
-# GLAD-only: GLAD says forest, MODIS does not
 modis_forest_binary <- forest_mask$unmask(0L)
 glad_forest_binary  <- glad_forest$unmask(0L)
 
@@ -973,6 +966,7 @@ tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
 ### ESA WorldCover Validation {#sec-veg-esri-validation}
 
 ```{r}
+#| eval: false
 #| label: veg-esa-worldcover-validation
 #| code-summary: "Validate with ESA WorldCover 10m land cover"
 
@@ -1068,6 +1062,7 @@ Post-classification:
 ### Integrated Pipeline {#sec-veg-pipeline}
 
 ```{r}
+#| eval: false
 #| label: veg-complete-workflow
 #| code-summary: "End-to-end vegetation classification — Honduras 2010"
 
@@ -1156,6 +1151,7 @@ tmap::tm_shape(aoi_states_sf) + tmap::tm_borders(col = "MAP_COLORS", lwd = 1) +
 Required outputs for fuel biomass calculation (Chapter 3):
 
 ```{r}
+#| eval: false
 #| label: veg-output-format
 #| code-summary: "Output table for Chapter 3"
 
@@ -1176,9 +1172,7 @@ output_table <- data.frame(
   )
 )
 
-knitr::kable(output_table,
-  caption = "Honduras 2010 — Vegetation Classification Output",
-  digits = 1)
+knitr::kable(output_table,caption = "2010 Vegetation Classification Output",digits=1)
 ```
 
 ------------------------------------------------------------

@@ -15,7 +15,7 @@ editor_options:
   markdown: 
     wrap: 60
 engine: knitr
-bibliography: ../references/references.bib
+bibliography: ../references/references.bibx
 csl: ../references/apa.csl
 citeproc: true
 ---
@@ -239,6 +239,10 @@ burned_area <- mcd64$
 cat("MCD64A1 images:", burned_area$size()$getInfo(), "\n")
 cat("Bands:", paste(burned_area$first()$bandNames()$getInfo(),
     collapse = ", "), "\n")
+
+# MODIS projection helper
+modis_proj <- burned_area$first()$projection()
+
 
 # 25-year composite: every pixel that ever burned 
 all_years_burn <- burned_area$
@@ -687,7 +691,7 @@ table and bar chart.
 :::
 
 ```{r}
-#| label: annual-burned-ireland
+#| label: annual-burned-honduras
 #| code-summary: "Annual burned area 2000–2024 (25 years)"
 
 # Helper: annual burned area (ha) for one year 
@@ -990,37 +994,38 @@ pixel_area_manual <- calculatePixelArea()
 
 ### GLAD Comparison {#sec-ba-glad-comparison}
 
-Using `forestdata` package for complementary validation:
-
 
 ```{r}
-#| eval: true
-#| cache: true
-#| warning: false
-#| message: false
-#| error: false
-#| label: glad-validation
-#| code-summary: "Validate with GLAD forest loss — Honduras"
+#| label: veg-glad-height-validation
+#| code-summary: "Validate forest classification with GLAD canopy height"
 
-# GLAD Global Forest Change (Hansen et al.)
-# GEE asset: UMD/hansen/global_forest_change_2023_v1_11
-glad <- ee$Image("UMD/hansen/global_forest_change_2023_v1_11")
+# Forest mask from MCD12Q1 (IGBP classification)
+# Classes 1-5 = forest types (Evergreen Needleleaf, Evergreen Broadleaf,
+# Deciduous Needleleaf, Deciduous Broadleaf, Mixed Forest)
+lc <- ee$ImageCollection("MODIS/061/MCD12Q1")$
+  filterDate("2020-01-01", "2020-12-31")$first()$
+  select("LC_Type1")
+forest_mask <- lc$lte(5L)$And(lc$gte(1L))$clip(aoi_country_ee$geometry())
 
-# Forest loss year band: 0 = no loss, 1-23 = loss year (2001-2023)
-# Keep as 0/1 binary (no selfMask) so $Not() works correctly
-glad_loss_2010 <- glad$select("lossyear")$eq(10L)$
-  clip(aoi_country_ee$geometry())
+# GLAD canopy height in GEE
+glad_height <- ee$Image("UMD/hansen/global_forest_change_2023_v1_11")$
+  select("treecover2000")
 
-# Both layers as 0/1 with no masked pixels
-modis_binary <- annual_burned_2010$unmask(0L)
-glad_binary  <- glad_loss_2010$unmask(0L)
+# Forest threshold: > 25% canopy cover. 
+# Reproject to MODIS grid with upsampling 
+glad_forest <- glad_height$gt(25L)
+glad_forest_500m <- glad_forest$reproject(crs = modis_proj, scale = 500L)
 
-# Agreement analysis at 500 m
-agreement   <- modis_binary$And(glad_binary)$clip(aoi_country_ee$geometry())
-modis_only  <- modis_binary$And(glad_binary$Not())$clip(aoi_country_ee$geometry())
-glad_only   <- glad_binary$And(modis_binary$Not())$clip(aoi_country_ee$geometry())
+# forest_mask at MODIS native res 
+modis_forest_binary <- forest_mask$unmask(0L)$
+  reproject(crs = modis_proj, scale = 500L)
+glad_forest_binary  <- glad_forest_500m$unmask(0L)
 
-stats <- ee$Image$cat(
+agreement  <- modis_forest_binary$And(glad_forest_binary)
+modis_only <- modis_forest_binary$And(glad_forest_binary$Not())
+glad_only  <- glad_forest_binary$And(modis_forest_binary$Not())
+
+val_stats <- ee$Image$cat(
   agreement$rename("agree"),
   modis_only$rename("modis_only"),
   glad_only$rename("glad_only")
@@ -1028,164 +1033,88 @@ stats <- ee$Image$cat(
   reducer   = ee$Reducer$sum(),
   geometry  = aoi_country_ee$geometry(),
   scale     = 500L,
-  maxPixels = 1e9
-)$getInfo()
+  maxPixels = 1e9,
+    bestEffort = TRUE)$getInfo()
 
-cat("Honduras 2010 — GLAD Forest Loss vs MCD64A1\n")
-cat("  Both detect:", stats$agree, "pixels\n")
-cat("  MCD64A1 only:", stats$modis_only, "pixels\n")
-cat("  GLAD loss only:", stats$glad_only, "pixels\n")
-```
+total <- as.integer(val_stats$agree %||% 0) +
+  as.integer(val_stats$modis_only %||% 0) +
+  as.integer(val_stats$glad_only %||% 0)
 
-#### Visualize Chunk (Longer Runtime)
+cat("Honduras — Forest Classification Agreement\n")
+cat("  Both agree (forest):  ", val_stats$agree, "pixels\n")
+cat("  MODIS-only forest:    ", val_stats$modis_only, "pixels\n")
+cat("  Hansen-only forest:   ", val_stats$glad_only, "pixels\n")
+if (total > 0) {cat("  Agreement rate: ",round(as.integer(
+	val_stats$agree %||% 0) / total * 100, 1), "%\n")}
 
-```{r}
-#| eval: true
-#| echo: true
-
-# Visualize
+# Visualize agreement
 tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
-  tmap::tm_tiles(ee_tile_url(agreement, list(palette = "green", min = 0L, max = 1L)), group = "Both") +
-  tmap::tm_tiles(ee_tile_url(modis_only, list(palette = "blue", min = 0L, max = 1L)), group = "MCD64A1 only") +
-  tmap::tm_tiles(ee_tile_url(glad_only, list(palette = "red", min = 0L, max = 1L)), group = "GLAD only") +
+  tmap::tm_tiles(ee_tile_url(agreement$selfMask()$clip(aoi_country_ee$geometry()),
+      list(palette = "green", min = 1L, max = 1L)), group = "Both Agree: Forest") +
+  tmap::tm_tiles(ee_tile_url(modis_only$selfMask()$clip(aoi_country_ee$geometry()),
+      list(palette = "blue", min = 1L, max = 1L)), group = "MODIS-only Forest") +
+  tmap::tm_tiles(ee_tile_url(glad_only$selfMask()$clip(aoi_country_ee$geometry()),
+      list(palette = "red", min = 1L, max = 1L)), group = "Hansen-only Forest") +
   tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
-	tmap::tm_basemap("Esri.WorldImagery")
+  tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 
-### ESA WorldCover Comparison {#sec-ba-esa-validation}
+### ESA WorldCover Validation {#sec-veg-esri-validation}
 
 ```{r}
-#| eval: false
-#| label: esa-validation
-#| code-summary: "Validate with ESA WorldCover 10m — Honduras"
+#| label: veg-esa-worldcover-validation
+#| code-summary: "Validate with ESA WorldCover 10m land cover"
 
-# ESA WorldCover — single images (not collections), so no empty / bandless risk
-# Classes: 10=Tree, 20=Shrub, 30=Grassland, 40=Cropland, 50=Built, 60=Bare, 70=Snow, 80=Water, 90=Wetland, 95=Mangroves
+# ESA WorldCover 2020 (10m) in GEE
+# Do NOT clip() 10m data — materialises >2^31 pixels over Honduras
+# Reproject to MODIS 500m grid IMMEDIATELY at load time
+# Using shared modis_proj from init chunk
+
 esa_2020 <- ee$Image("ESA/WorldCover/v100/2020")$
-  clip(aoi_country_ee$geometry())
-esa_2021 <- ee$Image("ESA/WorldCover/v200/2021")$
-  clip(aoi_country_ee$geometry())
+  reproject(crs = modis_proj, scale = 500L)
 
-# Detect transitions to bare/sparse vegetation (class 60)
-bare_code <- 60L
-esa_to_bare <- esa_2020$neq(bare_code)$And(esa_2021$eq(bare_code))
+# ESA classes: 10=Tree cover, 20=Shrubland, 30=Grassland,
+# 40=Cropland, 50=Built-up, 60=Bare, 70=Snow/Ice,
+# 80=Water, 90=Herbaceous wetland, 95=Mangroves, 100=Moss/Lichen
 
-# Aggregate 10 m binary to 500 m, then threshold
-modis_proj <- burned_area$first()$projection()
-esa_bare_500m <- esa_to_bare$
-  reduceResolution(
-    reducer   = ee$Reducer$mean(),
-    maxPixels = 4096L  # >=(500/10)^2, with margin for projection
-  )$
-  reproject(crs = modis_proj)$
-  gt(0)  # any 10 m pixel transitioned → flag at 500 m
+# ESA forest (Tree cover)
+esa_forest <- esa_2020$eq(10L)
 
-# MODIS burned area for 2020 (matching ESA base year)
-modis_2020 <- burned_area$
-  filterDate("2020-01-01", "2020-12-31")$
-  map(filterQuality)$
-  select("BurnDate")$max()$gt(0L)$
-  clip(aoi_country_ee$geometry())
+# ESA savanna proxy (Shrubland + Grassland)
+esa_savanna <- esa_2020$eq(20L)$Or(esa_2020$eq(30L))
 
-# Keep images masked (selfMask) so only flagged pixels are counted.
-# unmask(0) at 10 m over Honduras exceeds GEE's 2^31 pixel cap,
-# so we work with sparse masked images and reduce each separately.
-modis_masked <- modis_2020$selfMask()$clip(aoi_country_ee$geometry())
-esa_masked   <- esa_bare_500m$selfMask()$clip(aoi_country_ee$geometry())
+# Compare ESA forest with MODIS forest
+# Both images are already at 500m (esa_2020 reprojected above,
+# forest_mask from MCD12Q1 native 500m) — safe to unmask and combine
+esa_forest_binary <- esa_forest$unmask(0L)$
+  reproject(crs = modis_proj, scale = 500L)
+modis_forest_500m <- forest_mask$unmask(0L)$
+  reproject(crs = modis_proj, scale = 500L)
 
-reduce_sum <- function(img) {
-  img$reduceRegion(
-    reducer   = ee$Reducer$sum(),
-    geometry  = aoi_country_ee$geometry(),
-    scale     = 500L,
-    maxPixels = 1e9
-  )$getInfo()
-}
+agree_esa  <- modis_forest_500m$And(esa_forest_binary)
+modis_esa  <- modis_forest_500m$And(esa_forest_binary$Not())
+esa_only   <- esa_forest_binary$And(modis_forest_500m$Not())
 
-# Agreement: pixels where both datasets flag burning / bare transition
-n_modis <- reduce_sum(modis_masked)[[1]]
-n_esa   <- reduce_sum(esa_masked)[[1]]
+esa_stats <- ee$Image$cat(
+  agree_esa$rename("agree"),
+  modis_esa$rename("modis_only"),
+  esa_only$rename("esa_only")
+)$reduceRegion(
+  reducer   = ee$Reducer$sum(),
+  geometry  = aoi_country_ee$geometry(),
+  scale     = 500L,
+  maxPixels = 1e9,
+    bestEffort = TRUE)$getInfo()
 
-# Overlap: multiply two binary masks — only 1*1 survives
-overlap_img <- modis_masked$multiply(esa_masked)$selfMask()
-n_agree     <- reduce_sum(overlap_img)[[1]]
-n_modis_only <- n_modis - n_agree
-n_esa_only   <- n_esa   - n_agree
-
-cat("Honduras 2020–2021 — ESA WorldCover Change vs MCD64A1\n")
-cat("  Both detect:", n_agree, "pixels\n")
-cat("  MCD64A1 only:", n_modis_only, "pixels\n")
-cat("  ESA bare transition only:", n_esa_only, "pixels\n")
-# Disagreement may indicate:
-#   - MODIS missed small fires (ESA detected at 10 m)
-#   - ESA detected non-fire disturbances (logging, clearing)
+cat("Honduras — MODIS vs ESA WorldCover Forest Agreement\n")
+cat("  Overlapping forest: ", esa_stats$agree, "pixels\n")
+cat("  MODIS-only forest:   ", esa_stats$modis_only, "pixels\n")
+cat("  ESA-only forest:     ", esa_stats$esa_only, "pixels\n")
 ```
 
-### Country Data Comparison {#sec-ba-country-reports}
 
-```{r}
-#| eval: false
-#| label: country-comparison
-#| code-summary: "Compare with UNFCCC country reports — Honduras"
 
-# Compute annual burned area from MCD64A1 for multiple years
-years <- 2001:2023
-getAnnualBA <- function(yr) {
-  annual <- mcd64$
-    filter(ee$Filter$calendarRange(yr, yr, "year"))$
-    filterBounds(aoi_country_ee$geometry())$
-    map(filterQuality)$
-    select("BurnDate")$max()$gt(0L)$selfMask()
-
-  area_ha <- annual$
-    multiply(ee$Image$pixelArea()$divide(10000))$
-    reduceRegion(
-      reducer   = ee$Reducer$sum(),
-      geometry  = aoi_country_ee$geometry(),
-      scale     = 500L,
-      maxPixels = 1e9
-    )
-
-  ee$Feature(NULL, list(
-    year = yr,
-    burned_area_ha = area_ha$get("BurnDate")
-  ))
-}
-
-results_fc <- ee$FeatureCollection(lapply(years, getAnnualBA))
-modis_ba <- ee_to_sf(results_fc) |> sf::st_drop_geometry()
-
-# Example: Load country-reported burned area
-# (Would typically come from UNFCCC National Inventory Reports)
-country_reported <- data.frame(
-  year   = c(2010, 2015, 2020),
-  reported_ba_ha = c(25000, 18000, 32000),  # Replace with actual UNFCCC data
-  source = "Honduras NIR"
-)
-
-comparison <- merge(country_reported, modis_ba, by = "year")
-comparison$difference_ha <- comparison$reported_ba_ha - comparison$burned_area_ha
-comparison$percent_diff  <- (comparison$difference_ha / comparison$reported_ba_ha) * 100
-
-ggplot(comparison, aes(x = year)) +
-  geom_line(aes(y = reported_ba_ha, color = "Country Reported"), linewidth = 1) +
-  geom_line(aes(y = burned_area_ha, color = "MODIS MCD64A1"), linewidth = 1) +
-  geom_point(aes(y = reported_ba_ha, color = "Country Reported"), size = 3) +
-  geom_point(aes(y = burned_area_ha, color = "MODIS MCD64A1"), size = 3) +
-  scale_color_manual(values = c("Country Reported" = "blue", "MODIS MCD64A1" = "red")) +
-  labs(
-    title = "Burned Area: Country Reports vs MODIS MCD64A1",
-    subtitle = "Honduras",
-    x = "Year", y = "Burned Area (hectares)", color = "Source"
-  ) +
-  theme_minimal() +
-  theme(legend.position = "bottom")
-
-cor_test <- cor.test(comparison$reported_ba_ha, comparison$burned_area_ha)
-cat("Correlation:", round(cor_test$estimate, 3), "\n")
-cat("P-value:", cor_test$p.value, "\n")
-```
 
 ------------------------------------------------------------
 
@@ -1221,47 +1150,58 @@ applications
 
 ### Sensitivity Analysis {#sec-ba-sensitivity}
 
-
-```{r}
+````{r}
 #| eval: true
 #| label: sensitivity-analysis
 #| code-summary: "Assess sensitivity to quality threshold — Honduras 2010"
 
+# Use full MCD64A1 collection — not a pre-filtered subset
+mcd64_sens <- ee$ImageCollection("MODIS/061/MCD64A1")$
+  filterDate("2010-01-01", "2010-12-31")$
+  filterBounds(aoi_country_ee$geometry())
+geom <- aoi_country_ee$geometry()
+
 # Test multiple uncertainty thresholds
 thresholds <- c(10L, 15L, 20L, 25L, 30L)
 
-sensitivity_results <- data.frame(
-  threshold = numeric(),
-  burned_area_ha = numeric())
-
-for (thresh in thresholds) {
-  filtered <- burned_area$
-    filterDate("2010-01-01", "2010-12-31")$
-    map(function(img) {
+sensitivity_results <- do.call(rbind, lapply(thresholds, function(thresh) {
+  tryCatch({
+    filtered <- mcd64_sens$map(function(img) {
       mask <- img$select("Uncertainty")$lt(thresh)$
         And(img$select("BurnDate")$gt(0L))
-      img$updateMask(mask)})
-  result <- filtered$
-    select("BurnDate")$max()$gt(0L)$selfMask()$
-    multiply(ee$Image$pixelArea()$divide(10000))$
-    reduceRegion(
-      reducer   = ee$Reducer$sum(),
-      geometry  = aoi_country_ee$geometry(),
-      scale     = 500L,
-      maxPixels = 1e9
-    )$getInfo()
-  sensitivity_results <- rbind(
-    sensitivity_results,
-    data.frame(threshold = thresh, burned_area_ha = result$BurnDate)
-  )
-}
+      img$updateMask(mask)
+    })
+
+    result <- filtered$
+      select("BurnDate")$max()$gt(0L)$selfMask()$
+      multiply(ee$Image$pixelArea()$divide(10000))$
+      reduceRegion(
+        reducer    = ee$Reducer$sum(),
+        geometry   = geom,
+        scale      = 500L,
+        maxPixels  = 1e9,
+        bestEffort = TRUE
+      )$getInfo()
+
+    val <- result[["BurnDate"]]
+    data.frame(
+      threshold      = thresh,
+      burned_area_ha = if (is.null(val)) NA_real_ else as.numeric(val)
+    )
+  }, error = function(e) {
+    message("Threshold ", thresh, " failed: ", e$message)
+    data.frame(threshold = thresh, burned_area_ha = NA_real_)
+  })
+}))
 
 ggplot(sensitivity_results, aes(x = threshold, y = burned_area_ha)) +
   geom_line(linewidth = 1, color = "darkred") +
   geom_point(size = 3, color = "darkred") +
   geom_vline(xintercept = 20, linetype = "dashed", color = "blue") +
-  annotate("text", x = 20, y = max(sensitivity_results$burned_area_ha) * 0.9,
+  annotate("text", x = 20,
+           y = max(sensitivity_results$burned_area_ha, na.rm = TRUE) * 0.9,
            label = "FAOSTAT threshold", hjust = -0.1) +
+  scale_y_continuous(labels = scales::comma) +
   labs(
     title = "Sensitivity of Burned Area to Uncertainty Threshold",
     subtitle = "Honduras 2010 — MCD64A1",
@@ -1269,12 +1209,12 @@ ggplot(sensitivity_results, aes(x = threshold, y = burned_area_ha)) +
     y = "Burned Area (hectares)"
   ) +
   theme_minimal()
-```
+````
 
 
 ### Documenting Uncertainty for NGHGI {#sec-ba-nghgi-uncertainty}
 
-Required documentation for Tier 1:
+Required documentation:
 
 1.  Data source and version: MODIS MCD64A1 Collection 6.1
 2.  Quality criteria applied: Uncertainty \< 20%
@@ -1288,18 +1228,17 @@ Required documentation for Tier 1:
 
 Example uncertainty table for NGHGI report:
 
-
 ```{r}
 #| eval: true
 #| label: uncertainty-table
 
 uncertainty_table <- data.frame(
   Source = c(
-  	"Satellite detection", 
-  	"Land cover classification", 
-  	"Area calculation", 
-  	"Total (quadrature)"),
-  Uncertainty = c("±30%", "±15%", "±5%", "±34%"),
+    "Satellite detection",
+    "Land cover classification",
+    "Area calculation",
+    "Total (quadrature)"),
+  Uncertainty = c("\u00b130%", "\u00b115%", "\u00b15%", "\u00b134%"),
   Method = c(
     "MCD64A1 validation (Giglio et al. 2018)",
     "MCD12Q1 accuracy assessment",
@@ -1327,8 +1266,7 @@ knitr::kable(
 #| code-summary: "End-to-end burned area processing — Honduras"
 
 
-# IPCC Tier 1 Burned Area Processing Pipeline
-# MODIS MCD64A1 Collection 6.1
+# IPCC Tier 1 Burned Area Processing Script
 # ============================================================
 
 # 1. Parameters
@@ -1371,6 +1309,8 @@ task <- ee$batch$Export$table$toDrive(
   folder      = "IPCC_Fire_Emissions",
   fileFormat  = "CSV"
 )
+
+# Export task disabled
 #task$start()
 #cat("Export started:", task$id, "\n")
 
@@ -1383,15 +1323,11 @@ ggplot(results_df, aes(x = year, y = burned_area_ha)) +
   geom_line(color = "darkred", linewidth = 1) +
   geom_point(color = "darkred", size = 3) +
   labs(
-  	title    = "Annual Burned Area — Honduras",
-    subtitle = paste("MODIS MCD64A1 Collection 6.1 |", year_start, "–", year_end),
-    x = "Year", y = "Burned Area (hectares)"
-  ) +
+  	title    = "Annual Burned Area — Honduras", 
+  	subtitle = paste("MODIS MCD64A1 Collection 6.1 |", year_start, "–", year_end),
+  	x = "Year", y = "Burned Area (hectares)") +
   theme_minimal() +
-  theme(
-    plot.title    = element_text(face = "bold", size = 14),
-    plot.subtitle = element_text(size = 10, color = "gray40")
-  )
+  theme(plot.title=element_text(face="bold",size=14),plot.subtitle = element_text(size=10,color="gray40"))
 ```
 
 ### Data Export Formats {#sec-ba-export-formats}
@@ -1412,12 +1348,12 @@ nghgi_output <- results_df %>%
     Data_Source = "MODIS MCD64A1 Collection 6.1",
     Quality_Tier = "Tier 1",
     Uncertainty_Percent = 30
-  ) %>%
+    ) %>%
   rename(
     Year = year,
     Country = country,
     Burned_Area_ha = burned_area_ha
-  )
+    )
 
 # Export
 write.csv(

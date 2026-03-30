@@ -1,0 +1,82 @@
+---
+title: "notes"
+editor: visual
+---
+
+### Country Data Comparison (Pending Inputs) {#sec-ba-country-reports}
+
+```{r}
+#| eval: false
+#| label: country-comparison
+#| code-summary: "Compare with UNFCCC country reports — Honduras"
+
+# Ensure full MCD64A1 collection is loaded (not a pre-filtered subset)
+mcd64_full <- ee$ImageCollection("MODIS/061/MCD64A1")
+
+years <- 2001:2023
+geom  <- aoi_country_ee$geometry()
+
+getAnnualBA <- function(yr) {
+  annual <- mcd64_full$
+    filter(ee$Filter$calendarRange(yr, yr, "year"))$
+    filterBounds(geom)$
+    map(faostat_filter)$
+    select("BurnDate")$max()$gt(0L)$selfMask()
+  
+  area_result <- annual$
+    multiply(ee$Image$pixelArea()$divide(10000))$
+    reduceRegion(
+      reducer    = ee$Reducer$sum(),
+      geometry   = geom,
+      scale      = 500L,
+      maxPixels  = 1e9,
+      bestEffort = TRUE
+    )$getInfo()
+  
+  val <- area_result[["BurnDate"]]
+  data.frame(
+    year           = yr,
+    burned_area_ha = if (is.null(val)) NA_real_ else as.numeric(val)
+  )
+}
+
+# Pull year-by-year — avoids building a massive FeatureCollection server-side
+modis_ba <- do.call(rbind, lapply(years, function(yr) {
+  tryCatch(
+    getAnnualBA(yr),
+    error = function(e) {
+      message("Year ", yr, " failed: ", e$message)
+      data.frame(year = yr, burned_area_ha = NA_real_)
+    }
+  )
+}))
+
+# Example: Load burned area data
+country_reported <- data.frame(
+  year           = c(2010, 2015, 2020),
+  reported_ba_ha = c(25000, 18000, 32000),  
+  source         = "Honduras NIR"
+)
+
+comparison <- merge(country_reported, modis_ba, by = "year")
+comparison$difference_ha <- comparison$reported_ba_ha - comparison$burned_area_ha
+comparison$percent_diff  <- (comparison$difference_ha / comparison$reported_ba_ha) * 100
+
+ggplot(comparison, aes(x = year)) +
+  geom_line(aes(y = reported_ba_ha, color = "Country Reported"), linewidth = 1) +
+  geom_line(aes(y = burned_area_ha, color = "MODIS MCD64A1"), linewidth = 1) +
+  geom_point(aes(y = reported_ba_ha, color = "Country Reported"), size = 3) +
+  geom_point(aes(y = burned_area_ha, color = "MODIS MCD64A1"), size = 3) +
+  scale_color_manual(values = c("Country Reported" = "blue", "MODIS MCD64A1" = "red")) +
+  labs(
+    title    = "Burned Area: Country Reports vs MODIS MCD64A1",
+    subtitle = "Honduras",
+    x = "Year", y = "Burned Area (hectares)", color = "Source"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+cor_test <- cor.test(comparison$reported_ba_ha, comparison$burned_area_ha)
+cat("Correlation:", round(cor_test$estimate, 3), "\n")
+cat("P-value:", cor_test$p.value, "\n")
+```
