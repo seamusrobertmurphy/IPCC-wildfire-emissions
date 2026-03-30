@@ -211,20 +211,20 @@ downstream operations.
 reticulate::use_python("/opt/local/bin/python", required=T)
 
 # Initialise Earth Engine
-ee <- import("ee")
+ee <- reticulate::import("ee")
 ee$Initialize(project = "murphys-deforisk")
 cat("GEE initialised\n")
 
-# Helper Function: enables EE tile in tmap/leaflet visualisation
+# Helper Function to visualize EE tile in tmap/leaflet
 ee_tile_url <- function(ee_image, vis_params) {
   ee_image$getMapId(vis_params)$tile_fetcher$url_format}
 
-# EE FeatureCollection → sf
+# EE FeatureCollection => sf
 ee_to_sf <- function(fc) {
   geojsonsf::geojson_sf(
     jsonlite::toJSON(fc$getInfo(), auto_unbox = TRUE))}
 
-# Load AOI boundaries from FAO GAUL -------------------------
+# Load AOI boundaries from FAO GAUL 
 aoi_country_ee <- ee$FeatureCollection("FAO/GAUL/2015/level0")$
 	filter(ee$Filter$eq("ADM0_NAME", "Honduras"))
 aoi_states_ee  <- ee$FeatureCollection("FAO/GAUL/2015/level1")$
@@ -233,7 +233,7 @@ aoi_states_ee  <- ee$FeatureCollection("FAO/GAUL/2015/level1")$
 aoi_country_sf <- ee_to_sf(aoi_country_ee)
 aoi_states_sf  <- ee_to_sf(aoi_states_ee)
 
-# Load MCD64A1 & filter to AOI & TOI -----------------------
+# Load MCD64A1 & filter to AOI & TOI 
 mcd64 <- ee$ImageCollection("MODIS/061/MCD64A1")
 burned_area <- mcd64$
   filterBounds(aoi_country_ee$geometry())$
@@ -243,7 +243,7 @@ cat("MCD64A1 images:", burned_area$size()$getInfo(), "\n")
 cat("Bands:", paste(burned_area$first()$bandNames()$getInfo(),
     collapse = ", "), "\n")
 
-# 25-year composite: every pixel that ever burned -----------
+# 25-year composite: every pixel that ever burned 
 all_years_burn <- burned_area$
   select("BurnDate")$max()$gt(0L)$selfMask()$
   clip(aoi_country_ee$geometry())
@@ -260,7 +260,6 @@ tmap::tm_basemap("Esri.WorldImagery") +
 #### Multi-Criteria Filtering {#sec-ba-gee-advanced}
 
 ```{r}
-#| eval: false
 #| label: gee-advanced-filtering-a
 #| code-summary: "Advanced filtering with quality criteria"
 
@@ -269,7 +268,7 @@ filterQuality <- function(image) {
   burnDate    <- image$select("BurnDate")
   uncertainty <- image$select("Uncertainty")
   qa          <- image$select("QA")
-
+  
   # 1. Valid burn date (1-366)
   validBurn      <- burnDate$gt(0L)$And(burnDate$lte(366L))
   # 2. Uncertainty less than 20%
@@ -308,10 +307,8 @@ Recommended QA filtering:
 # Extract quality information as separate bands
 extractQA <- function(image) {
   qa <- image$select("QA")
-
   landWater   <- qa$bitwiseAnd(1L)
   dataQuality <- qa$rightShift(1L)$bitwiseAnd(3L)
-
   image$
     addBands(landWater$rename("land_water"))$
     addBands(dataQuality$rename("data_quality"))
@@ -368,12 +365,12 @@ collection and compare pre- vs. post-filter pixel counts.
 #| label: faostat-filter-honduras
 #| code-summary: "FAOSTAT quality filtering"
 
-# Use a year with known detections (2010 was the peak)
+# Use a year with known detections
 burned_2010 <- mcd64$
   filterBounds(aoi_country_ee$geometry())$
   filterDate("2010-01-01", "2010-12-31")
 
-# --- Pre-filter: all burned pixels -------------------------
+# Pre-filter: all burned pixels
 pre_count <- burned_2010$
   select("BurnDate")$
   map(function(img) img$gt(0L)$selfMask())$
@@ -385,7 +382,7 @@ pre_count <- burned_2010$
     maxPixels = 1e9
   )$getInfo()
 
-# --- Define FAOSTAT filter (Python-side) -------------------
+# Define FAOSTAT filter
 faostat_filter <- function(image) {
   unc  <- image$select("Uncertainty")
   burn <- image$select("BurnDate")
@@ -393,7 +390,7 @@ faostat_filter <- function(image) {
   image$updateMask(mask)
 }
 
-# --- Post-filter -------------------------------------------
+# Post-filter
 post_count <- burned_2010$
   map(faostat_filter)$
   select("BurnDate")$
@@ -418,6 +415,31 @@ if (pre > 0) {
   cat("  Retention rate       :",
       round(post / pre * 100, 1), "%\n")
 }
+
+# Visualize
+pre_burn <- burned_2010$
+  select("BurnDate")$
+  map(function(img) img$gt(0L)$selfMask())$
+  max()$
+  clip(aoi_country_ee$geometry())
+
+post_burn <- burned_2010$
+  map(faostat_filter)$
+  select("BurnDate")$max()$gt(0L)$selfMask()$
+  clip(aoi_country_ee$geometry())
+
+tmap::tmap_mode("view")
+tmap::tm_basemap("Esri.WorldImagery") +
+tmap::tm_tiles(
+  ee_tile_url(pre_burn, list(palette = "red", min = 0L, max = 1L)),
+  group = "Before Filter") +
+tmap::tm_tiles(
+  ee_tile_url(post_burn, list(palette = "yellow", min = 0L, max = 1L)),
+  group = "After Filter (<20%)") +
+tmap::tm_shape(aoi_country_sf) +
+  tmap::tm_borders(col = "white", lwd = 1.5) +
+tmap::tm_scalebar(
+  position = c("RIGHT", "BOTTOM"), text.size = 0.5)
 ```
 
 ### Uncertainty Quantification {#sec-ba-uncertainty-quant}

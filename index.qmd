@@ -81,10 +81,6 @@ This resource provides comprehensive methodological guidance for deriving IPCC T
 
 The methodology presented here addresses key challenges in fire emissions accounting: inter-annual variability in natural disturbances, the managed land proxy approach for anthropogenic attribution, uncertainty quantification across multiple data sources, and the balance between immediate emissions and subsequent carbon removals. Each chapter builds systematically from data acquisition through quality control, providing transparent, reproducible workflows suitable for national greenhouse gas inventory reporting and validation.
 
-## Chapter Workflows
-
-This toolkit was organized around the following chapters to facilitate step-by-step guidance for implementing each component of the IPCC Tier 1 method. Each chapter builds upon data and methods from previous sections, creating an integrated framework.
-
 #### Chapter 1: Burn Area {.unnumbered}
 
 Extract MODIS MCD64A1 data, apply quality filters, aggregate temporally and spatially, handle missing data, and validate against alternative fire products.
