@@ -6,6 +6,11 @@
 /.quarto/
 /assets/inputs/
 .DS_Store
+/.claude/
+CLAUDE.md
+SPECIFICATION.md
+/specs/
+/resources/
 
 *.dbf
 *.tif

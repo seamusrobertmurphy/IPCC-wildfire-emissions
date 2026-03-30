@@ -77,9 +77,33 @@ div.column {
 }
 ```
 
-This resource provides comprehensive methodological guidance for deriving IPCC Tier 1 Forest Fire Activity Data, with particular emphasis on burned area estimation following FAOSTAT and IPCC 2019 Refinement protocols. The workflow integrates satellite-based fire detection, land cover classification, fuel consumption modeling, and emission factor application within the Google Earth Engine platform to produce country-level greenhouse gas emission estimates from biomass burning.
+This resource provides comprehensive methodological guidance for deriving IPCC Tier 1 Forest Fire Activity Data, with particular emphasis on burned area estimation following FAOSTAT and IPCC 2019 Refinement protocols. The workflow integrates satellite-based fire detection, land cover classification, fuel consumption modeling, and emission factor application to produce country-level greenhouse gas emission estimates from biomass burning. The eBook uses an example AOI derived from the Republic of Ireland national border.
 
 The methodology presented here addresses key challenges in fire emissions accounting: inter-annual variability in natural disturbances, the managed land proxy approach for anthropogenic attribution, uncertainty quantification across multiple data sources, and the balance between immediate emissions and subsequent carbon removals. Each chapter builds systematically from data acquisition through quality control, providing transparent, reproducible workflows suitable for national greenhouse gas inventory reporting and validation.
+
+## Chapter Workflows
+
+This toolkit was organized around the following chapters to facilitate step-by-step guidance for implementing each component of the IPCC Tier 1 method. Each chapter builds upon data and methods from previous sections, creating an integrated framework.
+
+#### Chapter 1: Burn Area {.unnumbered}
+
+Extract MODIS MCD64A1 data, apply quality filters, aggregate temporally and spatially, handle missing data, and validate against alternative fire products.
+
+#### Chapter 2: Fuel Stratification {.unnumbered}
+
+Classify burned pixels into Forest (Humid Tropical, Other), Savanna, and Organic Soil categories using MODIS land cover and auxiliary datasets.
+
+#### Chapter 3: Fuel Consumption {.unnumbered}
+
+Assign IPCC default fuel consumption values based on vegetation type and climate zone stratification, calculate total burned biomass.
+
+#### Chapter 4: Emission Factors {.unnumbered}
+
+Apply IPCC emission factors, compute CH₄, N₂O, and CO₂ emissions, handle CO₂ reporting exclusions for non-stand-replacing fires.
+
+#### Chapter 5: QA/QC & Audit-Ready SOPs (Pending) {.unnumbered}
+
+Cross-validation with UNFCCC data, uncertainty propagation, sensitivity analysis, and documentation for NGHGI reporting.
 
 ------------------------------------------------------------------------
 
@@ -138,7 +162,7 @@ The methodology adopts the Managed Land Proxy (MLP) as the primary framework for
 -   Optional disaggregation separates anthropogenic activities from natural disturbance impacts
 -   Expectation that emissions from natural disturbances balance with subsequent removals over time
 
-The 2019 IPCC Refinement provides enhanced guidance for addressing interannual variability (IAV) caused by:
+The 2019 IPCC Refinement provides enhanced guidance for addressing inter-annual variability (IAV) caused by:
 
 1.  Natural disturbances (wildfires, insects, windthrow, ice storms)
 2.  Climate variability affecting photosynthesis and respiration
@@ -691,7 +715,7 @@ Getting Started:
 
 3.  Python API Setup (optional):
 
-    ``` bash
+    ``` python
     pip install earthengine-api
     earthengine authenticate
     ```
@@ -703,7 +727,7 @@ Getting Started:
     -   `FeatureCollection`: Vector dataset (e.g., country boundaries)
     -   `Reducer`: Aggregation functions (sum, mean, etc.)
 
-FAOSTAT-Relevant GEE Assets:
+FAOSTAT-Relevant GEE Assets:[^index-3]
 
 ``` javascript
 // Burned Area
@@ -731,37 +755,13 @@ Resources:
 
 ------------------------------------------------------------------------
 
-## Chapter Workflows
-
-The following chapters provide detailed, step-by-step guidance for implementing each component of the IPCC Tier 1 burned area and emissions estimation workflow. Each chapter builds upon data and methods from previous sections, creating an integrated analytical framework.
-
-### Chapter 1: Burn Area {.unnumbered}
-
-Extract MODIS MCD64A1 data, apply quality filters, aggregate temporally and spatially, handle missing data, and validate against alternative fire products.
-
-### Chapter 2: Fuel Stratification {.unnumbered}
-
-Classify burned pixels into Forest (Humid Tropical, Other), Savanna, and Organic Soil categories using MODIS land cover and auxiliary datasets.
-
-### Chapter 3: Fuel Consumption {.unnumbered}
-
-Assign IPCC default fuel consumption values based on vegetation type and climate zone stratification, calculate total burned biomass.
-
-### Chapter 4: Emission Factors {.unnumbered}
-
-Apply IPCC emission factors, compute CH₄, N₂O, and CO₂ emissions, handle CO₂ reporting exclusions for non-stand-replacing fires.
-
-### Chapter 5: QA/QC & SOPs {.unnumbered}
-
-Cross-validation with UNFCCC data, uncertainty propagation, sensitivity analysis, and documentation for NGHGI reporting.
-
-------------------------------------------------------------------------
-
-Last Updated: `r Sys.Date()`\
+Last Updated: 2025-11-10\
 Suggested Citation: Murphy, S (2025). IPCC Forest Fire Activity Data & Emissions Factors: Methodological Guide for Deriving Burned Area and Emissions Estimates.
 
 ------------------------------------------------------------------------
 
 [^index-1]: Note to self: 2025 wishlist
 
-[^index-2]: Section 2.6: URL to page number here
+[^index-2]: Direct Page Link: <https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf#page=71>
+
+[^index-3]: Code chunks provided in both Python, Javascript, and R for use in either Google Colaboratory, Earth Engine Codespace, or using `rgee` and `reticulate` dependencies.

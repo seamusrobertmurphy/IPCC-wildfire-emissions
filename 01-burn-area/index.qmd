@@ -43,9 +43,9 @@ easypackages::packages(
   "dendextend", "digest","DiagrammeR","dtwclust", "downlit", 
   "e1071", "exactextractr","elevatr", 
   "FNN", "future", "forestdata",
-  "gdalcubes", "gdalUtilities", "geojsonsf", "geos", "ggplot2", "ggstats", 
-  "ggspatial", "ggmap", "ggplotify", "ggpubr", "ggrepel", "giscoR", 
-  "hdf5r", "httr", "httr2", "htmltools",
+  "gdalcubes", "gdalUtilities", "geojsonsf", "geos", "geodata", "ggplot2", 
+  "ggstats", "ggspatial", "ggmap", "ggplotify", "ggpubr", "ggrepel", "giscoR", 
+  "hdf5r", "httr", "httr2", "htmltools", "here",
   "jsonlite", 
   "kohonen", 
   "leaflet.providers", "leafem", "libgeos","luz","lwgeom", "leaflet", "leafgl",
@@ -60,6 +60,9 @@ easypackages::packages(
   "tmap", "tmaptools", "terrainr", 
   "xgboost",
   prompt = F)
+
+sf::sf_use_s2(use_s2 = FALSE) #spherical geometries
+knitr::opts_knit$set(root.dir = here::here()) #working subdirectory
 ```
 
 ```{r}
@@ -81,7 +84,6 @@ knitr::opts_chunk$set(
   comment = NA, 
   tidy.opts = list(width.cutoff = 60)
   ) 
-sf::sf_use_s2(use_s2 = FALSE)
 ```
 
 ```{css, echo=FALSE, class.source = 'foldable'}
@@ -102,6 +104,50 @@ div.column {
   padding-top: 80px !important;
   background-repeat: no-repeat;
 }
+```
+
+### Import data
+
+#### AOI Jurisdiction
+
+```{r, class.source = c("numCode", "r", "numberLines")}
+#| eval: false
+
+# AOI Jurisdictional Bdry 
+aoi_country = geodata::gadm(country="IRL", level=0, path="./01-burn-area/AOI") |> sf::st_as_sf()
+aoi_states  = geodata::gadm(country="IRL", level=1, path="./01-burn-area/AOI") |> sf::st_as_sf()
+st_write(aoi_country, "./01-burn-area/AOI/aoi_country.shp", delete_dsn = T)
+st_write(aoi_states, "./01-burn-area/AOI/aoi_states.shp", delete_dsn = T)
+crs_master = sf::st_crs(aoi_country)
+
+# Visualize
+tmap::tmap_mode("view")
+tmap::tm_shape(aoi_states) + tmap::tm_borders(col="MAP_COLORS", lwd=2) +
+	tmap::tm_shape(aoi_country) + tmap::tm_borders(col="white", lwd=1) +
+  tmap::tm_scalebar(position=c("RIGHT", "BOTTOM"), text.size = .5) +
+  tmap::tm_basemap("Esri.WorldImagery") 
+	#tmap::tm_basemap("OpenStreetMap") 
+  #tmap::tm_basemap("OpenTopoMap") 
+  
+```
+
+```{r}
+#| warning: false
+#| message: false
+#| error: false
+#| echo: false
+#| eval: true
+#| comment: NA
+
+aoi_country = sf::read_sf("./01-burn-area/AOI/aoi_country.shp", quiet=T)
+aoi_states  = sf::read_sf("./01-burn-area/AOI/aoi_states.shp",  quiet=T) 
+
+# Visualize
+tmap::tmap_mode("view")
+tmap::tm_shape(aoi_states) + tmap::tm_borders(col="MAP_COLORS", lwd=2) +
+	tmap::tm_shape(aoi_country) + tmap::tm_borders(col="white", lwd=1) +
+  tmap::tm_scalebar(position=c("RIGHT", "BOTTOM"), text.size = .5) +
+  tmap::tm_basemap("Esri.WorldImagery") 
 ```
 
 ## FAOSTAT Framework {#sec-ba-framework}
@@ -143,6 +189,7 @@ Spatial Resolution Considerations:
     $d = 500 \times \cos(\text{latitude})$
 -   Area calculations corrected using pixel-specific
     latitude
+-   Target AOI and dataset overlaps/gaps (see above)
 
 ### Temporal Coverage {#sec-ba-temporal-coverage}
 
