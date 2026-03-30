@@ -156,20 +156,6 @@ with IPCC 2006 Guidelines [@ipccChapter3Consistent2006]:
 #   └─ ELSE → Not classified (excluded from analysis)
 ```
 
-## IPCC Vegetation Requirements {#sec-veg-reporting}
-
-Following IPCC guidelines:
-
-| Vegetation Type | CO₂ | CH₄ | N₂O | Rationale                   |
-|-----------------|-----|-----|-----|-----------------------------|
-| Forest Fires    | ❌  | ✅  | ✅  | CO₂ in carbon stock changes |
-| Savanna Fires   | ❌  | ✅  | ✅  | Assumes annual CO₂ balance  |
-| Peatland Fires  | ✅  | ✅  | ❌  | Per Wetlands Supplement     |
-
-Key principle: CO₂ from non-stand-replacing fires assumed
-balanced by regrowth within one year (IPCC 2019, Section
-2.4).
-
 ------------------------------------------------------------
 
 ## MODIS Land Cover: MCD12Q1 {#sec-veg-modis}

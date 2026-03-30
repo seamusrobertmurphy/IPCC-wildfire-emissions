@@ -219,21 +219,6 @@ Emissions from Grassland and woody vegetation:
 3\. Fires in Organic Soils\
 Emissions from peat fires identified by overlaying burned area with Histosols class from the Harmonized World Soil Database. Due to high uncertainty and limited validation outside Southeast Asia, emissions are set to zero for all countries except those in Southeast Asia (Indonesia, Malaysia, Brunei Darussalam). Complete global estimates are provided in supplementary files for reference and research purposes.
 
-#### UNFCCC Data Integration
-
-FAOSTAT also disseminates emissions and activity data reported by countries to UNFCCC:
-
--   Activity data: Sourced from National GHG Inventories or National Communications
--   Emission data: Sourced from UNFCCC data portal or Biennial Update Reports (BURs)
--   Formalized via FAO-UNFCCC Memorandum of Understanding
-
-This integration enables direct comparison between:
-
--   Top-down satellite-based FAOSTAT estimates
--   Bottom-up country-reported NGHGI data
-
-------------------------------------------------------------------------
-
 #### Temporal Gap-Filling
 
 Primary Satellite Era (2001–2024): Direct observations from MODIS MCD64A1 Collection 6.1 provide monthly burned area at 500m resolution.
@@ -507,42 +492,6 @@ Accuracy:
 -   Overall accuracy: \~75% globally
 -   Higher accuracy in homogeneous landscapes
 -   sConfusion common between woody savannas and open forests
-
-------------------------------------------------------------------------
-
-#### FAO Global Administrative Unit Layers (GAUL)
-
-Dataset Overview:\
-GAUL provides standardized national and sub-national administrative boundaries for all countries and territories.
-
-Coverage:
-
--   203 countries and 2 territories (FAO Tier 1 coverage)
--   Multi-level hierarchy (admin level 0, 1, 2)
--   Harmonized with FAOSTAT country classifications
-
-FAOSTAT Implementation:
-
--   Admin Level 0 used for country-level aggregation
--   All pixel-level fire data summed within national boundaries
-
-Ensures consistency with other FAOSTAT domains
-
-Version:
-
--   GAUL 2015 (last available comprehensive update)
--   Note: Some recent boundary changes not reflected
-
-Access:
-
--   FAO GeoNetwork: http://www.fao.org/geonetwork/
--   Google Earth Engine: `FAO/GAUL/2015/level0`
-
-Considerations:
-
--   Disputed boundaries handled per UN conventions
--   Some coastal zone definitions may differ from national claims
--   Small island territories aggregated into parent countries in some cases
 
 ------------------------------------------------------------------------
 
