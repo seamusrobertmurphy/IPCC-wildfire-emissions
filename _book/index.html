@@ -308,7 +308,7 @@ div.column {
 }
 </style>
 </div>
-<p>This resource provides comprehensive methodological guidance for deriving IPCC Tier 1 Forest Fire Activity Data, with particular emphasis on burned area estimation following FAOSTAT and IPCC 2019 Refinement protocols. The workflow integrates satellite-based fire detection, land cover classification, fuel consumption modeling, and emission factor application to produce country-level greenhouse gas emission estimates from biomass burning. The eBook uses an example AOI derived from the Republic of Ireland national border.</p>
+<p>This resource provides comprehensive methodological guidance for deriving IPCC Tier 1 Forest Fire Activity Data, with particular emphasis on burned area estimation following FAOSTAT and IPCC 2019 Refinement protocols. The workflow integrates satellite-based fire detection, land cover classification, fuel consumption modeling, and emission factor application to produce country-level greenhouse gas emission estimates from biomass burning. This eBook uses an example AOI derived from the national border of Honduras.</p>
 <p>The methodology presented here addresses key challenges in fire emissions accounting: inter-annual variability in natural disturbances, the managed land proxy approach for anthropogenic attribution, uncertainty quantification across multiple data sources, and the balance between immediate emissions and subsequent carbon removals. Each chapter builds systematically from data acquisition through quality control, providing transparent, reproducible workflows suitable for national greenhouse gas inventory reporting and validation.</p>
 <section id="chapter-1-burn-area" class="level4 unnumbered"><h4 class="unnumbered anchored" data-anchor-id="chapter-1-burn-area">Chapter 1: Burn Area</h4>
 <p>Extract MODIS MCD64A1 data, apply quality filters, aggregate temporally and spatially, handle missing data, and validate against alternative fire products.</p>
@@ -321,7 +321,7 @@ div.column {
 </section><section id="chapter-5-qaqc-audit-ready-sops-pending" class="level4 unnumbered"><h4 class="unnumbered anchored" data-anchor-id="chapter-5-qaqc-audit-ready-sops-pending">Chapter 5: QA/QC &amp; Audit-Ready SOPs (Pending)</h4>
 <p>Cross-validation with UNFCCC data, uncertainty propagation, sensitivity analysis, and documentation for NGHGI reporting.</p>
 <hr></section><section id="ipcc-tier-1-fire-emissions" class="level2"><h2 class="anchored" data-anchor-id="ipcc-tier-1-fire-emissions">IPCC Tier 1 Fire Emissions</h2>
-<p>The IPCC Tier 1 approach for estimating greenhouse gas emissions from fires provides a standardized, globally applicable framework based on readily available data and default emission factors. This methodology applies Equation 2.27 from the 2019 IPCC Refinements to Guidelines for National Greenhouse Gas Inventories <span class="citation" data-cites="ipccChapter2Generic2019">(<a href="#ref-ipccChapter2Generic2019" role="doc-biblioref">IPCC, 2019</a>)</span>:</p>
+<p>The IPCC Tier 1 approach for estimating greenhouse gas emissions from fires provides a standardized, globally applicable framework based on readily available data and default emission factors. This methodology applies Equation 2.27 from the 2019 IPCC Refinements to Guidelines for National Greenhouse Gas Inventories <span class="citation" data-cites="ipccChapter2Generic2019">(<a href="references/index.html#ref-ipccChapter2Generic2019" role="doc-biblioref">IPCC, 2019</a>)</span>:</p>
 <p><span class="math display">\[
 L_{fire} = A \times M_B \times C_f \times G_{ef} \times 10^{-3}
 \]</span></p>
@@ -349,7 +349,7 @@ L_{fire} = A \times M_B \times C_f \times G_{ef} \times 10^{-3}
 <p>Organic Soil Fires:</p>
 <ul>
 <li>Reports both CO₂ and CH₄ emissions</li>
-<li>Uses IPCC Wetlands Supplement parameters <span class="citation" data-cites="ipcc2013Supplement20062014">(<a href="#ref-ipcc2013Supplement20062014" role="doc-biblioref">IPCC, 2014</a>)</span>
+<li>Uses IPCC Wetlands Supplement parameters <span class="citation" data-cites="ipcc2013Supplement20062014">(<a href="references/index.html#ref-ipcc2013Supplement20062014" role="doc-biblioref">IPCC, 2014</a>)</span>
 </li>
 <li>Currently validated for Southeast Asia only</li>
 </ul></section><section id="managed-land-proxy-approach" class="level4"><h4 class="anchored" data-anchor-id="managed-land-proxy-approach">Managed Land Proxy Approach</h4>
@@ -380,7 +380,7 @@ L_{fire} = A \times M_B \times C_f \times G_{ef} \times 10^{-3}
 <p>FAOSTAT implements IPCC Tier 1 methodology using:</p>
 <ul>
 <li>Pixel-level processing in Google Earth Engine (GEE)</li>
-<li>Country-level aggregation via Global Administrative Unit Layers <span class="citation" data-cites="eurostatGeographicInformationSystem2025">(<a href="#ref-eurostatGeographicInformationSystem2025" role="doc-biblioref">EUROSTAT, n.d.</a>)</span>
+<li>Country-level aggregation via Global Administrative Unit Layers <span class="citation" data-cites="eurostatGeographicInformationSystem2025">(<a href="references/index.html#ref-eurostatGeographicInformationSystem2025" role="doc-biblioref">EUROSTAT, n.d.</a>)</span>
 </li>
 <li>Climate-dependent fuel consumption values stratified by FAO-FRA Ecological Zones</li>
 <li>Quality-filtered satellite observations (uncertainty &lt; 20%)</li>
@@ -416,7 +416,7 @@ Emissions from peat fires identified by overlaying burned area with Histosols cl
 <p>Primary Satellite Era (2001–2024): Direct observations from MODIS MCD64A1 Collection 6.1 provide monthly burned area at 500m resolution.</p>
 <p>Historical Period (1990–2000): Values backfilled using two approaches:</p>
 <ul>
-<li>1996–2000: Earlier FAOSTAT estimates <span class="citation" data-cites="rossi2016faostat">(<a href="#ref-rossi2016faostat" role="doc-biblioref">Rossi et al., 2016</a>)</span>
+<li>1996–2000: Earlier FAOSTAT estimates <span class="citation" data-cites="rossi2016faostat">(<a href="references/index.html#ref-rossi2016faostat" role="doc-biblioref">Rossi et al., 2016</a>)</span>
 </li>
 <li>1990–1995: Averaged values from reconstructed time series (1996–2002 mean)</li>
 </ul>
@@ -483,7 +483,7 @@ Emissions from peat fires identified by overlaying burned area with Histosols cl
 <ul>
 <li>Only pixels with uncertainty &lt; 20% are included</li>
 <li>Commission/omission errors vary by biome</li>
-<li>Global burned area may be underestimated by 20-30% <span class="citation" data-cites="giglio2010assessing">(<a href="#ref-giglio2010assessing" role="doc-biblioref">Giglio et al., 2010</a>)</span>
+<li>Global burned area may be underestimated by 20-30% <span class="citation" data-cites="giglio2010assessing">(<a href="references/index.html#ref-giglio2010assessing" role="doc-biblioref">Giglio et al., 2010</a>)</span>
 </li>
 </ul></section><section id="land-classification-uncertainty" class="level3"><h3 class="anchored" data-anchor-id="land-classification-uncertainty">2. Land Classification Uncertainty</h3>
 <p>MODIS MCD12Q1 accuracy:</p>
@@ -512,7 +512,7 @@ Emissions from peat fires identified by overlaying burned area with Histosols cl
 <li>Variability within vegetation types: SD often 0.1-0.2 (for factors ranging 0.2-0.9)</li>
 <li>Incomplete combustion of coarse woody debris vs.&nbsp;near-complete combustion of grasses</li>
 </ul></section><section id="emission-factor-uncertainty" class="level3"><h3 class="anchored" data-anchor-id="emission-factor-uncertainty">5. Emission Factor Uncertainty</h3>
-<p>IPCC defaults (Table 2.5) based on <span class="citation" data-cites="andreae2001emission">(<a href="#ref-andreae2001emission" role="doc-biblioref">Andreae &amp; Merlet, 2001</a>)</span>:</p>
+<p>IPCC defaults (Table 2.5) based on <span class="citation" data-cites="andreae2001emission">(<a href="references/index.html#ref-andreae2001emission" role="doc-biblioref">Andreae &amp; Merlet, 2001</a>)</span>:</p>
 <ul>
 <li>Values represent global averages across fire types</li>
 <li>Standard deviations: 20-60% of mean values</li>
@@ -557,7 +557,7 @@ Emissions from peat fires identified by overlaying burned area with Histosols cl
 <li>Obscures anthropogenic emission trends</li>
 <li>Challenges mitigation policy evaluation</li>
 </ul>
-<p>Optional Disaggregation Approach <span class="citation" data-cites="ipccChapter2Generic2019">(<a href="#ref-ipccChapter2Generic2019" role="doc-biblioref">IPCC, 2019</a>)</span><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>:</p>
+<p>Optional Disaggregation Approach <span class="citation" data-cites="ipccChapter2Generic2019">(<a href="references/index.html#ref-ipccChapter2Generic2019" role="doc-biblioref">IPCC, 2019</a>)</span><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>:</p>
 <p>Countries may separate:</p>
 <ul>
 <li>Natural disturbance component: Emissions beyond normal variability or 95% CI</li>
@@ -598,7 +598,7 @@ Emissions from peat fires identified by overlaying burned area with Histosols cl
 <li>NASA LP DAAC: https://lpdaac.usgs.gov/products/mcd64a1v061/</li>
 <li>Google Earth Engine: <code>ee.ImageCollection("MODIS/061/MCD64A1")</code>
 </li>
-<li>User Guide: <span class="citation" data-cites="giglio2024collection">(<a href="#ref-giglio2024collection" role="doc-biblioref">Giglio et al., 2024</a>)</span>
+<li>User Guide: <span class="citation" data-cites="giglio2024collection">(<a href="references/index.html#ref-giglio2024collection" role="doc-biblioref">Giglio et al., 2024</a>)</span>
 </li>
 </ul>
 <p>Limitations:</p>
@@ -640,7 +640,7 @@ Emissions from peat fires identified by overlaying burned area with Histosols cl
 <li>NASA LP DAAC: https://lpdaac.usgs.gov/products/mcd12q1v061/</li>
 <li>Google Earth Engine: <code>ee.ImageCollection("MODIS/061/MCD12Q1")</code>
 </li>
-<li>User Guide: <span class="citation" data-cites="sulla2018user">(<a href="#ref-sulla2018user" role="doc-biblioref">Sulla-Menashe et al., 2018</a>)</span>
+<li>User Guide: <span class="citation" data-cites="sulla2018user">(<a href="references/index.html#ref-sulla2018user" role="doc-biblioref">Sulla-Menashe et al., 2018</a>)</span>
 </li>
 </ul>
 <p>Accuracy:</p>
@@ -667,7 +667,7 @@ The Global Ecological Zones (GEZ) classification provides a climate-vegetation f
 <p>Access:</p>
 <ul>
 <li>FAO Forestry: http://www.fao.org/forest-resources-assessment/</li>
-<li>Document: FAO Global Ecological Zones for FAO forest reporting 2010 Update <span class="citation" data-cites="fao2012global">(<a href="#ref-fao2012global" role="doc-biblioref">FAO, 2012</a>)</span>
+<li>Document: FAO Global Ecological Zones for FAO forest reporting 2010 Update <span class="citation" data-cites="fao2012global">(<a href="references/index.html#ref-fao2012global" role="doc-biblioref">FAO, 2012</a>)</span>
 </li>
 </ul>
 <p>Application:</p>
@@ -718,13 +718,13 @@ IPCC Climate Zones classify global climate into categories used for stratifying 
 <p>Source:</p>
 <ul>
 <li>Joint Research Centre (JRC) Climate Zones layer</li>
-<li>Based on IPCC climatic zone definitions <span class="citation" data-cites="ipccChapter3Consistent2006">(<a href="#ref-ipccChapter3Consistent2006" role="doc-biblioref">IPCC, 2006</a>)</span>
+<li>Based on IPCC climatic zone definitions <span class="citation" data-cites="ipccChapter3Consistent2006">(<a href="references/index.html#ref-ipccChapter3Consistent2006" role="doc-biblioref">IPCC, 2006</a>)</span>
 </li>
 </ul>
 <p>FAOSTAT Implementation:</p>
 <ul>
 <li>Savanna fire fuel consumption values vary by climate zone (Table 2.4)</li>
-<li>Organic soil emission factors stratified by climate <span class="citation" data-cites="ipcc2013RevisedSupplementary2014">(<a href="#ref-ipcc2013RevisedSupplementary2014" role="doc-biblioref">IPCC, 2013</a>)</span>
+<li>Organic soil emission factors stratified by climate <span class="citation" data-cites="ipcc2013RevisedSupplementary2014">(<a href="references/index.html#ref-ipcc2013RevisedSupplementary2014" role="doc-biblioref">IPCC, 2013</a>)</span>
 </li>
 <li>Links IPCC methodology to geographic reality</li>
 </ul>
@@ -798,7 +798,7 @@ Google Earth Engine is a cloud-based geospatial analysis platform providing:</p>
 
 <!-- -->
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
 <div id="ref-andreae2001emission" class="csl-entry" role="listitem">
 Andreae, M. O., &amp; Merlet, P. (2001). Emission of trace gases and aerosols from biomass burning. <em>Global Biogeochemical Cycles</em>, <em>15</em>(4), 955–966.
 </div>
@@ -1374,7 +1374,7 @@ Sulla-Menashe, D., Friedl, M. A., et al. (2018). User guide to collection 6 MODI
 <span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
 <span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>This resource provides comprehensive methodological guidance for deriving IPCC Tier 1 Forest Fire Activity Data, with particular emphasis on burned area estimation following FAOSTAT and IPCC 2019 Refinement protocols. The workflow integrates satellite-based fire detection, land cover classification, fuel consumption modeling, and emission factor application to produce country-level greenhouse gas emission estimates from biomass burning. The eBook uses an example AOI derived from the Republic of Ireland national border.</span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>This resource provides comprehensive methodological guidance for deriving IPCC Tier 1 Forest Fire Activity Data, with particular emphasis on burned area estimation following FAOSTAT and IPCC 2019 Refinement protocols. The workflow integrates satellite-based fire detection, land cover classification, fuel consumption modeling, and emission factor application to produce country-level greenhouse gas emission estimates from biomass burning. This eBook uses an example AOI derived from the national border of Honduras.</span>
 <span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>The methodology presented here addresses key challenges in fire emissions accounting: inter-annual variability in natural disturbances, the managed land proxy approach for anthropogenic attribution, uncertainty quantification across multiple data sources, and the balance between immediate emissions and subsequent carbon removals. Each chapter builds systematically from data acquisition through quality control, providing transparent, reproducible workflows suitable for national greenhouse gas inventory reporting and validation.</span>
 <span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a></span>

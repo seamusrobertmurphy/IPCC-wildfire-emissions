@@ -996,7 +996,7 @@ pixel_area_manual <- calculatePixelArea()
 
 
 ```{r}
-#| eval: false
+#| eval: true
 #| label: veg-glad-height-validation
 #| code-summary: "Validate forest classification with GLAD canopy height"
 

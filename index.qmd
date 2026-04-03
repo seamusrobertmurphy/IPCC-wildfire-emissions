@@ -77,7 +77,7 @@ div.column {
 }
 ```
 
-This resource provides comprehensive methodological guidance for deriving IPCC Tier 1 Forest Fire Activity Data, with particular emphasis on burned area estimation following FAOSTAT and IPCC 2019 Refinement protocols. The workflow integrates satellite-based fire detection, land cover classification, fuel consumption modeling, and emission factor application to produce country-level greenhouse gas emission estimates from biomass burning. The eBook uses an example AOI derived from the Republic of Ireland national border.
+This resource provides comprehensive methodological guidance for deriving IPCC Tier 1 Forest Fire Activity Data, with particular emphasis on burned area estimation following FAOSTAT and IPCC 2019 Refinement protocols. The workflow integrates satellite-based fire detection, land cover classification, fuel consumption modeling, and emission factor application to produce country-level greenhouse gas emission estimates from biomass burning. This eBook uses an example AOI derived from the national border of Honduras.
 
 The methodology presented here addresses key challenges in fire emissions accounting: inter-annual variability in natural disturbances, the managed land proxy approach for anthropogenic attribution, uncertainty quantification across multiple data sources, and the balance between immediate emissions and subsequent carbon removals. Each chapter builds systematically from data acquisition through quality control, providing transparent, reproducible workflows suitable for national greenhouse gas inventory reporting and validation.
 
