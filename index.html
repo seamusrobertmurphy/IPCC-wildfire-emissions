@@ -1,0 +1,1956 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.33">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="author" content="Seamus Murphy">
+<meta name="dcterms.date" content="2026-03-30">
+<title>Wildfire Emissions</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./01-burn-area/index.html" rel="next">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ea385d0e468b0dd5ea5bf0780b1290d9.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-1e719da3bd5dead2fc3a1601e4583ebd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+<meta property="og:title" content="Wildfire Emissions">
+<meta property="og:description" content="">
+<meta property="og:image" content="https://seamusrobertmurphy.quarto.pub/TREES-wildfire-replications/data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg==">
+<meta property="og:site_name" content="Wildfire Emissions">
+</head>
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Preface</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Wildfire Emissions</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/seamusrobertmurphy/TREES-wildfire-replications" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01-burn-area/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Burn Area</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02-fuel-stratification/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Fuel Stratification</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03-fuel-consumption/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Fuel Consumption</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04-emission-factors/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Emission Factors</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">References</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title"><strong>On this page</strong></h2>
+   
+  <ul>
+<li>
+<a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a>
+  <ul class="collapse">
+<li><a href="#ipcc-tier-1-fire-emissions" id="toc-ipcc-tier-1-fire-emissions" class="nav-link" data-scroll-target="#ipcc-tier-1-fire-emissions">IPCC Tier 1 Fire Emissions</a></li>
+  <li><a href="#faostat-fires-domain" id="toc-faostat-fires-domain" class="nav-link" data-scroll-target="#faostat-fires-domain">FAOSTAT Fires Domain</a></li>
+  <li><a href="#qaqc-and-validation" id="toc-qaqc-and-validation" class="nav-link" data-scroll-target="#qaqc-and-validation">QA/QC and Validation</a></li>
+  <li>
+<a href="#uncertainty-considerations" id="toc-uncertainty-considerations" class="nav-link" data-scroll-target="#uncertainty-considerations">Uncertainty Considerations</a>
+  <ul class="collapse">
+<li><a href="#activity-data-uncertainty" id="toc-activity-data-uncertainty" class="nav-link" data-scroll-target="#activity-data-uncertainty">1. Activity Data Uncertainty</a></li>
+  <li><a href="#land-classification-uncertainty" id="toc-land-classification-uncertainty" class="nav-link" data-scroll-target="#land-classification-uncertainty">2. Land Classification Uncertainty</a></li>
+  <li><a href="#fuel-consumption-uncertainty" id="toc-fuel-consumption-uncertainty" class="nav-link" data-scroll-target="#fuel-consumption-uncertainty">3. Fuel Consumption Uncertainty</a></li>
+  <li><a href="#combustion-factor-uncertainty" id="toc-combustion-factor-uncertainty" class="nav-link" data-scroll-target="#combustion-factor-uncertainty">4. Combustion Factor Uncertainty</a></li>
+  <li><a href="#emission-factor-uncertainty" id="toc-emission-factor-uncertainty" class="nav-link" data-scroll-target="#emission-factor-uncertainty">5. Emission Factor Uncertainty</a></li>
+  </ul>
+</li>
+  <li><a href="#data-sources" id="toc-data-sources" class="nav-link" data-scroll-target="#data-sources">Data Sources</a></li>
+  </ul>
+</li>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/seamusrobertmurphy/TREES-wildfire-replications/edit/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/seamusrobertmurphy/TREES-wildfire-replications/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Wildfire Emissions</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p><a href="https://scholar.google.com/citations?hl=en&amp;user=jDGq9I4AAAAJ">Seamus Murphy</a> <a href="mailto:seamusrobertmurphy@gmail.com" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> <a href="https://orcid.org/0000-0002-1792-0351" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 30, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header><section id="preface" class="level1 unnumbered"><h1 class="unnumbered">Preface</h1>
+<hr>
+<div class="cell">
+<style type="text/css">
+div.column {
+    display: inline-block;
+    vertical-align: top;
+    width: 50%;
+}
+
+#TOC::before {
+  content: "";
+  display: block;
+  height:200px;
+  width: 200px;
+  background-image: url('https://raw.githubusercontent.com/seamusrobertmurphy/IPCC-wildfire-emissions/refs/heads/main/01-burn-area/AOI/aoi_burn_aa.png');
+  background-size: contain;
+  background-position: 50% 50%;
+  padding-top: 80px !important;
+  background-repeat: no-repeat;
+}
+</style>
+</div>
+<p>This resource provides comprehensive methodological guidance for deriving IPCC Tier 1 Forest Fire Activity Data, with particular emphasis on burned area estimation following FAOSTAT and IPCC 2019 Refinement protocols. The workflow integrates satellite-based fire detection, land cover classification, fuel consumption modeling, and emission factor application to produce country-level greenhouse gas emission estimates from biomass burning. This eBook uses an example AOI derived from the national border of Honduras.</p>
+<p>The methodology presented here addresses key challenges in fire emissions accounting: inter-annual variability in natural disturbances, the managed land proxy approach for anthropogenic attribution, uncertainty quantification across multiple data sources, and the balance between immediate emissions and subsequent carbon removals. Each chapter builds systematically from data acquisition through quality control, providing transparent, reproducible workflows suitable for national greenhouse gas inventory reporting and validation.</p>
+<section id="chapter-1-burn-area" class="level4 unnumbered"><h4 class="unnumbered anchored" data-anchor-id="chapter-1-burn-area">Chapter 1: Burn Area</h4>
+<p>Extract MODIS MCD64A1 data, apply quality filters, aggregate temporally and spatially, handle missing data, and validate against alternative fire products.</p>
+</section><section id="chapter-2-fuel-stratification" class="level4 unnumbered"><h4 class="unnumbered anchored" data-anchor-id="chapter-2-fuel-stratification">Chapter 2: Fuel Stratification</h4>
+<p>Classify burned pixels into Forest (Humid Tropical, Other), Savanna, and Organic Soil categories using MODIS land cover and auxiliary datasets.</p>
+</section><section id="chapter-3-fuel-consumption" class="level4 unnumbered"><h4 class="unnumbered anchored" data-anchor-id="chapter-3-fuel-consumption">Chapter 3: Fuel Consumption</h4>
+<p>Assign IPCC default fuel consumption values based on vegetation type and climate zone stratification, calculate total burned biomass.</p>
+</section><section id="chapter-4-emission-factors" class="level4 unnumbered"><h4 class="unnumbered anchored" data-anchor-id="chapter-4-emission-factors">Chapter 4: Emission Factors</h4>
+<p>Apply IPCC emission factors, compute CH₄, N₂O, and CO₂ emissions, handle CO₂ reporting exclusions for non-stand-replacing fires.</p>
+</section><section id="chapter-5-qaqc-audit-ready-sops-pending" class="level4 unnumbered"><h4 class="unnumbered anchored" data-anchor-id="chapter-5-qaqc-audit-ready-sops-pending">Chapter 5: QA/QC &amp; Audit-Ready SOPs (Pending)</h4>
+<p>Cross-validation with UNFCCC data, uncertainty propagation, sensitivity analysis, and documentation for NGHGI reporting.</p>
+<hr></section><section id="ipcc-tier-1-fire-emissions" class="level2"><h2 class="anchored" data-anchor-id="ipcc-tier-1-fire-emissions">IPCC Tier 1 Fire Emissions</h2>
+<p>The IPCC Tier 1 approach for estimating greenhouse gas emissions from fires provides a standardized, globally applicable framework based on readily available data and default emission factors. This methodology applies Equation 2.27 from the 2019 IPCC Refinements to Guidelines for National Greenhouse Gas Inventories <span class="citation" data-cites="ipccChapter2Generic2019">(<a href="#ref-ipccChapter2Generic2019" role="doc-biblioref">IPCC, 2019</a>)</span>:</p>
+<p><span class="math display">\[
+L_{fire} = A \times M_B \times C_f \times G_{ef} \times 10^{-3}
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li>L<sub>fire</sub> = greenhouse gas emissions from fire (tonnes of CH₄, N₂O, or CO₂)</li>
+<li>A = area burnt (ha)</li>
+<li>M<sub>B</sub> = mass of fuel available for combustion (tonnes ha⁻¹)</li>
+<li>C<sub>f</sub> = combustion factor (dimensionless, proportion of fuel consumed)</li>
+<li>G<sub>ef</sub> = emission factor (g kg⁻¹ dry matter burnt)</li>
+</ul>
+<section id="vegetation-specific-applications" class="level4"><h4 class="anchored" data-anchor-id="vegetation-specific-applications">Vegetation-Specific Applications</h4>
+<p>Forest Fires:</p>
+<ul>
+<li>Only non-CO₂ emissions (CH₄, N₂O) are reported</li>
+<li>CO₂ emissions excluded as they are captured in carbon stock change calculations</li>
+<li>Applies to fires in Evergreen, Deciduous, and Mixed Forest land cover types</li>
+</ul>
+<p>Savanna Fires:</p>
+<ul>
+<li>Non-CO₂ emissions only (CH₄, N₂O)</li>
+<li>Assumes CO₂ balance through annual vegetation regrowth</li>
+<li>Covers Grassland, Savanna, Woody Savanna, and Shrubland types</li>
+</ul>
+<p>Organic Soil Fires:</p>
+<ul>
+<li>Reports both CO₂ and CH₄ emissions</li>
+<li>Uses IPCC Wetlands Supplement parameters <span class="citation" data-cites="ipcc2013Supplement20062014">(<a href="#ref-ipcc2013Supplement20062014" role="doc-biblioref">IPCC, 2014</a>)</span>
+</li>
+<li>Currently validated for Southeast Asia only</li>
+</ul></section><section id="managed-land-proxy-approach" class="level4"><h4 class="anchored" data-anchor-id="managed-land-proxy-approach">Managed Land Proxy Approach</h4>
+<p>The methodology adopts the Managed Land Proxy (MLP) as the primary framework for attributing anthropogenic emissions. Under MLP:</p>
+<ul>
+<li>All emissions and removals on managed lands approximate anthropogenic effects</li>
+<li>Natural disturbances (e.g., wildfires) are included in total managed land fluxes</li>
+<li>Optional disaggregation separates anthropogenic activities from natural disturbance impacts</li>
+<li>Expectation that emissions from natural disturbances balance with subsequent removals over time</li>
+</ul>
+<p>The 2019 IPCC Refinement provides enhanced guidance for addressing inter-annual variability (IAV) caused by:</p>
+<ol type="1">
+<li>Natural disturbances (wildfires, insects, windthrow, ice storms)</li>
+<li>Climate variability affecting photosynthesis and respiration</li>
+<li>Variation in human activities (harvesting, land-use change)</li>
+</ol>
+<p>Countries experiencing high IAV from natural disturbances may optionally disaggregate these fluxes to better identify trends in anthropogenic emissions and evaluate mitigation actions.</p>
+<hr></section></section><section id="faostat-fires-domain" class="level2"><h2 class="anchored" data-anchor-id="faostat-fires-domain">FAOSTAT Fires Domain</h2>
+<section id="database-overview" class="level4"><h4 class="anchored" data-anchor-id="database-overview">Database Overview</h4>
+<p>The FAOSTAT Emissions from Fires domain provides spatially- and temporally stratified estimates of CH₄, N₂O, and CO₂ emissions from biomass burning across all countries and territories. The database:</p>
+<ul>
+<li>Covers the complete time series 1990–2024</li>
+<li>Updates annually with new satellite observations</li>
+<li>Disseminates activity data and emission estimates (kt CH₄, N₂O, CO₂)</li>
+<li>Provides regional aggregations for Annex I / non-Annex I country groups</li>
+<li>Integrates country-reported data from UNFCCC submissions for validation</li>
+</ul></section><section id="methodological-foundation" class="level4"><h4 class="anchored" data-anchor-id="methodological-foundation">Methodological Foundation</h4>
+<p>FAOSTAT implements IPCC Tier 1 methodology using:</p>
+<ul>
+<li>Pixel-level processing in Google Earth Engine (GEE)</li>
+<li>Country-level aggregation via Global Administrative Unit Layers <span class="citation" data-cites="eurostatGeographicInformationSystem2025">(<a href="#ref-eurostatGeographicInformationSystem2025" role="doc-biblioref">EUROSTAT, n.d.</a>)</span>
+</li>
+<li>Climate-dependent fuel consumption values stratified by FAO-FRA Ecological Zones</li>
+<li>Quality-filtered satellite observations (uncertainty &lt; 20%)</li>
+</ul>
+<p>The database serves as an official IPCC-recommended tool for National Greenhouse Gas Inventory (NGHGI) QA/QC processes and validation of activity data and emission estimates (IPCC 2019).</p>
+</section><section id="three-fire-categories" class="level4"><h4 class="anchored" data-anchor-id="three-fire-categories">Three Fire Categories</h4>
+<p>1. Forest Fires<br>
+Emissions from fires in Forest Land, disaggregated into:</p>
+<ul>
+<li>Humid Tropical Forest: Forest pixels overlaid with FAO-FRA tropical zones</li>
+<li>Other Forest: All remaining forest types (boreal, temperate, extra-tropical)</li>
+</ul>
+<p>Land cover identification aggregates MODIS IGBP classes:</p>
+<ul>
+<li>Evergreen Needleleaf Forest</li>
+<li>Evergreen Broadleaf Forest</li>
+<li>Deciduous Needleleaf Forest</li>
+<li>Deciduous Broadleaf Forest</li>
+<li>Mixed Forests</li>
+</ul>
+<p>2. Savanna Fires<br>
+Emissions from Grassland and woody vegetation:</p>
+<ul>
+<li>Grassland</li>
+<li>Savanna</li>
+<li>Woody Savanna</li>
+<li>Open Shrubland</li>
+<li>Closed Shrubland</li>
+</ul>
+<p>3. Fires in Organic Soils<br>
+Emissions from peat fires identified by overlaying burned area with Histosols class from the Harmonized World Soil Database. Due to high uncertainty and limited validation outside Southeast Asia, emissions are set to zero for all countries except those in Southeast Asia (Indonesia, Malaysia, Brunei Darussalam). Complete global estimates are provided in supplementary files for reference and research purposes.</p>
+</section><section id="temporal-gap-filling" class="level4"><h4 class="anchored" data-anchor-id="temporal-gap-filling">Temporal Gap-Filling</h4>
+<p>Primary Satellite Era (2001–2024): Direct observations from MODIS MCD64A1 Collection 6.1 provide monthly burned area at 500m resolution.</p>
+<p>Historical Period (1990–2000): Values backfilled using two approaches:</p>
+<ul>
+<li>1996–2000: Earlier FAOSTAT estimates <span class="citation" data-cites="rossi2016faostat">(<a href="#ref-rossi2016faostat" role="doc-biblioref">Rossi et al., 2016</a>)</span>
+</li>
+<li>1990–1995: Averaged values from reconstructed time series (1996–2002 mean)</li>
+</ul>
+<p>This approach ensures complete temporal coverage required for UNFCCC reporting while acknowledging higher uncertainty in pre-MODIS years.</p>
+</section></section><section id="qaqc-and-validation" class="level2"><h2 class="anchored" data-anchor-id="qaqc-and-validation">QA/QC and Validation</h2>
+<section id="national-ghg-inventories" class="level4"><h4 class="anchored" data-anchor-id="national-ghg-inventories">National GHG Inventories</h4>
+<p>Primary Use: The IPCC explicitly recommends FAOSTAT as a tool for NGHGI QA/QC processes (IPCC 2019). Countries can:</p>
+<ol type="1">
+<li>Cross-validate activity data: Compare satellite-derived burned areas against national fire databases</li>
+<li>Evaluate emission factors: Test sensitivity to country-specific vs.&nbsp;default IPCC parameters<br>
+</li>
+<li>Identify data gaps: Detect missing or inconsistent reporting in national systems</li>
+<li>Assess trends: Evaluate whether reported trends align with satellite observations</li>
+</ol></section><section id="comparison-frameworks" class="level4"><h4 class="anchored" data-anchor-id="comparison-frameworks">Comparison Frameworks</h4>
+<p>Top-Down vs.&nbsp;Bottom-Up Reconciliation:</p>
+<p>FAOSTAT (satellite-based, top-down) &lt;&gt; NGHGI (ground-based, bottom-up)</p>
+<p>Systematic differences may indicate:</p>
+<ul>
+<li>Detection limitations in satellite products (e.g., small fires, smoldering)</li>
+<li>Incomplete ground reporting</li>
+<li>Different definitions of “managed land”</li>
+<li>Biomass consumption parameter uncertainties</li>
+</ul>
+<p>Multi-Source Fire Validation:</p>
+<ul>
+<li>Fire Detection: MODIS active fire products (MCD14ML, MYD14) vs.&nbsp;burned area (MCD64A1)</li>
+<li>Land Cover: MODIS MCD12Q1 vs.&nbsp;national forest inventories</li>
+<li>Emission Factors: IPCC defaults <del>vs.&nbsp;regional measurements from literature</del><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>
+</li>
+</ul></section><section id="tier-advancement-pathways" class="level4"><h4 class="anchored" data-anchor-id="tier-advancement-pathways">Tier Advancement Pathways</h4>
+<p>Countries may use FAOSTAT as a stepping stone to higher-tier methods:</p>
+<p>Tier 1 =&gt; Tier 2:</p>
+<ul>
+<li>Replace default emission factors with country-specific values</li>
+<li>Refine fuel consumption parameters using field measurements</li>
+<li>Improve combustion factor estimates via burn severity mapping</li>
+</ul>
+<p>Tier 2 =&gt; Tier 3:</p>
+<ul>
+<li>Integrate process-based models (e.g., FOFEM, CONSUME)</li>
+<li>Develop national fire monitoring systems</li>
+<li>Implement measurement-based carbon stock change assessments</li>
+</ul></section><section id="mitigation-action-tracking" class="level4"><h4 class="anchored" data-anchor-id="mitigation-action-tracking">Mitigation Action Tracking</h4>
+<p>FAOSTAT time series enable evaluation of:</p>
+<ul>
+<li>Prescribed burning programs</li>
+<li>Fire suppression effectiveness</li>
+<li>Land management policy impacts</li>
+<li>Climate change effects on fire regimes</li>
+</ul>
+<p>Countries can quantify whether trends in anthropogenic fire emissions diverge from natural disturbance variability, supporting Nationally Determined Contribution (NDC) reporting and verification.</p>
+<hr></section></section><section id="uncertainty-considerations" class="level2"><h2 class="anchored" data-anchor-id="uncertainty-considerations">Uncertainty Considerations</h2>
+<section id="sources-of-uncertainty" class="level4"><h4 class="anchored" data-anchor-id="sources-of-uncertainty">Sources of Uncertainty</h4>
+</section><section id="activity-data-uncertainty" class="level3"><h3 class="anchored" data-anchor-id="activity-data-uncertainty">1. Activity Data Uncertainty</h3>
+<p>Satellite detection limitations:</p>
+<ul>
+<li>Small fires (&lt; 500m): May be missed by MODIS 500m pixels</li>
+<li>Canopy-obscured fires: Difficult to detect in dense forests</li>
+<li>Smoldering fires: Peat fires may not produce strong thermal signatures</li>
+<li>Cloud contamination: Persistent cloud cover reduces observation frequency</li>
+<li>Rapid vegetation regrowth: Short time lag between fire and regrowth obscures burn scars</li>
+</ul>
+<p>MCD64A1 applies quality filters:</p>
+<ul>
+<li>Only pixels with uncertainty &lt; 20% are included</li>
+<li>Commission/omission errors vary by biome</li>
+<li>Global burned area may be underestimated by 20-30% <span class="citation" data-cites="giglio2010assessing">(<a href="#ref-giglio2010assessing" role="doc-biblioref">Giglio et al., 2010</a>)</span>
+</li>
+</ul></section><section id="land-classification-uncertainty" class="level3"><h3 class="anchored" data-anchor-id="land-classification-uncertainty">2. Land Classification Uncertainty</h3>
+<p>MODIS MCD12Q1 accuracy:</p>
+<ul>
+<li>Overall accuracy: ~75% globally</li>
+<li>Confusion between woody savannas and forests</li>
+<li>Temporal lag in land-use change detection</li>
+<li>Mixed pixels in heterogeneous landscapes</li>
+</ul>
+<p>Impact on emissions: Misclassification affects fuel consumption values (Table 2.4 ranges: 2.6 to 163.6 t ha⁻¹).</p>
+</section><section id="fuel-consumption-uncertainty" class="level3"><h3 class="anchored" data-anchor-id="fuel-consumption-uncertainty">3. Fuel Consumption Uncertainty</h3>
+<p>IPCC default values (Table 2.4) reflect:</p>
+<ul>
+<li>High natural variability: Standard errors 30-50% of mean</li>
+<li>Limited data for some vegetation types</li>
+<li>Climate dependency: Values vary by FAO-FRA Ecological Zones, but within-zone heterogeneity remains</li>
+</ul>
+<p>Example uncertainties (Mean ± SE):</p>
+<ul>
+<li>Primary Tropical Forest: 119.6 ± (range: 83.9 to 163.6) t ha⁻¹</li>
+<li>Savanna Woodland: 2.6 ± 0.1 (early dry season) to 4.6 ± 1.5 (late dry season) t ha⁻¹</li>
+</ul></section><section id="combustion-factor-uncertainty" class="level3"><h3 class="anchored" data-anchor-id="combustion-factor-uncertainty">4. Combustion Factor Uncertainty</h3>
+<p>Proportion of fuel consumed (Table 2.6):</p>
+<ul>
+<li>Influenced by fire intensity, fuel moisture, weather conditions</li>
+<li>Variability within vegetation types: SD often 0.1-0.2 (for factors ranging 0.2-0.9)</li>
+<li>Incomplete combustion of coarse woody debris vs.&nbsp;near-complete combustion of grasses</li>
+</ul></section><section id="emission-factor-uncertainty" class="level3"><h3 class="anchored" data-anchor-id="emission-factor-uncertainty">5. Emission Factor Uncertainty</h3>
+<p>IPCC defaults (Table 2.5) based on <span class="citation" data-cites="andreae2001emission">(<a href="#ref-andreae2001emission" role="doc-biblioref">Andreae &amp; Merlet, 2001</a>)</span>:</p>
+<ul>
+<li>Values represent global averages across fire types</li>
+<li>Standard deviations: 20-60% of mean values</li>
+<li>Influenced by combustion efficiency (flaming vs.&nbsp;smoldering)</li>
+</ul>
+<p>Example (Savanna fires):</p>
+<ul>
+<li>CO₂: 1613 ± 95 g kg⁻¹</li>
+<li>CH₄: 2.3 ± 0.9 g kg⁻¹</li>
+<li>N₂O: 0.21 ± 0.10 g kg⁻¹</li>
+</ul>
+<section id="uncertainty-aggregation" class="level4"><h4 class="anchored" data-anchor-id="uncertainty-aggregation">Uncertainty Aggregation</h4>
+<p>For IPCC Tier 1, cumulative uncertainty typically:</p>
+<ul>
+<li>Activity data: ±30% for burned area</li>
+<li>Emission estimates: ±50% for CH₄ and N₂O, ±30-40% for CO₂</li>
+</ul>
+<p>Organic soil fires have particularly high uncertainty:</p>
+<ul>
+<li>Remote sensing detection challenges</li>
+<li>Limited field validation outside Southeast Asia</li>
+<li>Difficulty distinguishing surface fires from subsurface peat combustion</li>
+<li>Unknown proportion of fires on drained vs.&nbsp;undrained peatlands</li>
+</ul></section><section id="uncertainty-reduction" class="level4"><h4 class="anchored" data-anchor-id="uncertainty-reduction">Uncertainty Reduction</h4>
+<p>Country-Specific Improvements:</p>
+<ol type="1">
+<li>Integrate national fire databases with satellite observations</li>
+<li>Conduct field campaigns to measure fuel loads and combustion factors</li>
+<li>Develop regional emission factors from smoke sampling</li>
+<li>Implement Tier 2/3 methods in high-emission areas</li>
+</ol>
+<p>Methodological Enhancements:</p>
+<ol type="1">
+<li>Multi-sensor fusion (MODIS + VIIRS + Sentinel)</li>
+<li>Sub-pixel burned area algorithms</li>
+<li>Burn severity mapping for combustion factors</li>
+<li>Seasonal stratification of fuel moisture</li>
+</ol></section><section id="managing-inter-annual-variability" class="level4"><h4 class="anchored" data-anchor-id="managing-inter-annual-variability">Managing Inter-Annual Variability</h4>
+<p>High IAV from natural disturbances complicates trend analysis:</p>
+<ul>
+<li>Wildfires can cause 2-3 orders of magnitude annual variation</li>
+<li>Obscures anthropogenic emission trends</li>
+<li>Challenges mitigation policy evaluation</li>
+</ul>
+<p>Optional Disaggregation Approach <span class="citation" data-cites="ipccChapter2Generic2019">(<a href="#ref-ipccChapter2Generic2019" role="doc-biblioref">IPCC, 2019</a>)</span><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>:</p>
+<p>Countries may separate:</p>
+<ul>
+<li>Natural disturbance component: Emissions beyond normal variability or 95% CI</li>
+<li>Anthropogenic component: Remaining managed land fluxes</li>
+</ul>
+<p>This disaggregation:</p>
+<ul>
+<li>Improves clarity of human activity impacts</li>
+<li>Maintains MLP total for official reporting</li>
+<li>Requires documentation of methods and thresholds</li>
+<li>Assumes eventual balance between disturbance emissions and regrowth</li>
+</ul>
+<hr></section></section></section><section id="data-sources" class="level2"><h2 class="anchored" data-anchor-id="data-sources">Data Sources</h2>
+<section id="mcd64a1.061-burn-areas" class="level4"><h4 class="anchored" data-anchor-id="mcd64a1.061-burn-areas">MCD64A1.061: Burn Areas</h4>
+<p>Product Overview: The MCD64A1 Version 6.1 Burned Area product provides monthly, global gridded burned area at 500m spatial resolution, derived from combined Terra and Aqua MODIS observations.</p>
+<p>Key Features:</p>
+<ul>
+<li>Temporal Resolution: Monthly composites, 2001–present</li>
+<li>Spatial Resolution: 500m nominal pixel size</li>
+<li>Algorithm: Decision tree classifier using surface reflectance time series</li>
+<li>Output: Burn date encoded as ordinal day of year, with quality indicators</li>
+</ul>
+<p>Data Layers:</p>
+<ul>
+<li>Burn Date (day of year when burn detected)</li>
+<li>Burn Data Uncertainty (percentage uncertainty, 0-100%)</li>
+<li>Quality Assurance flags</li>
+</ul>
+<p>FAOSTAT Implementation:</p>
+<ul>
+<li>Quality filter applied: Only pixels with uncertainty &lt; 20% are retained</li>
+<li>Aggregation: Pixel-level burn dates accumulated to annual country totals</li>
+<li>GEE Asset: <code>MODIS/061/MCD64A1</code>
+</li>
+</ul>
+<p>Access:</p>
+<ul>
+<li>NASA LP DAAC: https://lpdaac.usgs.gov/products/mcd64a1v061/</li>
+<li>Google Earth Engine: <code>ee.ImageCollection("MODIS/061/MCD64A1")</code>
+</li>
+<li>User Guide: <span class="citation" data-cites="giglio2024collection">(<a href="#ref-giglio2024collection" role="doc-biblioref">Giglio et al., 2024</a>)</span>
+</li>
+</ul>
+<p>Limitations:</p>
+<ul>
+<li>May miss small fires (&lt; 500m²)</li>
+<li>Reduced accuracy in densely forested areas</li>
+<li>Cloud obscuration limits temporal coverage in some regions</li>
+<li>Detection lag in slow-spreading fires</li>
+</ul>
+<hr></section><section id="mcd12q1.061-igbp-land-cover" class="level4"><h4 class="anchored" data-anchor-id="mcd12q1.061-igbp-land-cover">MCD12Q1.061: IGBP Land Cover</h4>
+<p>Product Overview: MCD12Q1 provides annual global land cover classification at 500m resolution using supervised classification of MODIS reflectance data.</p>
+<p>Classification Scheme: FAOSTAT uses Land Cover Type 1 (IGBP 17-class legend):</p>
+<p>Forest Types (used for Forest Fire category):</p>
+<ul>
+<li>Class 1: Evergreen Needleleaf Forests</li>
+<li>Class 2: Evergreen Broadleaf Forests</li>
+<li>Class 3: Deciduous Needleleaf Forests</li>
+<li>Class 4: Deciduous Broadleaf Forests</li>
+<li>Class 5: Mixed Forests</li>
+</ul>
+<p>Grassland/Savanna Types (used for Savanna Fire category):</p>
+<ul>
+<li>Class 6: Closed Shrublands</li>
+<li>Class 7: Open Shrublands - Class 8: Woody Savannas</li>
+<li>Class 9: Savannas</li>
+<li>Class 10: Grasslands</li>
+<li>Other Classes: Croplands, Urban, Wetlands, etc. (Classes 11-17)</li>
+</ul>
+<p>FAOSTAT Implementation:</p>
+<ul>
+<li>Annual land cover maps matched to fire detection year</li>
+<li>Overlay burned pixels with contemporaneous land cover</li>
+<li>Exclude built-up, barren, and water bodies</li>
+<li>GEE Asset: <code>MODIS/061/MCD12Q1</code>
+</li>
+</ul>
+<p>Access:</p>
+<ul>
+<li>NASA LP DAAC: https://lpdaac.usgs.gov/products/mcd12q1v061/</li>
+<li>Google Earth Engine: <code>ee.ImageCollection("MODIS/061/MCD12Q1")</code>
+</li>
+<li>User Guide: <span class="citation" data-cites="sulla2018user">(<a href="#ref-sulla2018user" role="doc-biblioref">Sulla-Menashe et al., 2018</a>)</span>
+</li>
+</ul>
+<p>Accuracy:</p>
+<ul>
+<li>Overall accuracy: ~75% globally</li>
+<li>Higher accuracy in homogeneous landscapes</li>
+<li>sConfusion common between woody savannas and open forests</li>
+</ul>
+<hr></section><section id="fao-global-ecological-zones" class="level4"><h4 class="anchored" data-anchor-id="fao-global-ecological-zones">FAO Global Ecological Zones</h4>
+<p>Dataset Overview:<br>
+The Global Ecological Zones (GEZ) classification provides a climate-vegetation framework for stratifying fuel consumption parameters.</p>
+<p>Classification System Combines:</p>
+<ul>
+<li>Climate domains (Polar, Boreal, Temperate, Subtropical, Tropical)</li>
+<li>Ecological zones (e.g., Tropical moist forest, Tropical dry forest, Subtropical steppe)</li>
+</ul>
+<p>FAOSTAT Implementation:</p>
+<ul>
+<li>Overlay burned forest pixels with GEZ to distinguish:</li>
+<li>Humid Tropical Forest: Tropical moist ecological zones</li>
+<li>Other Forest: All remaining forest types</li>
+<li>Assign climate-dependent fuel consumption values from IPCC Table 2.4</li>
+</ul>
+<p>Access:</p>
+<ul>
+<li>FAO Forestry: http://www.fao.org/forest-resources-assessment/</li>
+<li>Document: FAO Global Ecological Zones for FAO forest reporting 2010 Update <span class="citation" data-cites="fao2012global">(<a href="#ref-fao2012global" role="doc-biblioref">FAO, 2012</a>)</span>
+</li>
+</ul>
+<p>Application:</p>
+<ul>
+<li>Determines fuel biomass consumption parameters</li>
+<li>Stratifies emission factors where climate-sensitive</li>
+<li>Links to FAO Forest Resources Assessment (FRA) reporting categories</li>
+</ul>
+<hr></section><section id="ipcc-soil-zones-layer" class="level4"><h4 class="anchored" data-anchor-id="ipcc-soil-zones-layer">IPCC Soil Zones Layer</h4>
+<p>Dataset Overview:<br>
+The Harmonized World Soil Database (HWSD v1.2) provides global soil type classifications at 30 arc-second (~1 km) resolution.</p>
+<p>Histosols Class:<br>
+Organic soils characterized by:</p>
+<ul>
+<li>High organic matter content (&gt; 20-30% by weight)</li>
+<li>Formed in waterlogged conditions</li>
+<li>Includes peatlands, bogs, fens</li>
+</ul>
+<p>FAOSTAT Implementation:</p>
+<ul>
+<li>Burned area pixels overlaid with Histosols spatial layer</li>
+<li>Fires in organic soils identified independently of land cover (except excluding built-up, barren, water)</li>
+<li>Different fuel consumption and emission factors applied (IPCC Wetlands Supplement 2014)</li>
+</ul>
+<p>Access:</p>
+<ul>
+<li>FAO Soils Portal: http://www.fao.org/soils-portal/</li>
+<li>IIASA: https://iiasa.ac.at/models-and-data/hwsd</li>
+</ul>
+<p>Critical Limitation:</p>
+<ul>
+<li>FAOSTAT organic soil fire emissions set to zero outside Southeast Asia due to:</li>
+<li>High uncertainty in peat fire detection</li>
+<li>Limited validation data - Difficulty distinguishing drained vs.&nbsp;undrained peatlands</li>
+<li>Uncertainty in human influence on fire occurrence</li>
+</ul>
+<p>Supplementary file <code>AllFires_OrganicSoils.csv</code> contains global estimates for research purposes.</p>
+<hr></section><section id="ipcc-climate-zones-layer" class="level4"><h4 class="anchored" data-anchor-id="ipcc-climate-zones-layer">IPCC Climate Zones Layer</h4>
+<p>Dataset Overview:<br>
+IPCC Climate Zones classify global climate into categories used for stratifying biomass growth rates, decomposition rates, and fire parameters.</p>
+<p>Classification:</p>
+<ul>
+<li>Polar</li>
+<li>Boreal (Cold)</li>
+<li>Temperate (Warm temperate, Cool temperate)</li>
+<li>Tropical (Tropical wet, Tropical moist, Tropical dry, Tropical montane)</li>
+</ul>
+<p>Source:</p>
+<ul>
+<li>Joint Research Centre (JRC) Climate Zones layer</li>
+<li>Based on IPCC climatic zone definitions <span class="citation" data-cites="ipccChapter3Consistent2006">(<a href="#ref-ipccChapter3Consistent2006" role="doc-biblioref">IPCC, 2006</a>)</span>
+</li>
+</ul>
+<p>FAOSTAT Implementation:</p>
+<ul>
+<li>Savanna fire fuel consumption values vary by climate zone (Table 2.4)</li>
+<li>Organic soil emission factors stratified by climate <span class="citation" data-cites="ipcc2013RevisedSupplementary2014">(<a href="#ref-ipcc2013RevisedSupplementary2014" role="doc-biblioref">IPCC, 2013</a>)</span>
+</li>
+<li>Links IPCC methodology to geographic reality</li>
+</ul>
+<p>Access:</p>
+<ul>
+<li>JRC European Soil Data Centre (ESDAC): https://esdac.jrc.ec.europa.eu/</li>
+<li>Reference: JRC (2010) Climatic Zone layer</li>
+</ul>
+<hr></section><section id="google-earth-engine-setup" class="level4"><h4 class="anchored" data-anchor-id="google-earth-engine-setup">Google Earth Engine Setup</h4>
+<p>Platform Overview:<br>
+Google Earth Engine is a cloud-based geospatial analysis platform providing:</p>
+<ul>
+<li>Petabyte-scale satellite imagery archives</li>
+<li>Planetary-scale computational infrastructure</li>
+<li>JavaScript and Python APIs</li>
+<li>Web-based Code Editor</li>
+</ul>
+<p>FAOSTAT Workflow Architecture:</p>
+<ol type="1">
+<li>Data Ingestion: All datasets (MCD64A1, MCD12Q1, GAUL, etc.) available as pre-processed GEE assets</li>
+<li>Pixel-Level Processing: Fire algorithm applied to all global pixels</li>
+<li>Zonal Statistics: Country-level aggregation via GAUL boundaries</li>
+<li>Export: Results exported as CSV tables for FAOSTAT database</li>
+</ol>
+<p>Getting Started:</p>
+<ol type="1">
+<li>
+<p>Account Registration:</p>
+<ul>
+<li>Sign up at https://earthengine.google.com/signup/</li>
+<li>Academic/NGO accounts typically approved within 1-2 days</li>
+</ul>
+</li>
+<li>
+<p>Code Editor Access:</p>
+<ul>
+<li>Navigate to https://code.earthengine.google.com/</li>
+<li>JavaScript environment for interactive analysis</li>
+</ul>
+</li>
+<li>
+<p>Python API Setup (optional):</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pip install earthengine<span class="op">-</span>api</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>earthengine authenticate</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</li>
+<li>
+<p>Key GEE Concepts:</p>
+<ul>
+<li>
+<code>ImageCollection</code>: Time series of raster images</li>
+<li>
+<code>Image</code>: Single raster dataset</li>
+<li>
+<code>FeatureCollection</code>: Vector dataset (e.g., country boundaries)</li>
+<li>
+<code>Reducer</code>: Aggregation functions (sum, mean, etc.)</li>
+</ul>
+</li>
+</ol>
+<p>FAOSTAT-Relevant GEE Assets:<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Burned Area</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> burnedArea <span class="op">=</span> ee<span class="op">.</span><span class="fu">ImageCollection</span>(<span class="st">"MODIS/061/MCD64A1"</span>)<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Land Cover</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> landCover <span class="op">=</span> ee<span class="op">.</span><span class="fu">ImageCollection</span>(<span class="st">"MODIS/061/MCD12Q1"</span>)<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">// Country Boundaries</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> countries <span class="op">=</span> ee<span class="op">.</span><span class="fu">FeatureCollection</span>(<span class="st">"FAO/GAUL/2015/level0"</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+
+
+<!-- -->
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-andreae2001emission" class="csl-entry" role="listitem">
+Andreae, M. O., &amp; Merlet, P. (2001). Emission of trace gases and aerosols from biomass burning. <em>Global Biogeochemical Cycles</em>, <em>15</em>(4), 955–966.
+</div>
+<div id="ref-eurostatGeographicInformationSystem2025" class="csl-entry" role="listitem">
+EUROSTAT. (n.d.). <em>Geographic information system of the european commission</em>.
+</div>
+<div id="ref-fao2012global" class="csl-entry" role="listitem">
+FAO, G. (2012). Global ecological zones for FAO forest reporting: 2010 update. <em>FAO: Rome, Italy</em>.
+</div>
+<div id="ref-giglio2024collection" class="csl-entry" role="listitem">
+Giglio, L., Hall, J. V., Humber, M., Argueta, F., Boschetti, L., &amp; Roy, D. (2024). Collection 2 VIIRS burned area product user’s guide version 1.1. <em>NASA EOSDIS Land Processes Distributed Active Archive Center. DOI: Https://Doi. Org/10.5067/VIIRS/VNP64A1</em>, <em>2</em>.
+</div>
+<div id="ref-giglio2010assessing" class="csl-entry" role="listitem">
+Giglio, L., Randerson, J., Van der Werf, G., Kasibhatla, P., Collatz, G., Morton, D., &amp; DeFries, R. (2010). Assessing variability and long-term trends in burned area by merging multiple satellite fire products. <em>Biogeosciences (Online)</em>, <em>7</em>(3), 1171–1186.
+</div>
+<div id="ref-ipccChapter3Consistent2006" class="csl-entry" role="listitem">
+IPCC. (2006). Chapter 3: Consistent representation of lands. In <em>2006 IPCC guidelines for national greenhouse gas inventories 3.1</em> (Agriculture, Forestry and Other Land Use, Vol. 4). Intergovernmental Panel on Climate Change. <a href="https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/4_Volume4/V4_03_Ch3_Representation.pdf">https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/4_Volume4/V4_03_Ch3_Representation.pdf</a>
+</div>
+<div id="ref-ipcc2013RevisedSupplementary2014" class="csl-entry" role="listitem">
+IPCC. (2013). <em>Revised supplementary methods and good practice guidance arising from the kyoto protocol</em>.
+</div>
+<div id="ref-ipcc2013Supplement20062014" class="csl-entry" role="listitem">
+IPCC. (2014). <em>2013 supplement to the 2006 IPCC guidelines for national greenhouse gas inventories: Wetlands iii</em>. Intergovernmental Panel on Climate Change. <a href="https://www.ipcc-nggip.iges.or.jp/public/wetlands/pdf/Wetlands_Supplement_Entire_Report.pdf">https://www.ipcc-nggip.iges.or.jp/public/wetlands/pdf/Wetlands_Supplement_Entire_Report.pdf</a>
+</div>
+<div id="ref-ipccChapter2Generic2019" class="csl-entry" role="listitem">
+IPCC. (2019). Chapter 2: Generic methodologies applicable to multiple land-use categories. In <em>2019 refinement to the 2006 IPCC guidelines for national greenhouse gas inventories</em> (Agriculture, Forestry and Other Land Use, Vol. 4). Intergovernmental Panel on Climate Change. <a href="https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf">https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf</a>
+</div>
+<div id="ref-rossi2016faostat" class="csl-entry" role="listitem">
+Rossi, S., Tubiello, F. N., Prosperi, P., Salvatore, M., Jacobs, H., Biancalani, R., House, J. I., &amp; Boschetti, L. (2016). FAOSTAT estimates of greenhouse gas emissions from biomass and peat fires. <em>Climatic Change</em>, <em>135</em>(3), 699–711.
+</div>
+<div id="ref-sulla2018user" class="csl-entry" role="listitem">
+Sulla-Menashe, D., Friedl, M. A., et al. (2018). User guide to collection 6 MODIS land cover (MCD12Q1 and MCD12C1) product. <em>Usgs: Reston, Va, Usa</em>, <em>1</em>, 18.
+</div>
+</div>
+</section></section></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><hr>
+<ol>
+<li id="fn1"><p>Note to self: 2025 wishlist<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Direct Page Link: <a href="https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf#page=71" class="uri">https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf#page=71</a><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Code provided Python and R, with some cells in Java for use natively in Earth Engine Codespace<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol></section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/seamusrobertmurphy\.quarto\.pub\/TREES-wildfire-replications");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./01-burn-area/index.html" class="pagination-link" aria-label="Burn Area">
+        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Burn Area</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb3" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Preface {.unnumbered}</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#| comment: NA</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>easypackages<span class="sc">::</span><span class="fu">packages</span>(</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"bslib"</span>, </span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"cols4all"</span>, <span class="st">"covr"</span>, <span class="st">"cowplot"</span>, </span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"dendextend"</span>, <span class="st">"digest"</span>,<span class="st">"DiagrammeR"</span>,<span class="st">"dtwclust"</span>, <span class="st">"downlit"</span>, </span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"e1071"</span>, <span class="st">"exactextractr"</span>,<span class="st">"elevatr"</span>, </span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">"FNN"</span>, <span class="st">"future"</span>, <span class="st">"forestdata"</span>,</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">"gdalcubes"</span>, <span class="st">"gdalUtilities"</span>, <span class="st">"geojsonsf"</span>, <span class="st">"geos"</span>, <span class="st">"ggplot2"</span>, <span class="st">"ggstats"</span>, </span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ggspatial"</span>, <span class="st">"ggmap"</span>, <span class="st">"ggplotify"</span>, <span class="st">"ggpubr"</span>, <span class="st">"ggrepel"</span>, <span class="st">"giscoR"</span>, </span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="st">"hdf5r"</span>, <span class="st">"httr"</span>, <span class="st">"httr2"</span>, <span class="st">"htmltools"</span>,</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  <span class="st">"jsonlite"</span>, </span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="st">"kohonen"</span>, </span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="st">"leaflet.providers"</span>, <span class="st">"leafem"</span>, <span class="st">"libgeos"</span>,<span class="st">"luz"</span>,<span class="st">"lwgeom"</span>, <span class="st">"leaflet"</span>, <span class="st">"leafgl"</span>,</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  <span class="st">"mapedit"</span>, <span class="st">"mapview"</span>, <span class="st">"maptiles"</span>, <span class="st">"methods"</span>, <span class="st">"mgcv"</span>, </span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ncdf4"</span>, <span class="st">"nnet"</span>, </span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  <span class="st">"openxlsx"</span>, <span class="st">"parallel"</span>, <span class="st">"plotly"</span>, </span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  <span class="st">"randomForest"</span>, <span class="st">"rasterVis"</span>, <span class="st">"raster"</span>, <span class="st">"Rcpp"</span>, <span class="st">"RcppArmadillo"</span>, </span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  <span class="st">"RcppCensSpatial"</span>,<span class="st">"rayshader"</span>, <span class="st">"RcppEigen"</span>, <span class="st">"RcppParallel"</span>, </span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  <span class="st">"RColorBrewer"</span>, <span class="st">"reactable"</span>, <span class="st">"rgl"</span>, <span class="st">"rsconnect"</span>,<span class="st">"RStoolbox"</span>, <span class="st">"rts"</span>, </span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  <span class="st">"s2"</span>, <span class="st">"sf"</span>, <span class="st">"scales"</span>, <span class="st">"sits"</span>,<span class="st">"spdep"</span>, <span class="st">"stars"</span>, <span class="st">"stringr"</span>,<span class="st">"supercells"</span>, </span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  <span class="st">"terra"</span>, <span class="st">"testthat"</span>, <span class="st">"tidyverse"</span>, <span class="st">"tidyterra"</span>,<span class="st">"tools"</span>, </span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  <span class="st">"tmap"</span>, <span class="st">"tmaptools"</span>, <span class="st">"terrainr"</span>, </span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  <span class="st">"xgboost"</span>,</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">prompt =</span> F)</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co">#mapviewOptions(fgb = FALSE)</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>sf<span class="sc">::</span><span class="fu">sf_use_s2</span>(<span class="at">use_s2 =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="co">#| warning: false</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: false</span></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a><span class="co">#| echo: false</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a><span class="co">#| comment: NA</span></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repos =</span> <span class="fu">c</span>(<span class="at">CRAN =</span> <span class="st">"https://cloud.r-project.org"</span>),</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>        <span class="at">htmltools.dir.version =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>        <span class="at">htmltools.preserve.raw =</span> <span class="cn">FALSE</span></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>  <span class="at">echo =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>  <span class="at">message =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>  <span class="at">warning =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>  <span class="at">error =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>  <span class="at">comment =</span> <span class="cn">NA</span>, </span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>  <span class="at">tidy.opts =</span> <span class="fu">list</span>(<span class="at">width.cutoff =</span> <span class="dv">60</span>)</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>  ) </span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a><span class="in">```{css, echo=FALSE, class.source = 'foldable'}</span></span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>div<span class="op">.</span><span class="fu">column</span> <span class="op">{</span></span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>    display<span class="op">:</span> inline<span class="op">-</span>block<span class="op">;</span></span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>    vertical<span class="op">-</span>align<span class="op">:</span> top<span class="op">;</span></span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>    width<span class="op">:</span> <span class="dv">50</span><span class="op">%;</span></span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>#TOC<span class="op">::</span>before <span class="op">{</span></span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>  content<span class="op">:</span> <span class="st">""</span><span class="op">;</span></span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>  display<span class="op">:</span> block<span class="op">;</span></span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>  height<span class="op">:</span><span class="dv">200</span>px<span class="op">;</span></span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>  width<span class="op">:</span> <span class="dv">200</span>px<span class="op">;</span></span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>  background<span class="op">-</span>image<span class="op">:</span> <span class="fu">url</span><span class="op">(</span>'https<span class="op">:</span><span class="co">//raw.githubusercontent.com/seamusrobertmurphy/IPCC-wildfire-emissions/refs/heads/main/01-burn-area/AOI/aoi_burn_aa.png');</span></span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>  background<span class="op">-</span>size<span class="op">:</span> contain<span class="op">;</span></span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>  background<span class="op">-</span>position<span class="op">:</span> <span class="dv">50</span><span class="op">%</span> <span class="dv">50</span><span class="op">%;</span></span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>  padding<span class="op">-</span>top<span class="op">:</span> <span class="dv">80</span>px <span class="op">!</span>important<span class="op">;</span></span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>  background<span class="op">-</span>repeat<span class="op">:</span> no<span class="op">-</span>repeat<span class="op">;</span></span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>This resource provides comprehensive methodological guidance for deriving IPCC Tier 1 Forest Fire Activity Data, with particular emphasis on burned area estimation following FAOSTAT and IPCC 2019 Refinement protocols. The workflow integrates satellite-based fire detection, land cover classification, fuel consumption modeling, and emission factor application to produce country-level greenhouse gas emission estimates from biomass burning. This eBook uses an example AOI derived from the national border of Honduras.</span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>The methodology presented here addresses key challenges in fire emissions accounting: inter-annual variability in natural disturbances, the managed land proxy approach for anthropogenic attribution, uncertainty quantification across multiple data sources, and the balance between immediate emissions and subsequent carbon removals. Each chapter builds systematically from data acquisition through quality control, providing transparent, reproducible workflows suitable for national greenhouse gas inventory reporting and validation.</span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Chapter 1: Burn Area {.unnumbered}</span></span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>Extract MODIS MCD64A1 data, apply quality filters, aggregate temporally and spatially, handle missing data, and validate against alternative fire products.</span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Chapter 2: Fuel Stratification {.unnumbered}</span></span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>Classify burned pixels into Forest (Humid Tropical, Other), Savanna, and Organic Soil categories using MODIS land cover and auxiliary datasets.</span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Chapter 3: Fuel Consumption {.unnumbered}</span></span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>Assign IPCC default fuel consumption values based on vegetation type and climate zone stratification, calculate total burned biomass.</span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Chapter 4: Emission Factors {.unnumbered}</span></span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>Apply IPCC emission factors, compute CH₄, N₂O, and CO₂ emissions, handle CO₂ reporting exclusions for non-stand-replacing fires.</span>
+<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Chapter 5: QA/QC &amp; Audit-Ready SOPs (Pending) {.unnumbered}</span></span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a>Cross-validation with UNFCCC data, uncertainty propagation, sensitivity analysis, and documentation for NGHGI reporting.</span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a><span class="fu">## IPCC Tier 1 Fire Emissions</span></span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>The IPCC Tier 1 approach for estimating greenhouse gas emissions from fires provides a standardized, globally applicable framework based on readily available data and default emission factors. This methodology applies Equation 2.27 from the 2019 IPCC Refinements to Guidelines for National Greenhouse Gas Inventories <span class="co">[</span><span class="ot">@ipccChapter2Generic2019</span><span class="co">]</span>:</span>
+<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>L_{fire} = A \times M_B \times C_f \times G_{ef} \times 10^{-3}</span>
+<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a>$$</span>
+<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a>Where:</span>
+<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>L~fire~ = greenhouse gas emissions from fire (tonnes of CH₄, N₂O, or CO₂)</span>
+<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>A = area burnt (ha)</span>
+<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>M~B~ = mass of fuel available for combustion (tonnes ha⁻¹)</span>
+<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>C~f~ = combustion factor (dimensionless, proportion of fuel consumed)</span>
+<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>G~ef~ = emission factor (g kg⁻¹ dry matter burnt)</span>
+<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Vegetation-Specific Applications</span></span>
+<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a>Forest Fires:</span>
+<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Only non-CO₂ emissions (CH₄, N₂O) are reported</span>
+<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>CO₂ emissions excluded as they are captured in carbon stock change calculations</span>
+<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Applies to fires in Evergreen, Deciduous, and Mixed Forest land cover types</span>
+<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a>Savanna Fires:</span>
+<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Non-CO₂ emissions only (CH₄, N₂O)</span>
+<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Assumes CO₂ balance through annual vegetation regrowth</span>
+<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Covers Grassland, Savanna, Woody Savanna, and Shrubland types</span>
+<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a>Organic Soil Fires:</span>
+<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Reports both CO₂ and CH₄ emissions</span>
+<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Uses IPCC Wetlands Supplement parameters <span class="co">[</span><span class="ot">@ipcc2013Supplement20062014</span><span class="co">]</span></span>
+<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Currently validated for Southeast Asia only</span>
+<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Managed Land Proxy Approach</span></span>
+<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a>The methodology adopts the Managed Land Proxy (MLP) as the primary framework for attributing anthropogenic emissions. Under MLP:</span>
+<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>All emissions and removals on managed lands approximate anthropogenic effects</span>
+<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Natural disturbances (e.g., wildfires) are included in total managed land fluxes</span>
+<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Optional disaggregation separates anthropogenic activities from natural disturbance impacts</span>
+<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Expectation that emissions from natural disturbances balance with subsequent removals over time</span>
+<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a>The 2019 IPCC Refinement provides enhanced guidance for addressing inter-annual variability (IAV) caused by:</span>
+<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Natural disturbances (wildfires, insects, windthrow, ice storms)</span>
+<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Climate variability affecting photosynthesis and respiration</span>
+<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Variation in human activities (harvesting, land-use change)</span>
+<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>Countries experiencing high IAV from natural disturbances may optionally disaggregate these fluxes to better identify trends in anthropogenic emissions and evaluate mitigation actions.</span>
+<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a><span class="fu">## FAOSTAT Fires Domain</span></span>
+<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Database Overview</span></span>
+<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a>The FAOSTAT Emissions from Fires domain provides spatially- and temporally stratified estimates of CH₄, N₂O, and CO₂ emissions from biomass burning across all countries and territories. The database:</span>
+<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Covers the complete time series 1990–2024</span>
+<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Updates annually with new satellite observations</span>
+<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Disseminates activity data and emission estimates (kt CH₄, N₂O, CO₂)</span>
+<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Provides regional aggregations for Annex I / non-Annex I country groups</span>
+<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Integrates country-reported data from UNFCCC submissions for validation</span>
+<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Methodological Foundation</span></span>
+<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a>FAOSTAT implements IPCC Tier 1 methodology using:</span>
+<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Pixel-level processing in Google Earth Engine (GEE)</span>
+<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Country-level aggregation via Global Administrative Unit Layers <span class="co">[</span><span class="ot">@eurostatGeographicInformationSystem2025</span><span class="co">]</span></span>
+<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Climate-dependent fuel consumption values stratified by FAO-FRA Ecological Zones</span>
+<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Quality-filtered satellite observations (uncertainty <span class="sc">\&lt;</span> 20%)</span>
+<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a>The database serves as an official IPCC-recommended tool for National Greenhouse Gas Inventory (NGHGI) QA/QC processes and validation of activity data and emission estimates (IPCC 2019).</span>
+<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Three Fire Categories</span></span>
+<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a>1<span class="sc">\.</span> Forest Fires\</span>
+<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a>Emissions from fires in Forest Land, disaggregated into:</span>
+<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Humid Tropical Forest: Forest pixels overlaid with FAO-FRA tropical zones</span>
+<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Other Forest: All remaining forest types (boreal, temperate, extra-tropical)</span>
+<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a>Land cover identification aggregates MODIS IGBP classes:</span>
+<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Evergreen Needleleaf Forest</span>
+<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Evergreen Broadleaf Forest</span>
+<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Deciduous Needleleaf Forest</span>
+<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Deciduous Broadleaf Forest</span>
+<span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Mixed Forests</span>
+<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a>2<span class="sc">\.</span> Savanna Fires\</span>
+<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a>Emissions from Grassland and woody vegetation:</span>
+<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Grassland</span>
+<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Savanna</span>
+<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Woody Savanna</span>
+<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Open Shrubland</span>
+<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Closed Shrubland</span>
+<span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a>3<span class="sc">\.</span> Fires in Organic Soils\</span>
+<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a>Emissions from peat fires identified by overlaying burned area with Histosols class from the Harmonized World Soil Database. Due to high uncertainty and limited validation outside Southeast Asia, emissions are set to zero for all countries except those in Southeast Asia (Indonesia, Malaysia, Brunei Darussalam). Complete global estimates are provided in supplementary files for reference and research purposes.</span>
+<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Temporal Gap-Filling</span></span>
+<span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a>Primary Satellite Era (2001–2024): Direct observations from MODIS MCD64A1 Collection 6.1 provide monthly burned area at 500m resolution.</span>
+<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a>Historical Period (1990–2000): Values backfilled using two approaches:</span>
+<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>1996–2000: Earlier FAOSTAT estimates <span class="co">[</span><span class="ot">@rossi2016faostat</span><span class="co">]</span></span>
+<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>1990–1995: Averaged values from reconstructed time series (1996–2002 mean)</span>
+<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a>This approach ensures complete temporal coverage required for UNFCCC reporting while acknowledging higher uncertainty in pre-MODIS years.</span>
+<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a><span class="fu">## QA/QC and Validation</span></span>
+<span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-229"><a href="#cb3-229" aria-hidden="true" tabindex="-1"></a><span class="fu">#### National GHG Inventories</span></span>
+<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a>Primary Use: The IPCC explicitly recommends FAOSTAT as a tool for NGHGI QA/QC processes (IPCC 2019). Countries can:</span>
+<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Cross-validate activity data: Compare satellite-derived burned areas against national fire databases</span>
+<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Evaluate emission factors: Test sensitivity to country-specific vs. default IPCC parameters\</span>
+<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Identify data gaps: Detect missing or inconsistent reporting in national systems</span>
+<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Assess trends: Evaluate whether reported trends align with satellite observations</span>
+<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Comparison Frameworks</span></span>
+<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a>Top-Down vs. Bottom-Up Reconciliation:</span>
+<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a>FAOSTAT (satellite-based, top-down) <span class="sc">\&lt;\&gt;</span> NGHGI (ground-based, bottom-up)</span>
+<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-244"><a href="#cb3-244" aria-hidden="true" tabindex="-1"></a>Systematic differences may indicate:</span>
+<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Detection limitations in satellite products (e.g., small fires, smoldering)</span>
+<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Incomplete ground reporting</span>
+<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Different definitions of "managed land"</span>
+<span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Biomass consumption parameter uncertainties</span>
+<span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a>Multi-Source Fire Validation:</span>
+<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Fire Detection: MODIS active fire products (MCD14ML, MYD14) vs. burned area (MCD64A1)</span>
+<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Land Cover: MODIS MCD12Q1 vs. national forest inventories</span>
+<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Emission Factors: IPCC defaults ~~vs. regional measurements from literature~~<span class="ot">[^index-1]</span></span>
+<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Tier Advancement Pathways</span></span>
+<span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a>Countries may use FAOSTAT as a stepping stone to higher-tier methods:</span>
+<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a>Tier 1 =<span class="sc">\&gt;</span> Tier 2:</span>
+<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Replace default emission factors with country-specific values</span>
+<span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Refine fuel consumption parameters using field measurements</span>
+<span id="cb3-265"><a href="#cb3-265" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Improve combustion factor estimates via burn severity mapping</span>
+<span id="cb3-266"><a href="#cb3-266" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-267"><a href="#cb3-267" aria-hidden="true" tabindex="-1"></a>Tier 2 =<span class="sc">\&gt;</span> Tier 3:</span>
+<span id="cb3-268"><a href="#cb3-268" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-269"><a href="#cb3-269" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Integrate process-based models (e.g., FOFEM, CONSUME)</span>
+<span id="cb3-270"><a href="#cb3-270" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Develop national fire monitoring systems</span>
+<span id="cb3-271"><a href="#cb3-271" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Implement measurement-based carbon stock change assessments</span>
+<span id="cb3-272"><a href="#cb3-272" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-273"><a href="#cb3-273" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Mitigation Action Tracking</span></span>
+<span id="cb3-274"><a href="#cb3-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-275"><a href="#cb3-275" aria-hidden="true" tabindex="-1"></a>FAOSTAT time series enable evaluation of:</span>
+<span id="cb3-276"><a href="#cb3-276" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-277"><a href="#cb3-277" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Prescribed burning programs</span>
+<span id="cb3-278"><a href="#cb3-278" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Fire suppression effectiveness</span>
+<span id="cb3-279"><a href="#cb3-279" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Land management policy impacts</span>
+<span id="cb3-280"><a href="#cb3-280" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Climate change effects on fire regimes</span>
+<span id="cb3-281"><a href="#cb3-281" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-282"><a href="#cb3-282" aria-hidden="true" tabindex="-1"></a>Countries can quantify whether trends in anthropogenic fire emissions diverge from natural disturbance variability, supporting Nationally Determined Contribution (NDC) reporting and verification.</span>
+<span id="cb3-283"><a href="#cb3-283" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-284"><a href="#cb3-284" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb3-285"><a href="#cb3-285" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-286"><a href="#cb3-286" aria-hidden="true" tabindex="-1"></a><span class="fu">## Uncertainty Considerations</span></span>
+<span id="cb3-287"><a href="#cb3-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-288"><a href="#cb3-288" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Sources of Uncertainty</span></span>
+<span id="cb3-289"><a href="#cb3-289" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-290"><a href="#cb3-290" aria-hidden="true" tabindex="-1"></a><span class="fu">### 1. Activity Data Uncertainty</span></span>
+<span id="cb3-291"><a href="#cb3-291" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-292"><a href="#cb3-292" aria-hidden="true" tabindex="-1"></a>Satellite detection limitations:</span>
+<span id="cb3-293"><a href="#cb3-293" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-294"><a href="#cb3-294" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Small fires (<span class="sc">\&lt;</span> 500m): May be missed by MODIS 500m pixels</span>
+<span id="cb3-295"><a href="#cb3-295" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Canopy-obscured fires: Difficult to detect in dense forests</span>
+<span id="cb3-296"><a href="#cb3-296" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Smoldering fires: Peat fires may not produce strong thermal signatures</span>
+<span id="cb3-297"><a href="#cb3-297" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Cloud contamination: Persistent cloud cover reduces observation frequency</span>
+<span id="cb3-298"><a href="#cb3-298" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Rapid vegetation regrowth: Short time lag between fire and regrowth obscures burn scars</span>
+<span id="cb3-299"><a href="#cb3-299" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-300"><a href="#cb3-300" aria-hidden="true" tabindex="-1"></a>MCD64A1 applies quality filters:</span>
+<span id="cb3-301"><a href="#cb3-301" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-302"><a href="#cb3-302" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Only pixels with uncertainty <span class="sc">\&lt;</span> 20% are included</span>
+<span id="cb3-303"><a href="#cb3-303" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Commission/omission errors vary by biome</span>
+<span id="cb3-304"><a href="#cb3-304" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Global burned area may be underestimated by 20-30% <span class="co">[</span><span class="ot">@giglio2010assessing</span><span class="co">]</span></span>
+<span id="cb3-305"><a href="#cb3-305" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-306"><a href="#cb3-306" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2. Land Classification Uncertainty</span></span>
+<span id="cb3-307"><a href="#cb3-307" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-308"><a href="#cb3-308" aria-hidden="true" tabindex="-1"></a>MODIS MCD12Q1 accuracy:</span>
+<span id="cb3-309"><a href="#cb3-309" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-310"><a href="#cb3-310" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Overall accuracy: \~75% globally</span>
+<span id="cb3-311"><a href="#cb3-311" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Confusion between woody savannas and forests</span>
+<span id="cb3-312"><a href="#cb3-312" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Temporal lag in land-use change detection</span>
+<span id="cb3-313"><a href="#cb3-313" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Mixed pixels in heterogeneous landscapes</span>
+<span id="cb3-314"><a href="#cb3-314" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-315"><a href="#cb3-315" aria-hidden="true" tabindex="-1"></a>Impact on emissions: Misclassification affects fuel consumption values (Table 2.4 ranges: 2.6 to 163.6 t ha⁻¹).</span>
+<span id="cb3-316"><a href="#cb3-316" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-317"><a href="#cb3-317" aria-hidden="true" tabindex="-1"></a><span class="fu">### 3. Fuel Consumption Uncertainty</span></span>
+<span id="cb3-318"><a href="#cb3-318" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-319"><a href="#cb3-319" aria-hidden="true" tabindex="-1"></a>IPCC default values (Table 2.4) reflect:</span>
+<span id="cb3-320"><a href="#cb3-320" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-321"><a href="#cb3-321" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>High natural variability: Standard errors 30-50% of mean</span>
+<span id="cb3-322"><a href="#cb3-322" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Limited data for some vegetation types</span>
+<span id="cb3-323"><a href="#cb3-323" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Climate dependency: Values vary by FAO-FRA Ecological Zones, but within-zone heterogeneity remains</span>
+<span id="cb3-324"><a href="#cb3-324" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-325"><a href="#cb3-325" aria-hidden="true" tabindex="-1"></a>Example uncertainties (Mean ± SE):</span>
+<span id="cb3-326"><a href="#cb3-326" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-327"><a href="#cb3-327" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Primary Tropical Forest: 119.6 ± (range: 83.9 to 163.6) t ha⁻¹</span>
+<span id="cb3-328"><a href="#cb3-328" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Savanna Woodland: 2.6 ± 0.1 (early dry season) to 4.6 ± 1.5 (late dry season) t ha⁻¹</span>
+<span id="cb3-329"><a href="#cb3-329" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-330"><a href="#cb3-330" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4. Combustion Factor Uncertainty</span></span>
+<span id="cb3-331"><a href="#cb3-331" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-332"><a href="#cb3-332" aria-hidden="true" tabindex="-1"></a>Proportion of fuel consumed (Table 2.6):</span>
+<span id="cb3-333"><a href="#cb3-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-334"><a href="#cb3-334" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Influenced by fire intensity, fuel moisture, weather conditions</span>
+<span id="cb3-335"><a href="#cb3-335" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Variability within vegetation types: SD often 0.1-0.2 (for factors ranging 0.2-0.9)</span>
+<span id="cb3-336"><a href="#cb3-336" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Incomplete combustion of coarse woody debris vs. near-complete combustion of grasses</span>
+<span id="cb3-337"><a href="#cb3-337" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-338"><a href="#cb3-338" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5. Emission Factor Uncertainty</span></span>
+<span id="cb3-339"><a href="#cb3-339" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-340"><a href="#cb3-340" aria-hidden="true" tabindex="-1"></a>IPCC defaults (Table 2.5) based on <span class="co">[</span><span class="ot">@andreae2001emission</span><span class="co">]</span>:</span>
+<span id="cb3-341"><a href="#cb3-341" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-342"><a href="#cb3-342" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Values represent global averages across fire types</span>
+<span id="cb3-343"><a href="#cb3-343" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Standard deviations: 20-60% of mean values</span>
+<span id="cb3-344"><a href="#cb3-344" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Influenced by combustion efficiency (flaming vs. smoldering)</span>
+<span id="cb3-345"><a href="#cb3-345" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-346"><a href="#cb3-346" aria-hidden="true" tabindex="-1"></a>Example (Savanna fires):</span>
+<span id="cb3-347"><a href="#cb3-347" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-348"><a href="#cb3-348" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>CO₂: 1613 ± 95 g kg⁻¹</span>
+<span id="cb3-349"><a href="#cb3-349" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>CH₄: 2.3 ± 0.9 g kg⁻¹</span>
+<span id="cb3-350"><a href="#cb3-350" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>N₂O: 0.21 ± 0.10 g kg⁻¹</span>
+<span id="cb3-351"><a href="#cb3-351" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-352"><a href="#cb3-352" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Uncertainty Aggregation</span></span>
+<span id="cb3-353"><a href="#cb3-353" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-354"><a href="#cb3-354" aria-hidden="true" tabindex="-1"></a>For IPCC Tier 1, cumulative uncertainty typically:</span>
+<span id="cb3-355"><a href="#cb3-355" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-356"><a href="#cb3-356" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Activity data: ±30% for burned area</span>
+<span id="cb3-357"><a href="#cb3-357" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Emission estimates: ±50% for CH₄ and N₂O, ±30-40% for CO₂</span>
+<span id="cb3-358"><a href="#cb3-358" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-359"><a href="#cb3-359" aria-hidden="true" tabindex="-1"></a>Organic soil fires have particularly high uncertainty:</span>
+<span id="cb3-360"><a href="#cb3-360" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-361"><a href="#cb3-361" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Remote sensing detection challenges</span>
+<span id="cb3-362"><a href="#cb3-362" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Limited field validation outside Southeast Asia</span>
+<span id="cb3-363"><a href="#cb3-363" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Difficulty distinguishing surface fires from subsurface peat combustion</span>
+<span id="cb3-364"><a href="#cb3-364" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Unknown proportion of fires on drained vs. undrained peatlands</span>
+<span id="cb3-365"><a href="#cb3-365" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-366"><a href="#cb3-366" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Uncertainty Reduction</span></span>
+<span id="cb3-367"><a href="#cb3-367" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-368"><a href="#cb3-368" aria-hidden="true" tabindex="-1"></a>Country-Specific Improvements:</span>
+<span id="cb3-369"><a href="#cb3-369" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-370"><a href="#cb3-370" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Integrate national fire databases with satellite observations</span>
+<span id="cb3-371"><a href="#cb3-371" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Conduct field campaigns to measure fuel loads and combustion factors</span>
+<span id="cb3-372"><a href="#cb3-372" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Develop regional emission factors from smoke sampling</span>
+<span id="cb3-373"><a href="#cb3-373" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Implement Tier 2/3 methods in high-emission areas</span>
+<span id="cb3-374"><a href="#cb3-374" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-375"><a href="#cb3-375" aria-hidden="true" tabindex="-1"></a>Methodological Enhancements:</span>
+<span id="cb3-376"><a href="#cb3-376" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-377"><a href="#cb3-377" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Multi-sensor fusion (MODIS + VIIRS + Sentinel)</span>
+<span id="cb3-378"><a href="#cb3-378" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Sub-pixel burned area algorithms</span>
+<span id="cb3-379"><a href="#cb3-379" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Burn severity mapping for combustion factors</span>
+<span id="cb3-380"><a href="#cb3-380" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Seasonal stratification of fuel moisture</span>
+<span id="cb3-381"><a href="#cb3-381" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-382"><a href="#cb3-382" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Managing Inter-Annual Variability</span></span>
+<span id="cb3-383"><a href="#cb3-383" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-384"><a href="#cb3-384" aria-hidden="true" tabindex="-1"></a>High IAV from natural disturbances complicates trend analysis:</span>
+<span id="cb3-385"><a href="#cb3-385" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-386"><a href="#cb3-386" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Wildfires can cause 2-3 orders of magnitude annual variation</span>
+<span id="cb3-387"><a href="#cb3-387" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Obscures anthropogenic emission trends</span>
+<span id="cb3-388"><a href="#cb3-388" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Challenges mitigation policy evaluation</span>
+<span id="cb3-389"><a href="#cb3-389" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-390"><a href="#cb3-390" aria-hidden="true" tabindex="-1"></a>Optional Disaggregation Approach <span class="co">[</span><span class="ot">@ipccChapter2Generic2019</span><span class="co">][^index-2]</span>:</span>
+<span id="cb3-391"><a href="#cb3-391" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-392"><a href="#cb3-392" aria-hidden="true" tabindex="-1"></a>Countries may separate:</span>
+<span id="cb3-393"><a href="#cb3-393" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-394"><a href="#cb3-394" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Natural disturbance component: Emissions beyond normal variability or 95% CI</span>
+<span id="cb3-395"><a href="#cb3-395" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Anthropogenic component: Remaining managed land fluxes</span>
+<span id="cb3-396"><a href="#cb3-396" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-397"><a href="#cb3-397" aria-hidden="true" tabindex="-1"></a>This disaggregation:</span>
+<span id="cb3-398"><a href="#cb3-398" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-399"><a href="#cb3-399" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Improves clarity of human activity impacts</span>
+<span id="cb3-400"><a href="#cb3-400" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Maintains MLP total for official reporting</span>
+<span id="cb3-401"><a href="#cb3-401" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Requires documentation of methods and thresholds</span>
+<span id="cb3-402"><a href="#cb3-402" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Assumes eventual balance between disturbance emissions and regrowth</span>
+<span id="cb3-403"><a href="#cb3-403" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-404"><a href="#cb3-404" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb3-405"><a href="#cb3-405" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-406"><a href="#cb3-406" aria-hidden="true" tabindex="-1"></a><span class="fu">## Data Sources</span></span>
+<span id="cb3-407"><a href="#cb3-407" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-408"><a href="#cb3-408" aria-hidden="true" tabindex="-1"></a><span class="fu">#### MCD64A1.061: Burn Areas</span></span>
+<span id="cb3-409"><a href="#cb3-409" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-410"><a href="#cb3-410" aria-hidden="true" tabindex="-1"></a>Product Overview: The MCD64A1 Version 6.1 Burned Area product provides monthly, global gridded burned area at 500m spatial resolution, derived from combined Terra and Aqua MODIS observations.</span>
+<span id="cb3-411"><a href="#cb3-411" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-412"><a href="#cb3-412" aria-hidden="true" tabindex="-1"></a>Key Features:</span>
+<span id="cb3-413"><a href="#cb3-413" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-414"><a href="#cb3-414" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Temporal Resolution: Monthly composites, 2001–present</span>
+<span id="cb3-415"><a href="#cb3-415" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Spatial Resolution: 500m nominal pixel size</span>
+<span id="cb3-416"><a href="#cb3-416" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Algorithm: Decision tree classifier using surface reflectance time series</span>
+<span id="cb3-417"><a href="#cb3-417" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Output: Burn date encoded as ordinal day of year, with quality indicators</span>
+<span id="cb3-418"><a href="#cb3-418" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-419"><a href="#cb3-419" aria-hidden="true" tabindex="-1"></a>Data Layers:</span>
+<span id="cb3-420"><a href="#cb3-420" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-421"><a href="#cb3-421" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Burn Date (day of year when burn detected)</span>
+<span id="cb3-422"><a href="#cb3-422" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Burn Data Uncertainty (percentage uncertainty, 0-100%)</span>
+<span id="cb3-423"><a href="#cb3-423" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Quality Assurance flags</span>
+<span id="cb3-424"><a href="#cb3-424" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-425"><a href="#cb3-425" aria-hidden="true" tabindex="-1"></a>FAOSTAT Implementation:</span>
+<span id="cb3-426"><a href="#cb3-426" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-427"><a href="#cb3-427" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Quality filter applied: Only pixels with uncertainty <span class="sc">\&lt;</span> 20% are retained</span>
+<span id="cb3-428"><a href="#cb3-428" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Aggregation: Pixel-level burn dates accumulated to annual country totals</span>
+<span id="cb3-429"><a href="#cb3-429" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>GEE Asset: <span class="in">`MODIS/061/MCD64A1`</span></span>
+<span id="cb3-430"><a href="#cb3-430" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-431"><a href="#cb3-431" aria-hidden="true" tabindex="-1"></a>Access:</span>
+<span id="cb3-432"><a href="#cb3-432" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-433"><a href="#cb3-433" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>NASA LP DAAC: https://lpdaac.usgs.gov/products/mcd64a1v061/</span>
+<span id="cb3-434"><a href="#cb3-434" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Google Earth Engine: <span class="in">`ee.ImageCollection("MODIS/061/MCD64A1")`</span></span>
+<span id="cb3-435"><a href="#cb3-435" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>User Guide: <span class="co">[</span><span class="ot">@giglio2024collection</span><span class="co">]</span></span>
+<span id="cb3-436"><a href="#cb3-436" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-437"><a href="#cb3-437" aria-hidden="true" tabindex="-1"></a>Limitations:</span>
+<span id="cb3-438"><a href="#cb3-438" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-439"><a href="#cb3-439" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>May miss small fires (<span class="sc">\&lt;</span> 500m²)</span>
+<span id="cb3-440"><a href="#cb3-440" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Reduced accuracy in densely forested areas</span>
+<span id="cb3-441"><a href="#cb3-441" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Cloud obscuration limits temporal coverage in some regions</span>
+<span id="cb3-442"><a href="#cb3-442" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Detection lag in slow-spreading fires</span>
+<span id="cb3-443"><a href="#cb3-443" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-444"><a href="#cb3-444" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb3-445"><a href="#cb3-445" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-446"><a href="#cb3-446" aria-hidden="true" tabindex="-1"></a><span class="fu">#### MCD12Q1.061: IGBP Land Cover</span></span>
+<span id="cb3-447"><a href="#cb3-447" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-448"><a href="#cb3-448" aria-hidden="true" tabindex="-1"></a>Product Overview: MCD12Q1 provides annual global land cover classification at 500m resolution using supervised classification of MODIS reflectance data.</span>
+<span id="cb3-449"><a href="#cb3-449" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-450"><a href="#cb3-450" aria-hidden="true" tabindex="-1"></a>Classification Scheme: FAOSTAT uses Land Cover Type 1 (IGBP 17-class legend):</span>
+<span id="cb3-451"><a href="#cb3-451" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-452"><a href="#cb3-452" aria-hidden="true" tabindex="-1"></a>Forest Types (used for Forest Fire category):</span>
+<span id="cb3-453"><a href="#cb3-453" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-454"><a href="#cb3-454" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 1: Evergreen Needleleaf Forests</span>
+<span id="cb3-455"><a href="#cb3-455" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 2: Evergreen Broadleaf Forests</span>
+<span id="cb3-456"><a href="#cb3-456" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 3: Deciduous Needleleaf Forests</span>
+<span id="cb3-457"><a href="#cb3-457" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 4: Deciduous Broadleaf Forests</span>
+<span id="cb3-458"><a href="#cb3-458" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 5: Mixed Forests</span>
+<span id="cb3-459"><a href="#cb3-459" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-460"><a href="#cb3-460" aria-hidden="true" tabindex="-1"></a>Grassland/Savanna Types (used for Savanna Fire category):</span>
+<span id="cb3-461"><a href="#cb3-461" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-462"><a href="#cb3-462" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 6: Closed Shrublands</span>
+<span id="cb3-463"><a href="#cb3-463" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 7: Open Shrublands - Class 8: Woody Savannas</span>
+<span id="cb3-464"><a href="#cb3-464" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 9: Savannas</span>
+<span id="cb3-465"><a href="#cb3-465" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Class 10: Grasslands</span>
+<span id="cb3-466"><a href="#cb3-466" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Other Classes: Croplands, Urban, Wetlands, etc. (Classes 11-17)</span>
+<span id="cb3-467"><a href="#cb3-467" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-468"><a href="#cb3-468" aria-hidden="true" tabindex="-1"></a>FAOSTAT Implementation:</span>
+<span id="cb3-469"><a href="#cb3-469" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-470"><a href="#cb3-470" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Annual land cover maps matched to fire detection year</span>
+<span id="cb3-471"><a href="#cb3-471" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Overlay burned pixels with contemporaneous land cover</span>
+<span id="cb3-472"><a href="#cb3-472" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Exclude built-up, barren, and water bodies</span>
+<span id="cb3-473"><a href="#cb3-473" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>GEE Asset: <span class="in">`MODIS/061/MCD12Q1`</span></span>
+<span id="cb3-474"><a href="#cb3-474" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-475"><a href="#cb3-475" aria-hidden="true" tabindex="-1"></a>Access:</span>
+<span id="cb3-476"><a href="#cb3-476" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-477"><a href="#cb3-477" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>NASA LP DAAC: https://lpdaac.usgs.gov/products/mcd12q1v061/</span>
+<span id="cb3-478"><a href="#cb3-478" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Google Earth Engine: <span class="in">`ee.ImageCollection("MODIS/061/MCD12Q1")`</span></span>
+<span id="cb3-479"><a href="#cb3-479" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>User Guide: <span class="co">[</span><span class="ot">@sulla2018user</span><span class="co">]</span></span>
+<span id="cb3-480"><a href="#cb3-480" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-481"><a href="#cb3-481" aria-hidden="true" tabindex="-1"></a>Accuracy:</span>
+<span id="cb3-482"><a href="#cb3-482" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-483"><a href="#cb3-483" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Overall accuracy: \~75% globally</span>
+<span id="cb3-484"><a href="#cb3-484" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Higher accuracy in homogeneous landscapes</span>
+<span id="cb3-485"><a href="#cb3-485" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>sConfusion common between woody savannas and open forests</span>
+<span id="cb3-486"><a href="#cb3-486" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-487"><a href="#cb3-487" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb3-488"><a href="#cb3-488" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-489"><a href="#cb3-489" aria-hidden="true" tabindex="-1"></a><span class="fu">#### FAO Global Ecological Zones</span></span>
+<span id="cb3-490"><a href="#cb3-490" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-491"><a href="#cb3-491" aria-hidden="true" tabindex="-1"></a>Dataset Overview:\</span>
+<span id="cb3-492"><a href="#cb3-492" aria-hidden="true" tabindex="-1"></a>The Global Ecological Zones (GEZ) classification provides a climate-vegetation framework for stratifying fuel consumption parameters.</span>
+<span id="cb3-493"><a href="#cb3-493" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-494"><a href="#cb3-494" aria-hidden="true" tabindex="-1"></a>Classification System Combines:</span>
+<span id="cb3-495"><a href="#cb3-495" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-496"><a href="#cb3-496" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Climate domains (Polar, Boreal, Temperate, Subtropical, Tropical)</span>
+<span id="cb3-497"><a href="#cb3-497" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Ecological zones (e.g., Tropical moist forest, Tropical dry forest, Subtropical steppe)</span>
+<span id="cb3-498"><a href="#cb3-498" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-499"><a href="#cb3-499" aria-hidden="true" tabindex="-1"></a>FAOSTAT Implementation:</span>
+<span id="cb3-500"><a href="#cb3-500" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-501"><a href="#cb3-501" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Overlay burned forest pixels with GEZ to distinguish:</span>
+<span id="cb3-502"><a href="#cb3-502" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Humid Tropical Forest: Tropical moist ecological zones</span>
+<span id="cb3-503"><a href="#cb3-503" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Other Forest: All remaining forest types</span>
+<span id="cb3-504"><a href="#cb3-504" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Assign climate-dependent fuel consumption values from IPCC Table 2.4</span>
+<span id="cb3-505"><a href="#cb3-505" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-506"><a href="#cb3-506" aria-hidden="true" tabindex="-1"></a>Access:</span>
+<span id="cb3-507"><a href="#cb3-507" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-508"><a href="#cb3-508" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>FAO Forestry: http://www.fao.org/forest-resources-assessment/</span>
+<span id="cb3-509"><a href="#cb3-509" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Document: FAO Global Ecological Zones for FAO forest reporting 2010 Update <span class="co">[</span><span class="ot">@fao2012global</span><span class="co">]</span></span>
+<span id="cb3-510"><a href="#cb3-510" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-511"><a href="#cb3-511" aria-hidden="true" tabindex="-1"></a>Application:</span>
+<span id="cb3-512"><a href="#cb3-512" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-513"><a href="#cb3-513" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Determines fuel biomass consumption parameters</span>
+<span id="cb3-514"><a href="#cb3-514" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Stratifies emission factors where climate-sensitive</span>
+<span id="cb3-515"><a href="#cb3-515" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Links to FAO Forest Resources Assessment (FRA) reporting categories</span>
+<span id="cb3-516"><a href="#cb3-516" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-517"><a href="#cb3-517" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb3-518"><a href="#cb3-518" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-519"><a href="#cb3-519" aria-hidden="true" tabindex="-1"></a><span class="fu">#### IPCC Soil Zones Layer</span></span>
+<span id="cb3-520"><a href="#cb3-520" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-521"><a href="#cb3-521" aria-hidden="true" tabindex="-1"></a>Dataset Overview:\</span>
+<span id="cb3-522"><a href="#cb3-522" aria-hidden="true" tabindex="-1"></a>The Harmonized World Soil Database (HWSD v1.2) provides global soil type classifications at 30 arc-second (\~1 km) resolution.</span>
+<span id="cb3-523"><a href="#cb3-523" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-524"><a href="#cb3-524" aria-hidden="true" tabindex="-1"></a>Histosols Class:\</span>
+<span id="cb3-525"><a href="#cb3-525" aria-hidden="true" tabindex="-1"></a>Organic soils characterized by:</span>
+<span id="cb3-526"><a href="#cb3-526" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-527"><a href="#cb3-527" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>High organic matter content (<span class="sc">\&gt;</span> 20-30% by weight)</span>
+<span id="cb3-528"><a href="#cb3-528" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Formed in waterlogged conditions</span>
+<span id="cb3-529"><a href="#cb3-529" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Includes peatlands, bogs, fens</span>
+<span id="cb3-530"><a href="#cb3-530" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-531"><a href="#cb3-531" aria-hidden="true" tabindex="-1"></a>FAOSTAT Implementation:</span>
+<span id="cb3-532"><a href="#cb3-532" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-533"><a href="#cb3-533" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Burned area pixels overlaid with Histosols spatial layer</span>
+<span id="cb3-534"><a href="#cb3-534" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Fires in organic soils identified independently of land cover (except excluding built-up, barren, water)</span>
+<span id="cb3-535"><a href="#cb3-535" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Different fuel consumption and emission factors applied (IPCC Wetlands Supplement 2014)</span>
+<span id="cb3-536"><a href="#cb3-536" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-537"><a href="#cb3-537" aria-hidden="true" tabindex="-1"></a>Access:</span>
+<span id="cb3-538"><a href="#cb3-538" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-539"><a href="#cb3-539" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>FAO Soils Portal: http://www.fao.org/soils-portal/</span>
+<span id="cb3-540"><a href="#cb3-540" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>IIASA: https://iiasa.ac.at/models-and-data/hwsd</span>
+<span id="cb3-541"><a href="#cb3-541" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-542"><a href="#cb3-542" aria-hidden="true" tabindex="-1"></a>Critical Limitation:</span>
+<span id="cb3-543"><a href="#cb3-543" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-544"><a href="#cb3-544" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>FAOSTAT organic soil fire emissions set to zero outside Southeast Asia due to:</span>
+<span id="cb3-545"><a href="#cb3-545" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>High uncertainty in peat fire detection</span>
+<span id="cb3-546"><a href="#cb3-546" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Limited validation data - Difficulty distinguishing drained vs. undrained peatlands</span>
+<span id="cb3-547"><a href="#cb3-547" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Uncertainty in human influence on fire occurrence</span>
+<span id="cb3-548"><a href="#cb3-548" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-549"><a href="#cb3-549" aria-hidden="true" tabindex="-1"></a>Supplementary file <span class="in">`AllFires_OrganicSoils.csv`</span> contains global estimates for research purposes.</span>
+<span id="cb3-550"><a href="#cb3-550" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-551"><a href="#cb3-551" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb3-552"><a href="#cb3-552" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-553"><a href="#cb3-553" aria-hidden="true" tabindex="-1"></a><span class="fu">#### IPCC Climate Zones Layer</span></span>
+<span id="cb3-554"><a href="#cb3-554" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-555"><a href="#cb3-555" aria-hidden="true" tabindex="-1"></a>Dataset Overview:\</span>
+<span id="cb3-556"><a href="#cb3-556" aria-hidden="true" tabindex="-1"></a>IPCC Climate Zones classify global climate into categories used for stratifying biomass growth rates, decomposition rates, and fire parameters.</span>
+<span id="cb3-557"><a href="#cb3-557" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-558"><a href="#cb3-558" aria-hidden="true" tabindex="-1"></a>Classification:</span>
+<span id="cb3-559"><a href="#cb3-559" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-560"><a href="#cb3-560" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Polar</span>
+<span id="cb3-561"><a href="#cb3-561" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Boreal (Cold)</span>
+<span id="cb3-562"><a href="#cb3-562" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Temperate (Warm temperate, Cool temperate)</span>
+<span id="cb3-563"><a href="#cb3-563" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Tropical (Tropical wet, Tropical moist, Tropical dry, Tropical montane)</span>
+<span id="cb3-564"><a href="#cb3-564" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-565"><a href="#cb3-565" aria-hidden="true" tabindex="-1"></a>Source:</span>
+<span id="cb3-566"><a href="#cb3-566" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-567"><a href="#cb3-567" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Joint Research Centre (JRC) Climate Zones layer</span>
+<span id="cb3-568"><a href="#cb3-568" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Based on IPCC climatic zone definitions <span class="co">[</span><span class="ot">@ipccChapter3Consistent2006</span><span class="co">]</span></span>
+<span id="cb3-569"><a href="#cb3-569" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-570"><a href="#cb3-570" aria-hidden="true" tabindex="-1"></a>FAOSTAT Implementation:</span>
+<span id="cb3-571"><a href="#cb3-571" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-572"><a href="#cb3-572" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Savanna fire fuel consumption values vary by climate zone (Table 2.4)</span>
+<span id="cb3-573"><a href="#cb3-573" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Organic soil emission factors stratified by climate <span class="co">[</span><span class="ot">@ipcc2013RevisedSupplementary2014</span><span class="co">]</span></span>
+<span id="cb3-574"><a href="#cb3-574" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Links IPCC methodology to geographic reality</span>
+<span id="cb3-575"><a href="#cb3-575" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-576"><a href="#cb3-576" aria-hidden="true" tabindex="-1"></a>Access:</span>
+<span id="cb3-577"><a href="#cb3-577" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-578"><a href="#cb3-578" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>JRC European Soil Data Centre (ESDAC): https://esdac.jrc.ec.europa.eu/</span>
+<span id="cb3-579"><a href="#cb3-579" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Reference: JRC (2010) Climatic Zone layer</span>
+<span id="cb3-580"><a href="#cb3-580" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-581"><a href="#cb3-581" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb3-582"><a href="#cb3-582" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-583"><a href="#cb3-583" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Google Earth Engine Setup</span></span>
+<span id="cb3-584"><a href="#cb3-584" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-585"><a href="#cb3-585" aria-hidden="true" tabindex="-1"></a>Platform Overview:\</span>
+<span id="cb3-586"><a href="#cb3-586" aria-hidden="true" tabindex="-1"></a>Google Earth Engine is a cloud-based geospatial analysis platform providing:</span>
+<span id="cb3-587"><a href="#cb3-587" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-588"><a href="#cb3-588" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Petabyte-scale satellite imagery archives</span>
+<span id="cb3-589"><a href="#cb3-589" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Planetary-scale computational infrastructure</span>
+<span id="cb3-590"><a href="#cb3-590" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>JavaScript and Python APIs</span>
+<span id="cb3-591"><a href="#cb3-591" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Web-based Code Editor</span>
+<span id="cb3-592"><a href="#cb3-592" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-593"><a href="#cb3-593" aria-hidden="true" tabindex="-1"></a>FAOSTAT Workflow Architecture:</span>
+<span id="cb3-594"><a href="#cb3-594" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-595"><a href="#cb3-595" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Data Ingestion: All datasets (MCD64A1, MCD12Q1, GAUL, etc.) available as pre-processed GEE assets</span>
+<span id="cb3-596"><a href="#cb3-596" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Pixel-Level Processing: Fire algorithm applied to all global pixels</span>
+<span id="cb3-597"><a href="#cb3-597" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Zonal Statistics: Country-level aggregation via GAUL boundaries</span>
+<span id="cb3-598"><a href="#cb3-598" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Export: Results exported as CSV tables for FAOSTAT database</span>
+<span id="cb3-599"><a href="#cb3-599" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-600"><a href="#cb3-600" aria-hidden="true" tabindex="-1"></a>Getting Started:</span>
+<span id="cb3-601"><a href="#cb3-601" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-602"><a href="#cb3-602" aria-hidden="true" tabindex="-1"></a><span class="ss">1.  </span>Account Registration:</span>
+<span id="cb3-603"><a href="#cb3-603" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-604"><a href="#cb3-604" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Sign up at https://earthengine.google.com/signup/</span>
+<span id="cb3-605"><a href="#cb3-605" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Academic/NGO accounts typically approved within 1-2 days</span>
+<span id="cb3-606"><a href="#cb3-606" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-607"><a href="#cb3-607" aria-hidden="true" tabindex="-1"></a><span class="ss">2.  </span>Code Editor Access:</span>
+<span id="cb3-608"><a href="#cb3-608" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-609"><a href="#cb3-609" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>Navigate to https://code.earthengine.google.com/</span>
+<span id="cb3-610"><a href="#cb3-610" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>JavaScript environment for interactive analysis</span>
+<span id="cb3-611"><a href="#cb3-611" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-612"><a href="#cb3-612" aria-hidden="true" tabindex="-1"></a><span class="ss">3.  </span>Python API Setup (optional):</span>
+<span id="cb3-613"><a href="#cb3-613" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-614"><a href="#cb3-614" aria-hidden="true" tabindex="-1"></a>    <span class="in">``` python</span></span>
+<span id="cb3-615"><a href="#cb3-615" aria-hidden="true" tabindex="-1"></a>    pip install earthengine<span class="op">-</span>api</span>
+<span id="cb3-616"><a href="#cb3-616" aria-hidden="true" tabindex="-1"></a>    earthengine authenticate</span>
+<span id="cb3-617"><a href="#cb3-617" aria-hidden="true" tabindex="-1"></a>    <span class="in">```</span></span>
+<span id="cb3-618"><a href="#cb3-618" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-619"><a href="#cb3-619" aria-hidden="true" tabindex="-1"></a><span class="ss">4.  </span>Key GEE Concepts:</span>
+<span id="cb3-620"><a href="#cb3-620" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-621"><a href="#cb3-621" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span><span class="in">`ImageCollection`</span>: Time series of raster images</span>
+<span id="cb3-622"><a href="#cb3-622" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span><span class="in">`Image`</span>: Single raster dataset</span>
+<span id="cb3-623"><a href="#cb3-623" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span><span class="in">`FeatureCollection`</span>: Vector dataset (e.g., country boundaries)</span>
+<span id="cb3-624"><a href="#cb3-624" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span><span class="in">`Reducer`</span>: Aggregation functions (sum, mean, etc.)</span>
+<span id="cb3-625"><a href="#cb3-625" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-626"><a href="#cb3-626" aria-hidden="true" tabindex="-1"></a>FAOSTAT-Relevant GEE Assets:<span class="ot">[^index-3]</span></span>
+<span id="cb3-627"><a href="#cb3-627" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-628"><a href="#cb3-628" aria-hidden="true" tabindex="-1"></a><span class="in">``` javascript</span></span>
+<span id="cb3-629"><a href="#cb3-629" aria-hidden="true" tabindex="-1"></a><span class="co">// Burned Area</span></span>
+<span id="cb3-630"><a href="#cb3-630" aria-hidden="true" tabindex="-1"></a><span class="dt">var</span> burnedArea <span class="op">=</span> ee<span class="op">.</span><span class="fu">ImageCollection</span><span class="op">(</span><span class="st">"MODIS/061/MCD64A1"</span><span class="op">);</span></span>
+<span id="cb3-631"><a href="#cb3-631" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-632"><a href="#cb3-632" aria-hidden="true" tabindex="-1"></a><span class="co">// Land Cover</span></span>
+<span id="cb3-633"><a href="#cb3-633" aria-hidden="true" tabindex="-1"></a><span class="dt">var</span> landCover <span class="op">=</span> ee<span class="op">.</span><span class="fu">ImageCollection</span><span class="op">(</span><span class="st">"MODIS/061/MCD12Q1"</span><span class="op">);</span></span>
+<span id="cb3-634"><a href="#cb3-634" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-635"><a href="#cb3-635" aria-hidden="true" tabindex="-1"></a><span class="co">// Country Boundaries</span></span>
+<span id="cb3-636"><a href="#cb3-636" aria-hidden="true" tabindex="-1"></a><span class="dt">var</span> countries <span class="op">=</span> ee<span class="op">.</span><span class="fu">FeatureCollection</span><span class="op">(</span><span class="st">"FAO/GAUL/2015/level0"</span><span class="op">);</span></span>
+<span id="cb3-637"><a href="#cb3-637" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-638"><a href="#cb3-638" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-639"><a href="#cb3-639" aria-hidden="true" tabindex="-1"></a>------------------------------------------------------------------------</span>
+<span id="cb3-640"><a href="#cb3-640" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-641"><a href="#cb3-641" aria-hidden="true" tabindex="-1"></a><span class="ot">[^index-1]: </span>Note to self: 2025 wishlist</span>
+<span id="cb3-642"><a href="#cb3-642" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-643"><a href="#cb3-643" aria-hidden="true" tabindex="-1"></a><span class="ot">[^index-2]: </span>Direct Page Link: <span class="ot">&lt;https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf#page=71&gt;</span></span>
+<span id="cb3-644"><a href="#cb3-644" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-645"><a href="#cb3-645" aria-hidden="true" tabindex="-1"></a><span class="ot">[^index-3]: </span>Code provided Python and R, with some cells in Java for use natively in Earth Engine Codespace</span>
+</code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+<p><a href="https://github.com/seamusrobertmurphy/TREES-wildfire-replications">Source</a></p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/seamusrobertmurphy/TREES-wildfire-replications/edit/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/seamusrobertmurphy/TREES-wildfire-replications/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p><a href="https://linkedin.com/in/seamusrobertmurphy">LinkedIn</a> | <a href="https://drive.google.com/uc?export=download&amp;id=13YLhsRCAMMHQw-jd2SJdaRJH9udBGytP">Resume</a> | <a href="https://scholar.google.com/citations?hl=en&amp;user=jDGq9I4AAAAJ">Scholar</a></p>
+</div>
+  </div>
+</footer>
+
+
+</body></html>

@@ -145,7 +145,7 @@ Key IPCC sources:
 Forest Fires (IPCC 2019 Table 2.5):
 
 | Forest Type | CH₄ (g kg⁻¹) | N₂O (g kg⁻¹) | CO (g kg⁻¹)\* | NO~x~ (g kg⁻¹)\* |
-|------------|------------|------------|------------|------------|
+|----|----|----|----|----|
 | Tropical Forest | 6.8 ± 2.0 | 0.20 ± 0.10 | 93 ± 38 | 3.9 ± 2.4 |
 | Temperate Forest | 4.7 ± 1.9 | 0.26 ± 0.15 | 107 ± 37 | 3.0 ± 1.4 |
 | Boreal Forest | 4.7 ± 1.9 | 0.26 ± 0.15 | 107 ± 37 | 3.0 ± 1.4 |
@@ -155,7 +155,7 @@ Forest Fires (IPCC 2019 Table 2.5):
 Savanna Fires (IPCC 2019 Table 2.5):
 
 | Vegetation Type | CH₄ (g kg⁻¹) | N₂O (g kg⁻¹) | CO (g kg⁻¹)\* | NO~x~ (g kg⁻¹)\* |
-|------------|------------|------------|------------|------------|
+|----|----|----|----|----|
 | Savanna/Grassland | 2.3 ± 0.9 | 0.21 ± 0.10 | 65 ± 20 | 3.9 ± 2.4 |
 
 Organic Soil Fires (IPCC 2014 Wetlands Supplement Table
@@ -506,7 +506,7 @@ FAOSTAT approach: N₂O = 0 for organic soil fires
 IPCC Tier 1 Rule:
 
 | Fire Category | Report CO₂? | Rationale |
-|----------------------|--------------------|------------------|
+|----|----|----|
 | Forest Fires | ❌ | Captured in carbon stock changes (Chapter 4.2, Forest Land) |
 | Savanna Fires | ❌ | Assumed balanced by annual regrowth |
 | Organic Soil Fires | ✅ | Permanent carbon loss (peat does not regrow in \<20 years) |
