@@ -33,7 +33,8 @@ easypackages::packages(
   "xgboost",
   prompt = F)
 
-sf::sf_use_s2(use_s2 = FALSE)
+sf::sf_use_s2(use_s2 = F)
+
 knitr::opts_knit$set(root.dir = here::here())
 
 options(repos = c(CRAN = "https://cloud.r-project.org"),
@@ -148,10 +149,10 @@ Fire Category
 
 |   | IGBP Source | Non-CO₂ via Eq. 2.27 | CO₂ Treatment |
 |------------------|------------------|------------------|------------------|
-| **Forest remaining Forest** (classes 1–5) | Evergreen/Deciduous Needleleaf & Broadleaf, Mixed | CH₄, N₂O | CO₂ reported via stock-change (Eq. 2.7–2.14) — not synchronous with regrowth[^index-3] |
-| **Forest converted to other land** | Same classes, land-use change detected | CH₄, N₂O, **CO₂** | All gases via Eq. 2.27; reported under new land-use category |
-| **Savanna/Grassland** (classes 6–10) | Shrublands, Woody Savannas, Savannas, Grasslands | CH₄, N₂O | CO₂ not reported — assumed synchronous with annual regrowth |
-| **Organic Soil** (HWSD overlay) | Histosols, independent of land cover | CO₂, CH₄ | Direct reporting (Wetlands Supplement) |
+| Forest remaining Forest (classes 1–5) | Evergreen/Deciduous Needleleaf & Broadleaf, Mixed | CH₄, N₂O | CO₂ reported via stock-change (Eq. 2.7–2.14) — not synchronous with regrowth[^index-3] |
+| Forest converted to other land | Same classes, land-use change detected | CH₄, N₂O, CO₂ | All gases via Eq. 2.27; reported under new land-use category |
+| Savanna/Grassland (classes 6–10) | Shrublands, Woody Savannas, Savannas, Grasslands | CH₄, N₂O | CO₂ not reported — assumed synchronous with annual regrowth |
+| Organic Soil (HWSD overlay) | Histosols, independent of land cover | CO₂, CH₄ | Direct reporting (Wetlands Supplement) |
 
 For forest remaining forest, fire CO₂ is captured through live biomass stock-change accounting (Eq. 2.7–2.14) because emissions and regrowth are not synchronous (§2.4). At Tier 1, DOM CO₂ is assumed zero. For deforestation fires, all gases including CO₂ are reported via Equation 2.27, with care to avoid double-counting with Equation 2.23 (decay). Organic soil fires are validated for Southeast Asia only; FAOSTAT sets emissions to zero beyond Indonesia, Malaysia, and Brunei [@ipcc2013Supplement20062014]. Default parameters from Tables 2.4[^index-4] and 2.5[^index-5] are applied in Chapters 3 and 4.
 
@@ -196,35 +197,32 @@ all_years_burn <- mcd64$
   select("BurnDate")$max()$gt(0L)$selfMask()$
   clip(aoi_country_ee$geometry())
 
-# IPCC Climate Zones
-ipcc_climate <- ee$Image(
-  "users/philipaudebert/IPCC/Corrigenda/ipcc_climate_1985-2015_corrigenda_raster"
-)$clip(aoi_country_ee$geometry())
 
-climate_vis <- list(
-  min = 1L, max = 12L,
+# Yellow edge outline for burn areas
+burn_binary <- all_years_burn$gt(0L)$unmask(0L)
+burn_edges  <- burn_binary$
+  focal_max(radius = 1L, kernelType = "square")$
+  subtract(burn_binary)$gt(0L)$selfMask()$
+  clip(aoi_country_ee$geometry())
+
+# IPCC Climate Zones
+ipcc_climate <- ee$Image("users/philipaudebert/IPCC/Corrigenda/ipcc_climate_1985-2015_corrigenda_raster")$
+	clip(aoi_country_ee$geometry())
+
+climate_vis <- list(min = 1L, max = 12L,
   palette = c(
     "#8B4513", "#1B9E77", "#66A61E", "#E6AB02",
     "#7570B3", "#A6761D", "#4682B4", "#87CEEB",
-    "#006400", "#8FBC8F", "#B0B0B0", "#E0E0E0"
+    "#006400", "#8FBC8F", "#B0B0B0", "#E0E0E0")
   )
-)
 
 tmap::tmap_mode("view")
-tmap::tm_shape(aoi_states_sf) +
-  tmap::tm_borders(col = "MAP_COLORS", lwd = 1) +
-tmap::tm_shape(aoi_country_sf) +
-  tmap::tm_borders(col = "white", lwd = 1.5) +
-tmap::tm_tiles(
-  ee_tile_url(ipcc_climate$selfMask(), climate_vis),
-  group = "IPCC Climate Zones"
-) +
-tmap::tm_tiles(
-  ee_tile_url(all_years_burn, list(palette = "red", min = 0L, max = 1L)),
-  group = "Burn Areas (2000\u20132025)"
-) +
-tmap::tm_add_legend(
-  polygons = "fill",
+tmap::tm_shape(aoi_states_sf) + tmap::tm_borders(col = "MAP_COLORS", lwd = 1) +
+	tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+	tmap::tm_tiles(ee_tile_url(ipcc_climate$selfMask(), climate_vis),group = "IPCC Climate Zones") +
+	tmap::tm_tiles(ee_tile_url(all_years_burn, list(palette = "red", min = 0L, max = 1L)),group = "Burn Areas (2000\u20132025)") +
+	tmap::tm_tiles(ee_tile_url(burn_edges, list(palette = "#FFFF00", min = 0L, max = 1L)),group = "Burn Areas (2000\u20132025)") +
+	tmap::tm_add_legend(polygons = "fill",
   fill = c("#8B4513", "#1B9E77", "#66A61E", "#E6AB02",
           "#7570B3", "#A6761D", "#4682B4", "#87CEEB",
           "#006400", "#8FBC8F", "#B0B0B0", "#E0E0E0"),
@@ -234,17 +232,11 @@ tmap::tm_add_legend(
     "5 Warm Temp. Moist",   "6 Warm Temp. Dry",
     "7 Cool Temp. Moist",   "8 Cool Temp. Dry",
     "9 Boreal Moist",       "10 Boreal Dry",
-    "11 Polar Moist",       "12 Polar Dry"
-  ),
-  title = "IPCC Climate Zones"
-) +
-	tmap::tm_add_legend(
-  polygons = "fill", fill = "red",
-  labels = "Burn Area",
-  title = "MCD64A1 (2000\u20132025)"
-) +
-tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
-tmap::tm_basemap("Esri.WorldImagery")
+    "11 Polar Moist",       "12 Polar Dry"),
+  title = "IPCC Climate Zones") +
+	tmap::tm_add_legend(polygons = "fill", fill = "red",labels = "Burn Area",title = "MCD64A1 (2000\u20132025)") +
+	tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+	tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 ### Fire Types by Landcover
@@ -270,46 +262,29 @@ lc_vis <- list(
 )
 
 # Reclassify into 3 fire categories
-fire_categories <- lc_2020$
-  remap(
+fire_categories <- lc_2020$remap(
     c(1L,2L,3L,4L,5L, 6L,7L,8L,9L,10L, 11L,12L,13L,14L,15L,16L,17L),
     c(1L,1L,1L,1L,1L, 2L,2L,2L,2L,2L,  3L,3L,3L,3L,3L,3L,3L)
-  )
-cat_vis <- list(min = 1L, max = 3L,
-                palette = c("#006400", "#DAA520", "#D3D3D3"))
+    )
+
+cat_vis <- list(min = 1L, max = 3L,palette = c("#006400", "#DAA520", "#D3D3D3"))
 
 tmap::tmap_mode("view")
 tmap::tm_shape(aoi_country_sf) +
-  tmap::tm_borders(col = "white", lwd = 1.5) +
-tmap::tm_tiles(
-  ee_tile_url(lc_2020, lc_vis),
-  group = "IGBP 17-Class"
-) +
-tmap::tm_tiles(
-  ee_tile_url(fire_categories$selfMask(), cat_vis),
-  group = "IPCC Fire Categories"
-) +
-	tmap::tm_tiles(
-  ee_tile_url(all_years_burn, list(palette = "red", min = 0L, max = 1L)),
-  group = "Burn Areas (2000\u20132025)"
-) +
-	tmap::tm_add_legend(
-  polygons = "fill", fill = "red",
-  labels = "Burn Area",
-  title = "MCD64A1 (2000\u20132025)"
-) +
-tmap::tm_add_legend(
-  polygons = "fill",
-  fill = c("#006400", "#DAA520", "#D3D3D3"),
+	tmap::tm_borders(col = "white", lwd = 1.5) +tmap::tm_tiles(ee_tile_url(lc_2020, lc_vis),group = "IGBP 17-Class") +
+	tmap::tm_tiles(ee_tile_url(fire_categories$selfMask(), cat_vis),group = "IPCC Fire Categories") +
+	tmap::tm_tiles(ee_tile_url(all_years_burn, list(palette = "red", min = 0L, max = 1L)),
+  group = "Burn Areas (2000\u20132025)") +
+	tmap::tm_tiles(ee_tile_url(burn_edges, list(palette = "#FFFF00", min = 0L, max = 1L)),group = "Burn Areas (2000\u20132025)") +
+	tmap::tm_add_legend(polygons = "fill", fill = "red",labels = "Burn Area",title = "MCD64A1 (2000\u20132025)") +
+	tmap::tm_add_legend(polygons = "fill",fill = c("#006400", "#DAA520", "#D3D3D3"),
   labels = c(
     "Forest (IGBP 1\u20135)",
     "Savanna (IGBP 6\u201310)",
-    "Other (IGBP 11\u201317, excluded)"
-  ),
-  title = "IPCC Fire Categories (2020)"
-) +
-tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
-tmap::tm_basemap("Esri.WorldImagery")
+    "Other (IGBP 11\u201317, excluded)"),
+  title = "IPCC Fire Categories (2020)") +
+	tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+	tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 ### Forest Type by Climate Zones
@@ -364,28 +339,18 @@ tmap::tm_tiles(
   ee_tile_url(forest_strata, strata_vis),
   group = "Forest Climate Strata"
 ) +
-tmap::tm_add_legend(
-  type = "fill",
-  col = c("#006400", "#9ACD32", "#DAA520", "#4682B4"),
+tmap::tm_add_legend(type = "fill",col = c("#006400", "#9ACD32", "#DAA520", "#4682B4"),
   labels = c(
     "Tropical Moist (M\u2082 120\u2013164 t/ha)",
     "Tropical Dry (M\u2082 84 t/ha)",
     "Temperate (M\u2082 50 t/ha)",
-    "Boreal (M\u2082 41 t/ha)"
-  ),
-  title = "Forest Strata (Tables 2.4/2.5)"
-) +
-	tmap::tm_tiles(
-  ee_tile_url(all_years_burn, list(palette = "red", min = 0L, max = 1L)),
-  group = "Burn Areas (2000\u20132025)"
-) +
-	tmap::tm_add_legend(
-  polygons = "fill", fill = "red",
-  labels = "Burn Area",
-  title = "MCD64A1 (2000\u20132025)"
-) +
-tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
-tmap::tm_basemap("Esri.WorldImagery")
+    "Boreal (M\u2082 41 t/ha)"),
+  title = "Forest Strata (Tables 2.4/2.5)") +
+	tmap::tm_tiles(ee_tile_url(all_years_burn, list(palette = "red", min = 0L, max = 1L)),group = "Burn Areas (2000-2025)") +
+	tmap::tm_add_legend(polygons = "fill", fill = "red",labels = "Burn Area",title = "MCD64A1 (2020-2025)") +
+	tmap::tm_tiles(ee_tile_url(burn_edges, list(palette = "#FFFF00", min = 0L, max = 1L)),group = "Burn Areas (2000-2025)") +
+	tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+	tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 ### IPCC Soil Zones
@@ -398,47 +363,34 @@ The IPCC soil classification maps global soils into 13 classes derived from the 
 #| error: false
 #| message: false
 #| warning: false
+sf::sf_use_s2(use_s2 = F)
 
 ipcc_soils <- ee$Image("projects/murphys-deforisk/assets/ipcc_soils")
 ipcc_soils_hnd <- ipcc_soils$clip(aoi_country_ee$geometry())
 
-soil_vis <- list(
-  min = 1L, max = 13L,
+soil_vis <- list(min = 1L, max = 13L,
   palette = c(
     "#E0E0E0", "#A66F03", "#FFD27F", "#FEBDBD", "#2A7200",
     "#D7D69D", "#676767", "#FFFFBD", "#9B9B9B", "#0083A8",
-    "#8303A7", "#BDE7FF", "#black"
+    "#8303A7", "#BDE7FF", "black"
   )
 )
 
 tmap::tmap_mode("view")
 tmap::tm_shape(aoi_country_sf) +
   tmap::tm_borders(col = "white", lwd = 1.5) +
-tmap::tm_tiles(
-  ee_tile_url(ipcc_soils_hnd$selfMask(), soil_vis),
-  group = "IPCC Soil Classes"
-) +
-tmap::tm_add_legend(
-  type = "fill",
-  col = c("#A66F03", "#FFD27F", "#2A7200", "#D7D69D",
-          "#FFFFBD", "#0083A8", "#8303A7"),
-  labels = c(
+	tmap::tm_tiles(ee_tile_url(ipcc_soils_hnd$selfMask(), soil_vis),group = "IPCC Soil Groups") +
+	tmap::tm_add_legend(
+		type = "fill", col = c("#A66F03", "#FFD27F", "#2A7200", "#D7D69D","#FFFFBD", "#0083A8", "#8303A7"),
+		labels = c(
     "HAC \u2014 High activity clay", "LAC \u2014 Low activity clay",
     "ORG \u2014 Organic soils", "POD \u2014 Spodic soils",
     "SAN \u2014 Sandy soils", "VOL \u2014 Volcanic soils",
-    "WET \u2014 Wetland soils"
-  ),
-  title = "IPCC Soil Classes (HWSD v2.0)"
-) +
-tmap::tm_tiles(
-  ee_tile_url(all_years_burn, list(palette = "red", min = 0L, max = 1L)),
-  group = "Burn Areas (2000\u20132025)"
-) +
-	tmap::tm_add_legend(
-  polygons = "fill", fill = "red",
-  labels = "Burn Area",
-  title = "MCD64A1 (2000\u20132025)"
-) +
+    "WET \u2014 Wetland soils"),
+  title = "IPCC Soil Classes (HWSD v2.0)") +
+	tmap::tm_tiles(ee_tile_url(all_years_burn, list(palette="red",min=0L,max=1L)),group = "Burn Areas (2000\u20132025)") +
+	tmap::tm_tiles(ee_tile_url(burn_edges, list(palette = "#FFFF00", min = 0L, max = 1L)),group = "Burn Areas (2020-2025)") +
+	tmap::tm_add_legend(polygons = "fill", fill = "red",labels = "Burn Area",title = "MCD64A1 (2000\u20132025)") +
 	tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
 	tmap::tm_basemap("Esri.WorldImagery")
 ```
@@ -455,13 +407,13 @@ Each term in Equation 2.27 introduces uncertainty that compounds across the chai
 
 All spatial processing in this eBook uses [Google Earth Engine](https://earthengine.google.com/) (GEE) via the Python API, called from R through `reticulate`. GEE provides petabyte-scale imagery archives and planetary-scale computation, FAOSTAT uses the same platform for its pixel-level fire emission processing.
 
-**Getting started:**
+Getting started:
 
 1.  Register at <https://earthengine.google.com/signup/>
 2.  Install the Python API: `pip install earthengine-api`
 3.  Authenticate: `earthengine authenticate`
 
-**R/reticulate setup** (used throughout this eBook):
+R/reticulate setup (used throughout this eBook):
 
 ``` r
 reticulate::use_python("/opt/local/bin/python", required = TRUE)
@@ -469,7 +421,7 @@ ee <- reticulate::import("ee")
 ee$Initialize(project = "your-project-id")
 ```
 
-**Core GEE assets used:**[^index-9]
+Core GEE assets used:[^index-9]
 
 ``` javascript
 // Burned Area
@@ -530,22 +482,24 @@ options(repos = c(CRAN = "https://cloud.r-project.org"),
 
 # Default code cell styling
 knitr::opts_chunk$set(
-  echo = TRUE, message = FALSE, warning = FALSE,
-  error = FALSE, comment = NA,
-  tidy.opts = list(width.cutoff = 60))
+	tidy.opts = list(width.cutoff = 60),
+  echo = TRUE, 
+  error = FALSE, 
+  message = FALSE, 
+  warning = FALSE,
+  comment = NA)
 
-# GEE initialisation
-reticulate::use_python("/opt/local/bin/python", required = TRUE)
+
+# Point runtime to preferred python kernel
+reticulate::use_python("/opt/local/bin/python", required = T)
+
+# GEE initialisation and authentication
 ee <- reticulate::import("ee")
 ee$Initialize(project = "murphys-deforisk")
 
 # GEE in R & tmap helpers
-ee_tile_url <- function(ee_image, vis_params) {
-  ee_image$getMapId(vis_params)$tile_fetcher$url_format
-}
-ee_to_sf <- function(fc) {
-  geojsonsf::geojson_sf(jsonlite::toJSON(fc$getInfo(), auto_unbox = TRUE))
-}
+ee_tile_url <- function(ee_image, vis_params) {ee_image$getMapId(vis_params)$tile_fetcher$url_format}
+ee_to_sf <- function(fc) {geojsonsf::geojson_sf(jsonlite::toJSON(fc$getInfo(), auto_unbox = TRUE))}
 
 # Assign AOI to country of choice
 aoi_country_ee <- ee$FeatureCollection("FAO/GAUL/2015/level0")$
