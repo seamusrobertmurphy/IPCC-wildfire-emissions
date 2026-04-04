@@ -77,7 +77,7 @@ div.column {
 }
 ```
 
-This resource provides comprehensive methodological guidance for deriving IPCC Tier 1 Forest Fire Activity Data, with particular emphasis on burned area estimation following FAOSTAT and IPCC 2019 Refinement protocols. The workflow integrates satellite-based fire detection, land cover classification, fuel consumption modeling, and emission factor application to produce country-level greenhouse gas emission estimates from biomass burning. This eBook uses an example AOI derived from the national border of Honduras.
+This resource provides a demonstration of the IPCC Tier 1 method for estimating greenhouse gas emissions from biomass burning, following the 2006 IPCC Guidelines as updated by the 2019 Refinement. The workflow implements Equation 2.27 end-to-end: satellite-based burned area detection, land cover stratification into IPCC fire categories, assignment of default fuel consumption values, and application of emission factors to derive CH~4~, N~2~O, and CO~2~ estimates formatted for UNFCCC reporting. This eBook uses an example AOI derived from the national border of Honduras.
 
 The methodology presented here addresses key challenges in fire emissions accounting: inter-annual variability in natural disturbances, the managed land proxy approach for anthropogenic attribution, uncertainty quantification across multiple data sources, and the balance between immediate emissions and subsequent carbon removals. Each chapter builds systematically from data acquisition through quality control, providing transparent, reproducible workflows suitable for national greenhouse gas inventory reporting and validation.
 
@@ -95,7 +95,7 @@ Assign IPCC default fuel consumption values based on vegetation type and climate
 
 #### Chapter 4: Emission Factors {.unnumbered}
 
-Apply IPCC emission factors, compute CH₄, N₂O, and CO₂ emissions, handle CO₂ reporting exclusions for non-stand-replacing fires.
+Apply IPCC emission factors (Table 2.5) to compute CH₄ and N₂O emissions via Equation 2.27, account for forest CO₂ through carbon stock changes, convert to CO₂-equivalents, and format outputs for UNFCCC CRF reporting.
 
 #### Chapter 5: QA/QC & Audit-Ready SOPs (Pending) {.unnumbered}
 
@@ -207,17 +207,17 @@ Emissions from Grassland and woody vegetation:
 -   Closed Shrubland
 
 3\. Fires in Organic Soils\
-Emissions from peat fires identified by overlaying burned area with the Histosols class from the Harmonized World Soil Database (HWSD). The IPCC 7-class soil classification used to identify organic soils is derived from the HWSD via taxotransfer procedures developed by [@batjes2009ipcc; @batjes2010ipcc], which map FAO soil taxonomic units to the generalized classes (HAC, LAC, SAN, POD, VOL, WET, ORG) required for Tier 1 inventories. Whether a burned pixel triggers organic soil emission factors depends entirely on this upstream classification.
+Emissions from peat fires identified by overlaying burned area with the Histosols class from the Harmonized World Soil Database (HWSD). The IPCC 7-class soil classification used to identify organic soils is derived from the HWSD via taxotransfer procedures developed by [@batjes2009ipcc; @batjes2010global; @batjes1996a], which map FAO soil taxonomic units to the generalized classes (HAC, LAC, SAN, POD, VOL, WET, ORG) required for Tier 1 inventories. Whether a burned pixel triggers organic soil emission factors depends entirely on this upstream classification.
 
 Due to high uncertainty and limited validation outside Southeast Asia, FAOSTAT sets organic soil fire emissions to zero for all countries except Indonesia, Malaysia, and Brunei Darussalam. Complete global estimates are provided in supplementary files for reference and research purposes.
 
 ::: {.callout-note title="Soil Classification Uncertainty for South America"}
 The Batjes soil profile database underlying the IPCC defaults has known geographic biases relevant to fire emissions reporting in South America:
 
--   **Brazilian data dominance**: Warm-temperate moist (W1) SOC reference values are elevated because Brazilian profiles are overrepresented in the global dataset, resulting in 10–30% overestimation compared to median-based statistics [@batjes2010ipcc]. This directly affects fuel load assumptions when organic soil fire factors are applied in these zones.
--   **Volcanic soil gaps**: The IPCC VOL soil class is poorly represented in the global profile database. Andean volcanic soils (Andisols) have unique carbon stabilization properties (allophane complexation) that differ from global defaults. When páramo or high-altitude grasslands on volcanic substrates burn, applying standard fuel consumption values introduces unquantified bias.
--   **Resolution limitations**: At ~1 km resolution, the HWSD cannot resolve transitional landscapes such as Amazonian várzea floodplains, Andean wetlands, or mosaic peatland-mineral soil boundaries common in Colombia, Ecuador, and Peru. Mixed pixels at these transitions may systematically misclassify organic soil extent.
--   **Depth limitation**: SOC estimates are limited to the IPCC reference depth of 0–30 cm, yet tropical peat fires commonly burn to 30–50 cm depth. As [@batjes2011soc] noted, the relationship between SOC~30~ stocks and deeper carbon varies markedly by climate zone and soil class, meaning Tier 1 defaults may underestimate fuel available for deep peat combustion.
+-   Brazilian data dominance: Warm-temperate moist (W1) SOC reference values are elevated because Brazilian profiles are overrepresented in the global dataset, resulting in 10–30% overestimation compared to median-based statistics [@batjes2010global]. This directly affects fuel load assumptions when organic soil fire factors are applied in these zones.
+-   Volcanic soil gaps: The IPCC VOL soil class is poorly represented in the global profile database. Andean volcanic soils (Andisols) have unique carbon stabilization properties (allophane complexation) that differ from global defaults. When páramo or high-altitude grasslands on volcanic substrates burn, applying standard fuel consumption values introduces unquantified bias.
+-   Resolution limitations: At \~1 km resolution, the HWSD cannot resolve transitional landscapes such as Amazonian várzea floodplains, Andean wetlands, or mosaic peatland-mineral soil boundaries common in Colombia, Ecuador, and Peru. Mixed pixels at these transitions may systematically misclassify organic soil extent.
+-   Depth limitation: SOC estimates are limited to the IPCC reference depth of 0–30 cm, yet tropical peat fires commonly burn to 30–50 cm depth. As [@batjes2011soil] noted, the relationship between SOC~30~ stocks and deeper carbon varies markedly by climate zone and soil class, meaning Tier 1 defaults may underestimate fuel available for deep peat combustion.
 :::
 
 #### Temporal Gap-Filling
@@ -294,23 +294,23 @@ Countries can quantify whether trends in anthropogenic fire emissions diverge fr
 
 Each term in the IPCC emission equation introduces uncertainty that compounds across the calculation chain. At Tier 1, cumulative uncertainty is typically ±30% for burned area, ±30–40% for CO₂ emissions, and ±50% for CH₄ and N₂O.
 
-**Activity data** (burned area): MCD64A1 retains only pixels with uncertainty \< 20%, but global burned area may still be underestimated by 20–30% due to small fires missed at 500m resolution, canopy obscuration, cloud contamination, and rapid regrowth masking burn scars [@giglio2010assessing].
+Activity data (burned area): MCD64A1 retains only pixels with uncertainty \< 20%, but global burned area may still be underestimated by 20–30% due to small fires missed at 500m resolution, canopy obscuration, cloud contamination, and rapid regrowth masking burn scars [@giglio2010assessing].
 
-**Land classification**: MCD12Q1 achieves ~75% global accuracy, with confusion between woody savannas and forests directly affecting which fuel consumption values are assigned (Table 2.4 ranges: 2.6–163.6 t ha⁻¹).
+Land classification: MCD12Q1 achieves \~75% global accuracy, with confusion between woody savannas and forests directly affecting which fuel consumption values are assigned (Table 2.4 ranges: 2.6–163.6 t ha⁻¹).
 
-**Fuel consumption and combustion factors**: IPCC defaults (Tables 2.4, 2.6) carry standard errors of 30–50% of mean values, reflecting natural variability across vegetation types, fire intensity, and fuel moisture conditions.
+Fuel consumption and combustion factors: IPCC defaults (Tables 2.4, 2.6) carry standard errors of 30–50% of mean values, reflecting natural variability across vegetation types, fire intensity, and fuel moisture conditions.
 
-**Emission factors**: IPCC defaults (Table 2.5) based on [@andreae2001emission] represent global averages with standard deviations of 20–60%, influenced by the balance between flaming and smoldering combustion.
+Emission factors: IPCC defaults (Table 2.5) based on [@andreae2001emission] represent global averages with standard deviations of 20–60%, influenced by the balance between flaming and smoldering combustion.
 
-**Organic soil fires** carry particularly high uncertainty due to detection challenges, limited field validation outside Southeast Asia, and difficulty distinguishing surface from subsurface peat combustion.
+Organic soil fires carry particularly high uncertainty due to detection challenges, limited field validation outside Southeast Asia, and difficulty distinguishing surface from subsurface peat combustion.
 
-**Upstream soil classification bias**: The determination of whether a burned pixel is classified as organic soil---and therefore whether peat fire emission factors are applied---depends on the IPCC soil class map derived from the Harmonized World Soil Database [@batjes2009ipcc; @batjes2010ipcc]. This classification introduces systematic uncertainties that propagate into fire emission estimates. The underlying SOC reference values (Table 2.3) are based on a global compilation of >10,000 soil profiles [@batjes2011soc], but the dataset is geographically uneven: warm-temperate moist zones are dominated by Brazilian profiles, inflating SOC_REF values by 10–30% relative to median statistics. For South American fire reporting, this bias compounds with HWSD resolution limitations (~1 km) that cannot resolve mosaic peatland-mineral soil boundaries in Amazonian floodplains and Andean wetlands, and with a 0–30 cm depth constraint that underestimates fuel available for deep tropical peat combustion. Volcanic soils (Andisols), widespread in Andean countries, are particularly underrepresented in the global profile database, leaving fuel consumption estimates for fires in páramo and high-altitude grasslands on volcanic substrates largely unvalidated.
+Upstream soil classification bias: The determination of whether a burned pixel is classified as organic soil, and therefore whether peat fire emission factors are applied, depends on the IPCC soil class map derived from the Harmonized World Soil Database [@batjes2009ipcc; @batjes2010global]. This classification introduces systematic uncertainties that propagate into fire emission estimates. The underlying SOC reference values (Table 2.3) are based on a global compilation of \>10,000 soil profiles [@batjes2011soil], but the dataset is geographically uneven: warm-temperate moist zones are dominated by Brazilian profiles, inflating SOC_REF values by 10–30% relative to median statistics. For South American fire reporting, this bias compounds with HWSD resolution limitations (\~1 km) that cannot resolve mosaic peatland-mineral soil boundaries in Amazonian floodplains and Andean wetlands, and with a 0–30 cm depth constraint that underestimates fuel available for deep tropical peat combustion. Volcanic soils (Andisols), widespread in Andean countries, are particularly underrepresented in the global profile database, leaving fuel consumption estimates for fires in páramo and high-altitude grasslands on volcanic substrates largely unvalidated.
 
-#### Uncertainty Reduction and Inter-Annual Variability
+#### Inter-Annual Variability
 
 Countries can reduce uncertainty by integrating national fire databases with satellite data, conducting field campaigns for fuel loads and combustion factors, developing regional emission factors, and implementing Tier 2/3 methods. Methodological enhancements include multi-sensor fusion (MODIS + VIIRS + Sentinel), sub-pixel burned area algorithms, and burn severity mapping.
 
-High inter-annual variability (IAV) from natural disturbances---which can cause 2–3 orders of magnitude variation---complicates trend analysis and policy evaluation. Countries may optionally disaggregate natural disturbance emissions (beyond normal variability or 95% CI) from anthropogenic managed-land fluxes, improving clarity while maintaining MLP totals for official reporting [@ipccChapter2Generic2019][^index-2].
+High inter-annual variability (IAV) from natural disturbances, which can cause 2–3 orders of magnitude variation, complicates trend analysis and policy evaluation. Countries may optionally disaggregate natural disturbance emissions (beyond normal variability or 95% CI) from anthropogenic managed-land fluxes, improving clarity while maintaining MLP totals for official reporting [@ipccChapter2Generic2019].[^index-2]
 
 ------------------------------------------------------------------------
 
@@ -551,6 +551,6 @@ var countries = ee.FeatureCollection("FAO/GAUL/2015/level0");
 
 [^index-1]: Note to self: 2025 wishlist
 
-[^index-2]: Direct Page Link: <https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf#page=71>
+[^index-2]: Paged Link: <https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf#page=71>
 
 [^index-3]: Code provided Python and R, with some cells in Java for use natively in Earth Engine Codespace

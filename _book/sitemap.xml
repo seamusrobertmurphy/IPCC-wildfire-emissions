@@ -2,11 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://seamusrobertmurphy.quarto.pub/TREES-wildfire-replications/index.html</loc>
-    <lastmod>2026-04-04T03:29:48.644Z</lastmod>
+    <lastmod>2026-04-04T12:05:16.737Z</lastmod>
   </url>
   <url>
     <loc>https://seamusrobertmurphy.quarto.pub/TREES-wildfire-replications/01-burn-area/index.html</loc>
-    <lastmod>2026-04-04T02:56:42.682Z</lastmod>
+    <lastmod>2026-04-04T11:54:30.553Z</lastmod>
   </url>
   <url>
     <loc>https://seamusrobertmurphy.quarto.pub/TREES-wildfire-replications/02-fuel-stratification/index.html</loc>
@@ -18,10 +18,18 @@
   </url>
   <url>
     <loc>https://seamusrobertmurphy.quarto.pub/TREES-wildfire-replications/04-emission-factors/index.html</loc>
-    <lastmod>2026-04-04T03:19:23.431Z</lastmod>
+    <lastmod>2026-04-04T11:05:14.479Z</lastmod>
   </url>
   <url>
     <loc>https://seamusrobertmurphy.quarto.pub/TREES-wildfire-replications/references/index.html</loc>
     <lastmod>2026-02-01T21:42:40.005Z</lastmod>
+  </url>
+  <url>
+    <loc>https://seamusrobertmurphy.quarto.pub/TREES-wildfire-replications/resources/ipcc-resources.html</loc>
+    <lastmod>2026-04-04T11:32:20.612Z</lastmod>
+  </url>
+  <url>
+    <loc>https://seamusrobertmurphy.quarto.pub/TREES-wildfire-replications/resources/ipcc-glossary.html</loc>
+    <lastmod>2026-04-04T11:43:16.508Z</lastmod>
   </url>
 </urlset>

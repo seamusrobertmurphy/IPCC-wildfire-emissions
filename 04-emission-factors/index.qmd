@@ -22,12 +22,16 @@ citeproc: true
 
 ## Overview {.unnumbered}
 
-This chapter describes the application of IPCC default
-emission factors (G~ef~) to calculate greenhouse gas
-emissions from biomass burning. The methodology converts
-fuel consumption estimates (from Chapter 3) into emissions
-of carbon dioxide (CO~2~), methane (CH~4~), and nitrous
-oxide (N~2~O), following IPCC Tier 1 reporting requirements.
+This chapter applies IPCC default emission factors (G~ef~)
+to convert fuel consumption estimates from Chapter 3 into
+greenhouse gas emissions. For forest fires, CH~4~ and N~2~O
+are estimated directly using Equation 2.27, while CO~2~ is
+accounted for through carbon stock changes (Equations
+2.7-2.14) in the Forest Land chapter. For savanna fires at
+Tier 1, CO~2~ is assumed balanced by regrowth within one
+year, so only non-CO~2~ gases are reported. For organic soil
+fires, CO~2~ is reported separately because peat carbon is
+not replaced by regrowth on management-relevant timescales.
 
 ### Environment Setup {.unnumbered}
 
@@ -98,7 +102,7 @@ div.column {
   display: block;
   height:200px;
   width: 200px;
-  background-image: url('https://raw.githubusercontent.com/seamusrobertmurphy/map-templates/refs/heads/main/assets/outputs/01-site-map.png');
+  background-image: url('https://raw.githubusercontent.com/seamusrobertmurphy/IPCC-wildfire-emissions/refs/heads/main/04-emission-factors/assets/ef-uncertainty-aa.png');
   background-size: contain;
   background-position: 50% 50%;
   padding-top: 80px !important;
@@ -123,7 +127,7 @@ Where:
 
 -   G~ef~ = Emission factor (g gas per kg dry matter burned)
 -   L~fire~ = Total emissions (tonnes of gas)
--   10⁻³ = Unit conversion factor (g to kg, kg to tonnes)
+-   10^-3^ = Unit conversion factor (g to kg, kg to tonnes)
 
 Expanded form: $$
 L_{fire} \text{ (tonnes)} = \text{Area (ha)} \times \frac{\text{Biomass (t DM)}}{\text{ha}} \times \frac{\text{g gas}}{\text{kg DM}} \times 10^{-3}
@@ -133,40 +137,41 @@ $$
 
 Key IPCC sources:
 
--   Table 2.5: Emission factors for fires in forests and
-    other vegetation types
--   Table 2.6: Emission factors for fires in organic soils
-    (Wetlands Supplement)
--   Table 5.6: CO₂ emission factors for carbon stock changes
-    (forests only)
+-   Table 2.5 (2019 Refinement): Emission factors for CO~2~,
+    CH~4~, N~2~O, CO, and NO~x~ from fires in forests,
+    savanna, and other vegetation types
+-   Wetlands Supplement Table 2.6: CO~2~ and CH~4~ emission
+    factors for fires on organic soils
+-   Chapter 4.2 (2006 Guidelines): Carbon stock change
+    methods for forest CO~2~ accounting
 
-### IPCC Default Emission Factors - Quick Reference {#sec-emissions-defaults}
+### IPCC Default Emission Factors {#sec-emissions-defaults}
 
-Forest Fires (IPCC 2019 Table 2.5):
+Forest Fires (IPCC 2019 Refinement, Table 2.5):
 
-| Forest Type | CH₄ (g kg⁻¹) | N₂O (g kg⁻¹) | CO (g kg⁻¹)\* | NO~x~ (g kg⁻¹)\* |
-|------------|------------|------------|------------|------------|
-| Tropical Forest | 6.8 ± 2.0 | 0.20 ± 0.10 | 93 ± 38 | 3.9 ± 2.4 |
-| Temperate Forest | 4.7 ± 1.9 | 0.26 ± 0.15 | 107 ± 37 | 3.0 ± 1.4 |
-| Boreal Forest | 4.7 ± 1.9 | 0.26 ± 0.15 | 107 ± 37 | 3.0 ± 1.4 |
+| Forest Type | CO~2~ (g kg^-1^) | CH~4~ (g kg^-1^) | N~2~O (g kg^-1^) | CO (g kg^-1^)\* | NO~x~ (g kg^-1^)\* |
+|----------|----------|----------|----------|----------|----------|
+| Tropical Forest | 1580 ± 90 | 6.8 ± 2.0 | 0.20 ± 0.10 | 104 ± 20 | 3.9 ± 2.4 |
+| Extratropical Forest | 1569 ± 131 | 4.7 ± 1.9 | 0.26 ± 0.15 | 107 ± 37 | 3.0 ± 1.4 |
 
-\*Optional gases for Tier 1
+\*Optional precursor gases for Tier 1
 
-Savanna Fires (IPCC 2019 Table 2.5):
+Savanna Fires (IPCC 2019 Refinement, Table 2.5):
 
-| Vegetation Type | CH₄ (g kg⁻¹) | N₂O (g kg⁻¹) | CO (g kg⁻¹)\* | NO~x~ (g kg⁻¹)\* |
-|------------|------------|------------|------------|------------|
-| Savanna/Grassland | 2.3 ± 0.9 | 0.21 ± 0.10 | 65 ± 20 | 3.9 ± 2.4 |
+| Vegetation Type | CO~2~ (g kg^-1^) | CH~4~ (g kg^-1^) | N~2~O (g kg^-1^) | CO (g kg^-1^)\* | NO~x~ (g kg^-1^)\* |
+|----------|----------|----------|----------|----------|----------|
+| Savanna/Grassland | 1613 ± 95 | 2.3 ± 0.9 | 0.21 ± 0.10 | 65 ± 20 | 3.9 ± 2.4 |
 
-Organic Soil Fires (IPCC 2014 Wetlands Supplement Table
+Note: Savanna CO~2~ emission factor is listed for
+completeness but is not applied at Tier 1 due to the
+synchrony assumption (see @sec-co2-logic).
+
+Organic Soil Fires (IPCC 2013 Wetlands Supplement, Table
 2.6):
 
-| Soil Type         | CO₂ (g kg⁻¹) | CH₄ (g kg⁻¹) | N₂O (g kg⁻¹)  |
-|-------------------|--------------|--------------|---------------|
-| Tropical Peatland | 1703 ± 8     | 5.7 ± 5.4    | Not estimated |
-
-Note: CO₂ emission factor = 1703 g kg⁻¹ ≈ 1.7 kg CO₂ per kg
-peat burned
+| Soil Type | CO~2~ (g kg^-1^) | CH~4~ (g kg^-1^) | N~2~O (g kg^-1^) |
+|------------------|--------------|--------------|--------------|
+| Tropical Peatland | 1703 ± 8 | 5.7 ± 5.4 | Not estimated |
 
 ------------------------------------------------------------
 
@@ -292,9 +297,9 @@ cat("Upstream inputs loaded: MCD64A1 + MCD12Q1 + WorldClim + fuel raster\n")
 
 ------------------------------------------------------------
 
-## Methane (CH₄) Emissions {#sec-emissions-ch4}
+## Methane (CH~4~) Emissions {#sec-emissions-ch4}
 
-### CH₄ Emission Mechanisms {#sec-ch4-mechanisms}
+### CH~4~ Emission Mechanisms {#sec-ch4-mechanisms}
 
 Formation process: Incomplete combustion under
 oxygen-limited conditions
@@ -303,34 +308,34 @@ $$
 \text{Biomass} \xrightarrow{\text{Incomplete combustion}} \text{CH}_4 + \text{CO}_2 + \text{CO} + \text{char}
 $$
 
-Key factors affecting CH₄ emissions:
+Key factors affecting CH~4~ emissions:
 
 1.  Fire intensity:
-    -   Low-intensity fires = More smoldering = Higher CH₄
-    -   High-intensity fires = More flaming = Lower CH₄
+    -   Low-intensity fires = More smoldering = Higher CH~4~
+    -   High-intensity fires = More flaming = Lower CH~4~
 2.  Fuel moisture:
     -   Wet fuels = Lower combustion temperature = Higher
-        CH₄
-    -   Dry fuels = Higher temperature = Lower CH₄
+        CH~4~
+    -   Dry fuels = Higher temperature = Lower CH~4~
 3.  Fuel type:
-    -   Forest: High CH₄ (dense, moist fuels)
-    -   Savanna: Low CH₄ (grass cures completely)
+    -   Forest: High CH~4~ (dense, moist fuels)
+    -   Savanna: Low CH~4~ (grass cures completely)
 4.  Combustion phase:
-    -   Flaming: Minimal CH₄ (\>90% CO₂)
-    -   Smoldering: High CH₄ (20-40% of carbon as CH₄)
+    -   Flaming: Minimal CH~4~ (\>90% CO~2~)
+    -   Smoldering: High CH~4~ (20-40% of carbon as CH~4~)
 
-### Forest CH₄ Emissions {#sec-ch4-forest}
+### Forest CH~4~ Emissions {#sec-ch4-forest}
 
 #### Emission Factors by Forest Type {#sec-ch4-forest-ef}
 
-Tropical Forests (6.8 g CH₄ kg⁻¹):
+Tropical Forests (6.8 g CH~4~ kg^-1^):
 
 -   Highest emission factors
 -   Dense canopy \>\> poor ventilation
 -   High fuel moisture \>\> low combustion efficiency
 -   Long smoldering phase (especially coarse woody debris)
 
-Temperate/Boreal Forests (4.7 g CH₄ kg⁻¹):
+Temperate/Boreal Forests (4.7 g CH~4~ kg^-1^):
 
 -   Moderate emission factors
 -   More complete combustion in conifers
@@ -346,7 +351,7 @@ Honduras Tropical Forest Fires (2010):
 Given:
 
 -   Biomass burned from Chapter 3 (GEE-derived)
--   Emission factor: 6.8 g CH₄ kg⁻¹ DM (tropical forest)
+-   Emission factor: 6.8 g CH~4~ kg^-1^ DM (tropical forest)
 
 Calculation: $$
 \begin{aligned}
@@ -374,7 +379,7 @@ forest_biomass_t <- forest_biomass[["fuel_consumption"]] %||% 0
 forest_biomass_Gg <- forest_biomass_t / 1000
 
 # IPCC emission factor (tropical forest)
-EF_CH4_tropical_forest <- 6.8  # g kg⁻��
+EF_CH4_tropical_forest <- 6.8  # g kg⁻¹
 
 # Calculate CH₄ emissions
 # Gg DM × g/kg = Gg × g/kg (numerically equivalent)
@@ -386,18 +391,18 @@ cat("  EF (tropical):       ", EF_CH4_tropical_forest, "g kg⁻¹\n")
 cat("  CH₄ emissions:       ", round(forest_CH4_Gg, 3), "Gg CH₄\n")
 ```
 
-### Savanna CH₄ Emissions {#sec-ch4-savanna}
+### Savanna CH~4~ Emissions {#sec-ch4-savanna}
 
 #### Lower Emission Factors {#sec-ch4-savanna-ef}
 
-Savanna/Grassland (2.3 g CH₄ kg⁻¹):
+Savanna/Grassland (2.3 g CH~4~ kg^-1^):
 
 -   Lowest emission factors among all vegetation types
 -   Grass fuels cure completely (low moisture)
 -   Predominantly flaming combustion
 -   Minimal smoldering phase - High combustion efficiency
 
-Why savanna CH₄ \< forest CH₄:
+Why savanna CH~4~ \< forest CH~4~:
 
 1\. Fuel moisture: 5-10% (savanna) vs. 30-60% (forest)
 
@@ -439,9 +444,9 @@ cat("  EF (savanna):          ", EF_CH4_savanna, "g kg⁻¹\n")
 cat("  CH₄ emissions:         ", round(savanna_CH4_Gg, 4), "Gg CH₄\n")
 ```
 
-### Organic Soil CH₄ Emissions {#sec-ch4-organic}
+### Organic Soil CH~4~ Emissions {#sec-ch4-organic}
 
-Tropical Peatland (5.7 g CH₄ kg⁻¹):
+Tropical Peatland (5.7 g CH~4~ kg^-1^):
 
 -   Intermediate emission factors
 -   Smoldering combustion dominates
@@ -488,28 +493,28 @@ $$
 Key factors:
 
 1.  Nitrogen content of fuel:
-    -   Legumes: High N \>\> High N₂O
-    -   Conifers: Low N \>\> Low N₂O
+    -   Legumes: High N \>\> High N~2~O
+    -   Conifers: Low N \>\> Low N~2~O
     -   Grasses: Variable N (fertilization-dependent)
 2.  Combustion temperature:
-    -   Low temp (400-600°C): High N₂O/NO~x~ ratio
-    -   High temp (\>800°C): Low N₂O (converts to N₂)
+    -   Low temp (400-600°C): High N~2~O/NO~x~ ratio
+    -   High temp (\>800°C): Low N~2~O (converts to N~2~)
 3.  Fuel moisture:
-    -   Affects temperature = Affects N₂O production
+    -   Affects temperature = Affects N~2~O production
 4.  Fire residency time:
-    -   Long smoldering = More N₂O
+    -   Long smoldering = More N~2~O
 
-### Forest N₂O Emissions {#sec-n2o-forest}
+### Forest N~2~O Emissions {#sec-n2o-forest}
 
 #### Emission Factors by Forest Type {#sec-n2o-forest-ef}
 
-Tropical Forests (0.20 g N₂O kg⁻¹):
+Tropical Forests (0.20 g N~2~O kg^-1^):
 
 -   Lower emission factors (surprising given high N content)
 -   Explanation: High temperature flaming combustion
--   More N₂ produced instead of N₂O
+-   More N~2~ produced instead of N~2~O
 
-Temperate/Boreal Forests (0.26 g N₂O kg⁻¹):
+Temperate/Boreal Forests (0.26 g N~2~O kg^-1^):
 
 -   Moderate emission factors
 -   Conifer needles: Low N content (\~0.5%)
@@ -537,9 +542,9 @@ cat("  EF (tropical):       ", EF_N2O_tropical_forest, "g kg⁻¹\n")
 cat("  N₂O emissions:       ", round(forest_N2O_Gg, 4), "Gg N₂O\n")
 ```
 
-### Savanna N₂O Emissions {#sec-n2o-savanna}
+### Savanna N~2~O Emissions {#sec-n2o-savanna}
 
-Savanna/Grassland (0.21 g N₂O kg⁻¹):
+Savanna/Grassland (0.21 g N~2~O kg^-1^):
 
 -   Similar to forest emission factors
 -   Nitrogen variability depends on:
@@ -563,9 +568,9 @@ cat("  EF (savanna):          ", EF_N2O_savanna, "g kg⁻¹\n")
 cat("  N₂O emissions:         ", round(savanna_N2O_Gg, 5), "Gg N₂O\n")
 ```
 
-### Organic Soil N���O Emissions {#sec-n2o-organic}
+### Organic Soil N~2~O Emissions {#sec-n2o-organic}
 
-NOT ESTIMATED for organic soil fires (IPCC 2014 Wetlands
+NOT ESTIMATED for organic soil fires (IPCC 2013 Wetlands
 Supplement):
 
 > "Due to lack of data, no default N₂O emission factor is
@@ -576,68 +581,140 @@ Rationale:
 -   Very few measurements available
 -   Peat nitrogen content highly variable
 -   Smoldering combustion \>\> complex N chemistry
--   Most N released as N₂ or NH₃ rather than N₂O
+-   Most N released as N~2~ or NH~3~ rather than N~2~O
 
-FAOSTAT approach: N₂O = 0 for organic soil fires
+FAOSTAT approach: N~2~O = 0 for organic soil fires
 
 ------------------------------------------------------------
 
-## Carbon Dioxide (CO₂) Emissions {#sec-emissions-co2}
+## Carbon Dioxide (CO~2~) Emissions {#sec-emissions-co2}
 
-### CO��� Reporting Logic {#sec-co2-logic}
+### CO~2~ Reporting Logic {#sec-co2-logic}
 
-IPCC Tier 1 Rule:
+The treatment of CO~2~ differs by fire type under IPCC
+methodology. The key distinction is whether fire CO~2~
+emissions are synchronous with CO~2~ removals from regrowth:
 
-| Fire Category | CO₂ Reported | Rationale |
-|--------------------|--------------------|--------------------|
-| Forest Fires | ❌ | Captured in carbon stock changes (Chapter 4.2, Forest Land) |
-| Savanna Fires | ❌ | Assumed balanced by annual regrowth |
-| Organic Soil Fires | ✅ | Permanent carbon loss (peat does not regrow in \<20 years) |
+| Fire Category | CO~2~ Reported? | Accounting Method | IPCC Source |
+|---------------|---------------|---------------|---------------|
+| Forest Fires | Yes | Carbon stock changes (Eq. 2.7--2.14) | 2006 GL §4.2.4 |
+| Savanna Fires | No (Tier 1) | Synchrony assumed for non-woody grassland | 2019 Ref §2.4 |
+| Organic Soil Fires | Yes | Separate G~ef~ (Eq. 2.27) | 2013 WS Ch. 2 |
 
-### Forest/Savanna CO₂ Treatment {#sec-co2-forest-savanna}
+### Forest CO~2~ Treatment {#sec-co2-forest}
 
-Why CO₂ is excluded:
+#### Why forest fire CO~2~ must be reported
 
-1.  Carbon neutrality assumption (short-term): $$
-    \text{CO}_2\text{(fire)} = \text{CO}_2\text{(regrowth)} \quad \text{over 1-20 years}
-    $$
+The 2006 IPCC Guidelines (Vol. 4, Ch. 4, §4.2.4) state:
 
-2.  Accounting framework:
+> "In Forest Land Remaining Forest Land, emissions of CO~2~
+> from biomass burning also need to be accounted for because
+> they are generally not synchronous with rates of CO~2~
+> uptake."
 
-    -   CO₂ from fire = immediate emission
-    -   CO₂ sequestered by regrowth = gradual removal
-    -   Net change reported in carbon stock change category,
-        not fire emissions
+The 2019 Refinement (Vol. 4, Ch. 2, §2.4) reinforces:
 
-3.  IPCC methodology (2006 Guidelines, Vol. 4, Ch. 2):
+> "For Forest Land, synchrony is unlikely if significant
+> woody biomass is killed (i.e., losses represent several
+> years of growth and C accumulation), and the net emissions
+> should be reported."
 
-    -   Fire emissions reported: Non-CO₂ only (CH₄, N���O)
-    -   Carbon stock changes reported: All carbon fluxes
-        including fire impacts
+#### Accounting pathway: Carbon stock changes
 
-Exception: If fire causes permanent land-use change (e.g.,
-deforestation), CO₂ reported under Land Use Change, not fire
-emissions.
+Forest fire CO~2~ is captured through the carbon stock
+change framework (Gain-Loss Method, Equations 2.7--2.14),
+not through the fire-specific Equation 2.27:
 
-### Organic Soil CO₂ Emissions {#sec-co2-organic}
+-   Biomass loss from fire = immediate CO~2~ emission
+    (captured by Equation 2.14 as a disturbance loss)
+-   Regrowth = gradual CO~2~ removal (captured by Equation
+    2.9 as annual biomass increment)
+-   Net change reported annually in the Forest Land carbon
+    stock change category
 
-#### Why Organic Soil CO₂ is Different {#sec-co2-organic-rationale}
+Non-CO~2~ gases (CH~4~, N~2~O) cannot be captured by stock
+change accounting and must be estimated separately using
+Equation 2.27 and the G~ef~ values from Table 2.5.
+
+#### Cross-check: CO~2~ emission factor from Table 2.5
+
+Table 2.5 lists CO~2~ emission factors for forests
+(Tropical: 1580 ± 90 g kg^-1^; Extratropical: 1569 ± 131 g
+kg^-1^). These can serve as a cross-check against the
+stock-change estimate:
+
+```{r}
+#| label: co2-forest-crosscheck
+#| code-summary: "Forest CO₂ cross-check using Table 2.5 Gef — Honduras 2010"
+
+# Table 2.5 CO₂ emission factor (tropical forest)
+EF_CO2_tropical_forest <- 1580  # g kg⁻¹
+
+# Cross-check estimate
+forest_CO2_crosscheck_Gg <- forest_biomass_Gg * EF_CO2_tropical_forest
+
+cat("Honduras 2010 — Forest CO₂ Cross-Check\n")
+cat("  Forest biomass burned:", round(forest_biomass_Gg, 2), "Gg DM\n")
+cat("  EF (tropical Table 2.5):", EF_CO2_tropical_forest, "g kg⁻¹\n")
+cat("  CO₂ cross-check:      ", round(forest_CO2_crosscheck_Gg, 2), "Gg CO₂\n")
+cat("\n  Note: This value is for cross-checking only.\n")
+cat("  Forest CO₂ is reported through carbon stock changes\n")
+cat("  (Equations 2.7–2.14), not the fire emissions table.\n")
+```
+
+### Savanna CO~2~ Treatment {#sec-co2-savanna}
+
+#### Tier 1 synchrony assumption
+
+At Tier 1, CO~2~ from savanna and grassland fires is not
+reported separately because regrowth is assumed to reabsorb
+the emitted CO~2~ within one year. The 2019 Refinement (Vol.
+4, Ch. 2, §2.4) states:
+
+> "For grassland biomass burning and burning of agriculture
+> residues, the assumption of equivalence is generally
+> reasonable."
+
+#### Caveats for woody savannas
+
+The Guidelines explicitly warn against applying synchrony to
+woody systems:
+
+> "woody vegetation may also burn in these land categories,
+> and greenhouse gas emissions from those sources should be
+> reported using a higher Tier method"
+
+and:
+
+> "care must be taken before assuming synchrony in such
+> systems"
+
+For Honduras Tier 1, the synchrony assumption is applied to
+savanna/grassland pixels (IGBP classes 6-10). Countries with
+significant woody savanna burning should consider Tier 2
+methods.
+
+### Organic Soil CO~2~ Emissions {#sec-co2-organic}
+
+#### Why Organic Soil CO~2~ is Different {#sec-co2-organic-rationale}
 
 Peat = Non-renewable carbon source:
 
--   Peat accumulation: 0.1-1.0 mm year⁻¹
+-   Peat accumulation: 0.1-1.0 mm year^-1^
 -   Fire consumption: 100-500 mm per event
 -   Recovery time: 100-5,000 years
--   Conclusion: Fire CO₂ NOT balanced by regrowth
+-   Conclusion: Fire CO~2~ NOT balanced by regrowth
 
-IPCC Wetlands Supplement: \> "Emissions of CO₂ from peat
-fires should be estimated separately from other fire types,
-as the carbon in peat has accumulated over centuries to
-millennia and is not rapidly replaced by regrowth."
+IPCC Wetlands Supplement:
+
+> "Emissions of CO₂ from peat fires should be estimated
+> separately from other fire types, as the carbon in peat
+> has accumulated over centuries to millennia and is not
+> rapidly replaced by regrowth."
 
 #### Emission Factor {#sec-co2-organic-ef}
 
-Tropical Peatland (1703 g CO₂ kg⁻¹): $$
+Tropical Peatland (1703 g CO~2~ kg^-1^): $$
 \begin{aligned}
 \text{Carbon content of peat} &= 0.50 \text{ kg C per kg DM} \\
 \text{Molecular weight ratio} &= \frac{44 \text{ (CO}_2)}{12 \text{ (C)}} = 3.67 \\
@@ -646,17 +723,17 @@ G_{ef,CO_2} &= 0.50 \times 3.67 \times 1000 \text{ g kg}^{-1} \\
 \end{aligned}
 $$
 
-IPCC default: 1703 g kg⁻¹ (slightly lower, accounting for
-incomplete carbon conversion)
+IPCC default: 1703 g kg^-1^
 
-Uncertainty: Very low (±8 g kg⁻¹) — CO₂/C ratio is
-stoichiometric
+-   Lower value accounting for incomplete carbon conversion)
+-   Uncertainty: Very low (±8 g kg^-1^)
+-   CO~2~/C ratio is stoichiometric
 
 ------------------------------------------------------------
 
 ## Reproducible Workflow {#sec-emissions-workflow}
 
-### Consolidated Emissions Calculation {#sec-emissions-pipeline}
+### Full Script {#sec-emissions-pipeline}
 
 ```{r}
 #| label: emissions-complete-workflow
@@ -665,49 +742,74 @@ stoichiometric
 library(tidyverse)
 
 # 1. Load IPCC Emission Factors
+# Non-CO₂ gases estimated via Equation 2.27
+# Forest CO₂ estimated via stock changes (not included here)
+# Savanna CO₂ excluded per Tier 1 synchrony assumption
 emission_factors <- tribble(
-  ~fire_category, ~climate_zone, ~gas, ~EF_g_kg, ~uncertainty_pct,
+  ~fire_category, ~climate_zone, ~gas, ~EF_g_kg,
+  ~uncertainty_pct, ~accounting_note,
 
-  # Forest Fires
+  # Forest Fires — non-CO₂ via Equation 2.27
   "Forest", "Tropical", "CH4", 6.8, 30,
+  "Eq 2.27",
   "Forest", "Tropical", "N2O", 0.20, 50,
+  "Eq 2.27",
   "Forest", "Temperate", "CH4", 4.7, 40,
+  "Eq 2.27",
   "Forest", "Temperate", "N2O", 0.26, 60,
+  "Eq 2.27",
   "Forest", "Boreal", "CH4", 4.7, 40,
+  "Eq 2.27",
   "Forest", "Boreal", "N2O", 0.26, 60,
+  "Eq 2.27",
 
-  # Savanna Fires
+  # Forest CO₂ — cross-check only (primary via stock changes)
+  "Forest", "Tropical", "CO2", 1580, 6,
+  "Cross-check (stock changes primary)",
+  "Forest", "Temperate", "CO2", 1569, 8,
+  "Cross-check (stock changes primary)",
+  "Forest", "Boreal", "CO2", 1569, 8,
+  "Cross-check (stock changes primary)",
+
+  # Savanna Fires — non-CO₂ only at Tier 1
   "Savanna", "All", "CH4", 2.3, 40,
+  "Eq 2.27",
   "Savanna", "All", "N2O", 0.21, 50,
+  "Eq 2.27",
 
-  # Organic Soil Fires
+  # Organic Soil Fires — CO₂ reported (non-renewable C)
   "Organic_Soil", "Tropical", "CO2", 1703, 0.5,
-  "Organic_Soil", "Tropical", "CH4", 5.7, 95
+  "Eq 2.27 (WS)",
+  "Organic_Soil", "Tropical", "CH4", 5.7, 95,
+  "Eq 2.27 (WS)"
 )
 
 # 2. Build fuel consumption data from GEE results (Ch3)
 fuel_consumption_data <- tribble(
-  ~country, ~year, ~fire_category, ~vegetation_type, ~climate_zone,
-  ~area_ha, ~biomass_burned_Gg,
+  ~country, ~year, ~fire_category, ~vegetation_type,
+  ~climate_zone, ~area_ha, ~biomass_burned_Gg,
 
-  "Honduras", 2010, "Forest", "Humid_Tropical_Forest", "Tropical",
-  NA_real_, forest_biomass_Gg,
+  "Honduras", 2010, "Forest", "Humid_Tropical_Forest",
+  "Tropical", NA_real_, forest_biomass_Gg,
 
   "Honduras", 2010, "Savanna", "Savanna_Mixed", "All",
   NA_real_, savanna_biomass_Gg
 )
 
 # 3. Calculate Emissions by Gas
+# Exclude forest CO₂ cross-check rows from primary totals
 emissions <- fuel_consumption_data %>%
   left_join(
-    emission_factors,
+    emission_factors %>%
+      filter(accounting_note == "Eq 2.27"),
     by = c("fire_category", "climate_zone")
   ) %>%
   mutate(
     emissions_Gg = biomass_burned_Gg * EF_g_kg
   ) %>%
-  select(country, year, fire_category, vegetation_type, climate_zone,
-         biomass_burned_Gg, gas, EF_g_kg, emissions_Gg, uncertainty_pct)
+  select(country, year, fire_category, vegetation_type,
+         climate_zone, biomass_burned_Gg, gas, EF_g_kg,
+         emissions_Gg, uncertainty_pct)
 
 # 4. Summarize by GHG & Category
 emissions_summary <- emissions %>%
@@ -766,14 +868,15 @@ write.csv(
 library(knitr)
 
 kable(
-  emissions_co2eq %>% select(fire_category, gas, total_emissions_Gg, CO2eq_Gg),
-  caption = "Honduras 2010 Fire Emissions by GHG & Category",
+  emissions_co2eq %>%
+    select(fire_category, gas, total_emissions_Gg, CO2eq_Gg),
+  caption = "Honduras 2010 Fire Emissions by GHG & Category (Equation 2.27 gases only)",
   digits = 4
 )
 
 kable(
   total_co2eq,
-  caption = "Honduras 2010 Tier 1 Total Fire Emissions",
+  caption = "Honduras 2010 Tier 1 Total Fire Emissions (non-CO₂ gases)",
   digits = 4
 )
 ```
@@ -785,31 +888,32 @@ kable(
 ### GWP Concept {#sec-gwp-concept}
 
 Global Warming Potential (GWP): Radiative forcing of 1 kg of
-gas relative to 1 kg of CO₂ over specified time horizon
+gas relative to 1 kg of CO₂ over 100-year, GWP100
+[@IPCC2014, pp. 87]:
 
 IPCC Assessment Report 5 (AR5) - 100-year GWPs:
 
-| Gas | GWP (without feedback) | GWP (with feedback) |
-|-----|------------------------|---------------------|
-| CO₂ | 1 (by definition)      | 1                   |
-| CH₄ | 28                     | 34                  |
-| N₂O | 265                    | 298                 |
+| Gas   | GWP (w/o feedback) | GWP (w/ feedback) |
+|-------|--------------------|-------------------|
+| CO~2~ | 1 (by definition)  | 1                 |
+| CH~4~ | 28                 | 34                |
+| N~2~O | 265                | 298               |
 
 FAOSTAT uses AR5 without feedbacks: GWP~CH4~ = 28, GWP~N2O~
 = 265
 
-IPCC Assessment Report 6 (AR6) - Updated values:
+IPCC Assessment Report 6 (AR6):[^index-1]
 
-| Gas | GWP (100-year) |
-|-----|----------------|
-| CH₄ | 27.9           |
-| N₂O | 273            |
+| Gas   | GWP (100-year) |
+|-------|----------------|
+| CH~4~ | 27.9           |
+| N~2~O | 273            |
 
 Reporting guidance: Use GWP set consistent with national
 reporting (typically AR5 for UNFCCC submissions through
 \~2024)
 
-### Calculating CO₂-Equivalents {#sec-gwp-calculation}
+### Calculating CO~2~-Equivalents {#sec-gwp-calculation}
 
 $$
 \text{CO}_2\text{-eq (Gg)} = \sum_{i=1}^{n} \text{Emissions}_i \text{ (Gg)} \times \text{GWP}_i
@@ -830,14 +934,17 @@ emissions_by_gas <- emissions_co2eq %>%
     .groups = "drop"
   )
 
-cat("Honduras 2010 — CO₂-Equivalents\n")
+cat("Honduras 2010 — CO₂-Equivalents (Eq 2.27 gases)\n")
 for (i in seq_len(nrow(emissions_by_gas))) {
   cat(sprintf("  %s: %.4f Gg → %.2f Gg CO₂-eq\n",
     emissions_by_gas$gas[i],
     emissions_by_gas$emissions_Gg[i],
     emissions_by_gas$CO2eq_Gg[i]))
 }
-cat("  Total:", round(sum(emissions_by_gas$CO2eq_Gg), 2), "Gg CO₂-eq\n")
+cat("  Total:", round(sum(emissions_by_gas$CO2eq_Gg), 2),
+    "Gg CO₂-eq\n")
+cat("\n  Note: Forest CO₂ is reported via carbon stock\n")
+cat("  changes (Ch. 4.2), not included in this total.\n")
 
 # Visualize
 ggplot(emissions_by_gas, aes(x = gas, y = CO2eq_Gg, fill = gas)) +
@@ -847,7 +954,7 @@ ggplot(emissions_by_gas, aes(x = gas, y = CO2eq_Gg, fill = gas)) +
   scale_fill_manual(values = c("CH4" = "orange", "N2O" = "red")) +
   labs(
     title = "Fire Emissions by Gas (CO₂-equivalents)",
-    subtitle = "Honduras 2010 — Forest and Savanna Fires",
+    subtitle = "Honduras 2010 — Forest and Savanna Fires (Eq 2.27 non-CO₂ gases)",
     x = "Greenhouse Gas",
     y = "Emissions (Gg CO₂-eq)",
     fill = "Gas"
@@ -864,11 +971,16 @@ ggplot(emissions_by_gas, aes(x = gas, y = CO2eq_Gg, fill = gas)) +
 
 1\. Emission Factor Uncertainty (IPCC Table 2.5):
 
-| Gas | Forest (%) | Savanna (%) | Organic Soil (%) |
-|-----|------------|-------------|------------------|
-| CH₄ | ±30-40     | ±40         | ±95              |
-| N₂O | ±50-60     | ±50         | N/A              |
-| CO₂ | N/A        | N/A         | ±0.5             |
+| Gas   | Forest (%) | Savanna (%) | Organic Soil (%) |
+|-------|------------|-------------|------------------|
+| CO~2~ | ±6         | ±6          | ±0.5             |
+| CH~4~ | ±30-40     | ±40         | ±95              |
+| N~2~O | ±50-60     | ±50         | N/A              |
+
+Note: Forest CO~2~ emission factor uncertainty (±6%) is
+relevant for cross-checking. The total uncertainty in forest
+CO~2~ reporting is dominated by stock-change uncertainty
+(biomass estimates, allometric models), not G~ef~.
 
 2\. Cumulative Uncertainty (from all chapters):
 
@@ -876,12 +988,12 @@ Recall from Chapter 3: $$
 U_{total}^2 = U_A^2 + U_{MB}^2 + U_{Cf}^2 + U_{Gef}^2
 $$
 
-For Forest CH₄ emissions:
+For Forest CH~4~ emissions:
 
 -   $U_A$ = ±30% (burned area)
 -   $U_{MB}$ = ±50% (fuel load)
 -   $U_{Cf}$ = ±25% (combustion factor)
--   $U_{Gef}$ = ±35% (CH₄ emission factor)
+-   $U_{Gef}$ = ±35% (CH~4~ emission factor)
 
 Combined uncertainty: $$
 U_{total} = \sqrt{30^2 + 50^2 + 25^2 + 35^2} = \sqrt{4650} \approx 68\%
@@ -889,7 +1001,7 @@ $$
 
 For Savanna emissions: \~85% uncertainty
 
-For Organic soil CO₂: \~60% uncertainty (dominated by fuel
+For Organic soil CO~2~: \~60% uncertainty (dominated by fuel
 consumption)
 
 ### Monte Carlo Uncertainty Propagation {#sec-uncertainty-montecarlo}
@@ -897,8 +1009,6 @@ consumption)
 ```{r}
 #| label: uncertainty-montecarlo
 #| code-summary: "Monte Carlo simulation — Honduras tropical forest CH₄"
-
-library(tidyverse)
 
 # Parameters: Honduras Humid Tropical Forest
 n_simulations <- 10000
@@ -968,7 +1078,7 @@ ggplot(simulations, aes(x = CH4_kg_per_ha)) +
 #| label: emissions-gee-spatial
 #| code-summary: "Create spatially-explicit emissions maps — Honduras 2010"
 
-# 1. Derive Emission Factor Rasters
+# 1. Derive Emission Factor Rasters (non-CO₂ gases via Eq 2.27)
 # CH₄ emission factors by vegetation type
 EF_CH4_img <- ee$Image(0)$rename("EF_CH4")
 EF_CH4_img <- EF_CH4_img$
@@ -983,6 +1093,12 @@ EF_N2O_img <- EF_N2O_img$
   where(forest_mask$And(tropical$Not()), 0.26)$
   where(savanna_mask, 0.21)
 
+# CO₂ emission factor raster (cross-check for forest only)
+EF_CO2_img <- ee$Image(0)$rename("EF_CO2")
+EF_CO2_img <- EF_CO2_img$
+  where(forest_mask$And(tropical), 1580)$
+  where(forest_mask$And(tropical$Not()), 1569)
+
 # 2. Calculate Emissions Per Pixel
 # CH₄ emissions (kg): biomass (t) × 1000 (kg/t) × EF (g/kg) / 1000 (g→kg)
 CH4_per_pixel <- biomass_per_pixel$
@@ -994,6 +1110,13 @@ CH4_per_pixel <- biomass_per_pixel$
 N2O_per_pixel <- biomass_per_pixel$
   multiply(EF_N2O_img)$
   rename("N2O_kg")$
+  clip(aoi_country_ee$geometry())
+
+# CO₂ cross-check (forest only, kg)
+CO2_crosscheck_per_pixel <- biomass_per_pixel$
+  updateMask(forest_mask)$
+  multiply(EF_CO2_img)$
+  rename("CO2_crosscheck_kg")$
   clip(aoi_country_ee$geometry())
 
 # 3. Visualize
@@ -1048,15 +1171,29 @@ N2O_total <- N2O_per_pixel$
     maxPixels = 1e9
   )$getInfo()
 
+# CO₂ cross-check (forest only)
+CO2_crosscheck_total <- CO2_crosscheck_per_pixel$
+  reduceRegion(
+    reducer   = ee$Reducer$sum(),
+    geometry  = aoi_country_ee$geometry(),
+    scale     = 500L,
+    maxPixels = 1e9
+  )$getInfo()
+
 CH4_Gg <- (CH4_total[["CH4_kg"]] %||% 0) / 1e6
 N2O_Gg <- (N2O_total[["N2O_kg"]] %||% 0) / 1e6
+CO2_xcheck_Gg <- (CO2_crosscheck_total[["CO2_crosscheck_kg"]] %||% 0) / 1e6
 
 cat("Honduras 2010 — GEE Pixel-Level Emissions\n")
 cat("  Total CH₄:", round(CH4_Gg, 4), "Gg\n")
-cat("  Total N��O:", round(N2O_Gg, 5), "Gg\n")
+cat("  Total N₂O:", round(N2O_Gg, 5), "Gg\n")
 cat("  CH₄ CO₂-eq:", round(CH4_Gg * 28, 2), "Gg\n")
 cat("  N₂O CO₂-eq:", round(N2O_Gg * 265, 2), "Gg\n")
-cat("  Total CO₂-eq:", round(CH4_Gg * 28 + N2O_Gg * 265, 2), "Gg\n")
+cat("  Total CO₂-eq (non-CO₂):",
+    round(CH4_Gg * 28 + N2O_Gg * 265, 2), "Gg\n")
+cat("\n  Forest CO₂ cross-check:",
+    round(CO2_xcheck_Gg, 2), "Gg\n")
+cat("  (Reported via stock changes, not fire emissions table)\n")
 ```
 
 ------------------------------------------------------------
@@ -1070,18 +1207,21 @@ Required tables for fire emissions:
 1.  Table 4.C - Fires on Forest Land
     -   Area burned (ha)
     -   Biomass burned (tonnes DM)
-    -   CH₄ emissions (Gg)
-    -   N₂O emissions (Gg)
+    -   CH~4~ emissions (Gg)
+    -   N~2~O emissions (Gg)
+    -   Note: CO~2~ from forest fires is reported in the
+        carbon stock change rows of Table 4.A, not here
 2.  Table 4.F - Fires on Grassland
     -   Area burned (ha)
     -   Biomass burned (tonnes DM)
-    -   CH₄ emissions (Gg)
-    -   N₂O emissions (Gg)
+    -   CH~4~ emissions (Gg)
+    -   N~2~O emissions (Gg)
+    -   CO~2~: Not reported (Tier 1 synchrony assumption)
 3.  Table 4(V) - Fires in Organic Soils (Wetlands
     Supplement)
     -   Area burned (ha)
-    -   CO₂ emissions (Gg)
-    -   CH₄ emissions (Gg)
+    -   CO~2~ emissions (Gg)
+    -   CH~4~ emissions (Gg)
 
 ```{r}
 #| label: emissions-crf-format
@@ -1100,7 +1240,8 @@ crf_4c <- emissions %>%
   mutate(
     IPCC_Category = "4.C.1",
     Subcategory = "Fires - Forest Land",
-    Tier = "Tier 1"
+    Tier = "Tier 1",
+    CO2_note = "CO₂ reported via stock changes (Table 4.A)"
   )
 
 # Format for CRF Table 4.F (Grassland)
@@ -1116,7 +1257,8 @@ crf_4f <- emissions %>%
   mutate(
     IPCC_Category = "4.F.1",
     Subcategory = "Fires - Grassland",
-    Tier = "Tier 1"
+    Tier = "Tier 1",
+    CO2_note = "CO₂ excluded (Tier 1 synchrony assumption)"
   )
 
 # Combine for full CRF submission
@@ -1131,9 +1273,11 @@ write.csv(
 
 library(knitr)
 kable(
-  crf_fires,
+  crf_fires %>%
+    select(IPCC_Category, Subcategory, biomass_burned_t,
+           CH4_Gg, N2O_Gg, Tier, CO2_note),
   caption = "UNFCCC CRF Tables 4.C and 4.F — Honduras 2010 Fire Emissions",
-  digits = c(0, 0, 0, 4, 5, 0, 0, 0)
+  digits = c(0, 0, 0, 4, 5, 0, 0)
 )
 ```
 
@@ -1147,13 +1291,17 @@ IPCC Good Practice Guidance requires documentation of:
     -   IPCC 2019 Refinement Tables 2.4 and 2.5
 2.  Methods:
     -   Tier 1 approach
-    -   Equation 2.27
+    -   Equation 2.27 for non-CO~2~ gases
+    -   Carbon stock changes (Eq. 2.7--2.14) for forest
+        CO~2~
     -   Quality filters applied (uncertainty \< 20%)
-3.  Assumptions:
-    -   CO₂ from forest/savanna fires excluded (carbon
-        neutrality)
-    -   Organic soil fires limited to Southeast Asia
-    -   Seasonal stratification (where applicable)
+3.  CO~2~ accounting:
+    -   Forest: CO~2~ reported through stock changes (2006
+        GL §4.2.4)
+    -   Savanna: CO~2~ excluded per Tier 1 synchrony
+        assumption (2019 Ref §2.4)
+    -   Organic soils: CO~2~ reported separately (2013 WS
+        Ch. 2)
 4.  Uncertainty:
     -   Combined uncertainty: ±65-100%
     -   Major contributors: Fuel loads, combustion factors
@@ -1175,16 +1323,23 @@ IPCC Good Practice Guidance requires documentation of:
 
 1.  Emission factors convert biomass burned to gas
     emissions:
-    -   CH₄: 2.3-6.8 g kg⁻¹ (savanna \< forest)
-    -   N₂O: 0.20-0.26 g kg⁻¹ (similar across types)
-    -   CO₂: 1703 g kg⁻¹ (organic soils only)
-2.  CO₂ reporting logic:
-    -   Forest/Savanna: CO₂ excluded (carbon neutrality
-        assumption)
-    -   Organic soils: CO₂ reported (permanent loss)
-3.  CO₂-equivalents:
+    -   CH~4~: 2.3-6.8 g kg^-1^ (savanna \< forest)
+    -   N~2~O: 0.20-0.26 g kg^-1^ (similar across types)
+    -   CO~2~: 1580-1613 g kg^-1^ (forest/savanna, Table
+        2.5)
+    -   CO~2~: 1703 g kg^-1^ (organic soils, Wetlands Supp.)
+2.  CO~2~ reporting:
+    -   Forest: CO~2~ is reported via carbon stock changes
+        (not the fire emissions table); synchrony cannot be
+        assumed for woody biomass (2006 GL §4.2.4)
+    -   Savanna: CO~2~ excluded at Tier 1 (synchrony assumed
+        for non-woody grassland), with caveats for woody
+        systems (2019 Ref §2.4)
+    -   Organic soils: CO~2~ reported directly (permanent
+        carbon loss)
+3.  CO~2~-equivalents:
     -   GWP~CH4~ = 28, GWP~N2O~ = 265 (IPCC AR5)
-    -   Total warming impact dominated by CH₄ (65-70%)
+    -   Total warming impact dominated by CH~4~ (65-70%)
 4.  Uncertainty:
     -   Forest fires: ±68%
     -   Savanna fires: ±85%
@@ -1192,6 +1347,7 @@ IPCC Good Practice Guidance requires documentation of:
         factors
 5.  Reporting:
     -   UNFCCC CRF Tables 4.C (Forest) and 4.F (Grassland)
+    -   Forest CO~2~ in stock change tables (4.A)
     -   Transparency documentation required
 
 ### Chapter 5 {#sec-emissions-to-chapter5}
@@ -1213,3 +1369,19 @@ your region, Chapter 5 could cover:
 -   Inter-annual variability and climate drivers
 
 ------------------------------------------------------------
+
+[^index-1]: To confirm values, paged links to GWP values
+    from AR5
+    [here](https://www.ipcc.ch/site/assets/uploads/2018/05/SYR_AR5_FINAL_full_wcover.pdf#page=104),
+    AR2
+    [here](https://www.ipcc.ch/site/assets/uploads/2018/02/ipcc_sar_wg_I_full_report.pdf#page=36),
+    and ~~AR6 here~~.
+
+    [AR6](https://www.ipcc.ch/report/ar6/syr/downloads/report/IPCC_AR6_SYR_AnnexesIndex.pdf#page=6)
+    states: "Under the Paris Rulebook \[Decision 18/CMA.1,
+    annex, paragraph 37\], parties have agreed to use GWP100
+    values from the IPCC AR5 or GWP100 values from a
+    subsequent IPCC Assessment Report to reportaggregate
+    emissions and removals of GHGs. In addition, parties may
+    use other metrics to report supplemental information on
+    aggregate emissions and removals of GHGs."

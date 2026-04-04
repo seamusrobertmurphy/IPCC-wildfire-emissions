@@ -14,7 +14,7 @@ book:
     left: "[Source](https://github.com/seamusrobertmurphy/TREES-wildfire-replications)"
     right: |
       [LinkedIn](https://linkedin.com/in/seamusrobertmurphy) | 
-      [Resume](https://drive.google.com/uc?export=download&id=13YLhsRCAMMHQw-jd2SJdaRJH9udBGytP) | 
+      [Resume](https://drive.google.com/file/d/1Eu9nDTJw_HcnBUE2XNEqrz_gSVmShvZY/view?usp=sharing) | 
       [Scholar](https://scholar.google.com/citations?hl=en&user=jDGq9I4AAAAJ)
 
   site-url: https://seamusrobertmurphy.quarto.pub/TREES-wildfire-replications
@@ -31,7 +31,9 @@ book:
 
   appendices:
     - references/index.qmd
-
+    - resources/ipcc-resources.qmd
+    - resources/ipcc-glossary.qmd
+    
 bibliography: references/references.bib
 csl: references/apa.csl
 citeproc: true  

@@ -337,7 +337,7 @@ error probability
 
 -   20% threshold balances omission (missing fires) vs.
     commission (false detections)
--   Giglio et al. (2018) validation shows:
+-   @giglio2018collection validation shows:
     -   Uncertainty \< 20%: Commission \~15%, Omission \~30%
     -   Uncertainty \> 50%: Commission \~40%, Omission \~50%
 
