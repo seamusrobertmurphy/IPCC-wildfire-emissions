@@ -32,8 +32,7 @@ book:
   appendices:
     - references/index.qmd
     - resources/ipcc-resources.qmd
-    - resources/ipcc-glossary.qmd
-    
+
 bibliography: references/references.bib
 csl: references/apa.csl
 citeproc: true  

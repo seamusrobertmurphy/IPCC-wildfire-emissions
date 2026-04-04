@@ -81,23 +81,23 @@ This resource provides a demonstration of the IPCC Tier 1 method for estimating 
 
 The methodology presented here addresses key challenges in fire emissions accounting: inter-annual variability in natural disturbances, the managed land proxy approach for anthropogenic attribution, uncertainty quantification across multiple data sources, and the balance between immediate emissions and subsequent carbon removals. Each chapter builds systematically from data acquisition through quality control, providing transparent, reproducible workflows suitable for national greenhouse gas inventory reporting and validation.
 
-#### Chapter 1: Burn Area {.unnumbered}
+#### 01 Burn Area  {.unnumbered}
 
 Extract MODIS MCD64A1 data, apply quality filters, aggregate temporally and spatially, handle missing data, and validate against alternative fire products.
 
-#### Chapter 2: Fuel Stratification {.unnumbered}
+#### 02 Fuel Stratification {.unnumbered}
 
-Classify burned pixels into Forest (Humid Tropical, Other), Savanna, and Organic Soil categories using MODIS land cover and auxiliary datasets.
+Classify burned pixels into Forest (Humid Tropical, Other[^index-1]), Savanna, and Organic Soil categories using MODIS land cover and auxiliary datasets.
 
-#### Chapter 3: Fuel Consumption {.unnumbered}
+#### 03 Fuel Consumption {.unnumbered}
 
 Assign IPCC default fuel consumption values based on vegetation type and climate zone stratification, calculate total burned biomass.
 
-#### Chapter 4: Emission Factors {.unnumbered}
+#### 04 Emission Factors {.unnumbered}
 
 Apply IPCC emission factors (Table 2.5) to compute CH₄ and N₂O emissions via Equation 2.27, account for forest CO₂ through carbon stock changes, convert to CO₂-equivalents, and format outputs for UNFCCC CRF reporting.
 
-#### Chapter 5: QA/QC & Audit-Ready SOPs (Pending) {.unnumbered}
+#### 05 Uncertainty & Reporting (Pending) {.unnumbered}
 
 Cross-validation with UNFCCC data, uncertainty propagation, sensitivity analysis, and documentation for NGHGI reporting.
 
@@ -259,7 +259,7 @@ Multi-Source Fire Validation:
 
 -   Fire Detection: MODIS active fire products (MCD14ML, MYD14) vs. burned area (MCD64A1)
 -   Land Cover: MODIS MCD12Q1 vs. national forest inventories
--   Emission Factors: IPCC defaults ~~vs. regional measurements from literature~~[^index-1]
+-   Emission Factors: IPCC defaults ~~vs. regional measurements from literature~~[^index-2]
 
 #### Tier Advancement Pathways
 
@@ -310,7 +310,7 @@ Upstream soil classification bias: The determination of whether a burned pixel i
 
 Countries can reduce uncertainty by integrating national fire databases with satellite data, conducting field campaigns for fuel loads and combustion factors, developing regional emission factors, and implementing Tier 2/3 methods. Methodological enhancements include multi-sensor fusion (MODIS + VIIRS + Sentinel), sub-pixel burned area algorithms, and burn severity mapping.
 
-High inter-annual variability (IAV) from natural disturbances, which can cause 2–3 orders of magnitude variation, complicates trend analysis and policy evaluation. Countries may optionally disaggregate natural disturbance emissions (beyond normal variability or 95% CI) from anthropogenic managed-land fluxes, improving clarity while maintaining MLP totals for official reporting [@ipccChapter2Generic2019].[^index-2]
+High inter-annual variability (IAV) from natural disturbances, which can cause 2–3 orders of magnitude variation, complicates trend analysis and policy evaluation. Countries may optionally disaggregate natural disturbance emissions (beyond normal variability or 95% CI) from anthropogenic managed-land fluxes, improving clarity while maintaining MLP totals for official reporting [@ipccChapter2Generic2019].[^index-3]
 
 ------------------------------------------------------------------------
 
@@ -534,7 +534,7 @@ Getting Started:
     -   `FeatureCollection`: Vector dataset (e.g., country boundaries)
     -   `Reducer`: Aggregation functions (sum, mean, etc.)
 
-FAOSTAT-Relevant GEE Assets:[^index-3]
+FAOSTAT-Relevant GEE Assets:[^index-4]
 
 ``` javascript
 // Burned Area
@@ -549,8 +549,12 @@ var countries = ee.FeatureCollection("FAO/GAUL/2015/level0");
 
 ------------------------------------------------------------------------
 
-[^index-1]: Note to self: 2025 wishlist
+[^index-1]: <https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch03_Land%20Representation.pdf#page=11>
 
-[^index-2]: Paged Link: <https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf#page=71>
+    <https://www.fao.org/4/ap861e/ap861e00.pdf#page=12>
 
-[^index-3]: Code provided Python and R, with some cells in Java for use natively in Earth Engine Codespace
+[^index-2]: Note to self: 2025 wishlist
+
+[^index-3]: Paged Link: <https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf#page=71>
+
+[^index-4]: Code provided Python and R, with some cells in Java for use natively in Earth Engine Codespace
