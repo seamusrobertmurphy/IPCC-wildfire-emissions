@@ -2,7 +2,7 @@
 
 [![Quarto Publish](https://img.shields.io/badge/Quarto-Published-blue?logo=quarto)](https://seamusrobertmurphy.quarto.pub/ipcc-fire-emissions/) [![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/) [![ORCID](https://img.shields.io/badge/ORCID-0000--0002--1792--0351-green?logo=orcid)](https://orcid.org/0000-0002-1792-0351)
 
-A reproducible, end-to-end implementation of the IPCC Tier 1 methodology for estimating greenhouse gas emissions from wildfire and prescribed burning. Built as an executable eBook in R and Python sourcing approved datasets in the Google Earth Engine Catalog to compute national level emissions and export outputs for local reporting.
+A reproducible, end-to-end implementation of the IPCC Tier 1 methodology for estimating greenhouse gas emissions from wildfire and prescribed burning. Built as an executable eBook in R and Python, spatial datasets are sourced and processed in the Google Earth Engine Catalog to compute national level emissions.
 
 [Read the full book =\>\>](https://seamusrobertmurphy.quarto.pub/ipcc-fire-emissions/)
 
@@ -45,46 +45,19 @@ Each chapter corresponds to one component of the equation, progressing from burn
 | MCD12Q1 C6.1 | [MODIS via GEE](https://developers.google.com/earth-engine/datasets/catalog/MODIS_061_MCD12Q1) | IGBP land cover classification |
 | WorldClim V1 | [WorldClim via GEE](https://developers.google.com/earth-engine/datasets/catalog/WORLDCLIM_V1_BIO) | Bioclimatic variables for climate zone delineation |
 | FAO GAUL 2015 | [FAO via GEE](https://developers.google.com/earth-engine/datasets/catalog/FAO_GAUL_2015_level0) | Country and subnational administrative boundaries |
-| IPCC Tables 2.4, 2.5 | 2019 Refinement, Vol. 4, Ch. 2 | Default fuel consumption and emission factors |
+| IPCC Tables 2.4, 2.5 | 2019 Refinement | Default fuel consumption and emission factors |
 | IPCC Wetlands Supplement | 2013 Supplement | Organic soil emission factors |
 
 ------------------------------------------------------------------------
 
-## IPCC Reference Documents
-
-This implementation is based on the following IPCC methodological guidance:
-
--   2006 IPCC Guidelines for National Greenhouse Gas Inventories — Volume 4: Agriculture, Forestry and Other Land Use, Chapters 2 and 4
--   2019 Refinement to the 2006 IPCC Guidelines — Volume 4, Chapter 2 (Generic Methodologies) with updated Tables 2.4, 2.5, and 2.6
--   2013 Supplement to the 2006 Guidelines: Wetlands — Chapter 2 (Drained Inland Organic Soils), for peatland fire CO~2~ and CH~2~ emission factors
--   2013 Revised Supplementary Methods and Good Practice Guidance Arising from the Kyoto Protocol
-
-------------------------------------------------------------------------
-
-## Requirements
+## Dependencies
 
 ### Software
 
 -   R ≥ 4.3
 -   Quarto ≥ 1.4
 -   Python 3.9+ (for `earthengine-api` via `reticulate`)
--   Google Earth Engine account with an authenticated project
-
-### Key R packages
-
-``` r
-# Geospatial
-sf, terra, stars, exactextractr, gdalcubes
-
-# Earth Engine
-reticulate  # with earthengine-api installed in Python env
-
-# Visualization
-tmap, leaflet, ggplot2, plotly
-
-# Data
-tidyverse, knitr
-```
+-   Google Earth Engine account with an authenticated projec
 
 ### Setup
 
@@ -111,12 +84,12 @@ quarto render
 This project implements the correct IPCC treatment of CO~2~ from fire, which differs by fire type:
 
 | Fire Type | CO~2~ Reported? | Method | IPCC Source |
-|----------------|:--------------:|-----------------------|------------------|
+|-----------------|:---------------:|---------------------|-----------------|
 | Forest | Yes | Carbon stock changes (Eq. 2.7–2.14) | 2006 GL, Vol. 4, §4.2.4 |
 | Savanna | No | Synchrony assumed for non-woody grassland | 2019 Ref, Vol. 4, §2.4 |
 | Organic Soil | Yes | Separate G~ef~ via Eq. 2.27 | 2013 Wetlands Supplement |
 
-Forest fire CO<sub>2</sub> is not excluded from national inventories. It is captured through the carbon stock change framework because fire emissions and regrowth removals are not synchronous for woody biomass. The savanna synchrony assumption applies only to non-woody grassland at Tier 1, with explicit caveats for woody savannas in the 2019 Refinement.
+Forest fire CO~2~ is not excluded from national inventories. It is captured through the carbon stock change framework because fire emissions and regrowth removals are not synchronous for woody biomass. The savanna synchrony assumption applies only to non-woody grassland at Tier 1, with explicit caveats for woody savannas in the 2019 Refinement.
 
 ------------------------------------------------------------------------
 
@@ -133,15 +106,13 @@ Forest fire CO<sub>2</sub> is not excluded from national inventories. It is capt
 
 ------------------------------------------------------------------------
 
-## Additional Reading
-
 #### IPCC Resources
 
 | Resource | Description | Source |
-|----------------|---------------------------------------|----------------|
+|-----------------|--------------------------------------|-----------------|
 | IPCC 2006, Vol. 4 |  |  |
 | Ch.2 Generic Methodologies | Eq.2.9 Calculation of biomass retention & growth post-conversion | [Link](https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/4_Volume4/V4_02_Ch2_Generic.pdf#page=15) |
-| Ch.3 Representation of Lands | S.3.2 Six land-use categories recommended for estimating GHG emissions from LULC | [Link](https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/4_Volume4/V4_03_Ch3_Representation.pdf#page=6.9) |
+| Ch.3 Representation of Lands | s.3.2 Six land-use categories recommended for estimating GHG emissions from LULC | [Link](https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/4_Volume4/V4_03_Ch3_Representation.pdf#page=6.9) |
 | IPCC 2019, Vol. 4 |  |  |
 | Ch.2 Generic Methodologies | Eq 2.25 Annual SOC stock change in mineral soils | [Link](https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf#page=33) |
 |  | Tbl.2.3 Default reference condition of SOC stocks to soil & climate | [Link](https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf#page=35) |
