@@ -79,17 +79,17 @@ quarto render
 
 ------------------------------------------------------------------------
 
-## CO~2~ Accounting Note
+## CO<sub>2</sub> Accounting Note
 
-This project implements the correct IPCC treatment of CO~2~ from fire, which differs by fire type:
+This project implements the correct IPCC treatment of CO<sub>2</sub> from fire, which differs by fire type:
 
-| Fire Type | CO~2~ Reported? | Method | IPCC Source |
+| Fire Type | CO<sub>2</sub> Reported? | Method | IPCC Source |
 |-----------------|:---------------:|---------------------|-----------------|
 | Forest | Yes | Carbon stock changes (Eq. 2.7–2.14) | 2006 GL, Vol. 4, §4.2.4 |
 | Savanna | No | Synchrony assumed for non-woody grassland | 2019 Ref, Vol. 4, §2.4 |
 | Organic Soil | Yes | Separate G~ef~ via Eq. 2.27 | 2013 Wetlands Supplement |
 
-Forest fire CO~2~ is not excluded from national inventories. It is captured through the carbon stock change framework because fire emissions and regrowth removals are not synchronous for woody biomass. The savanna synchrony assumption applies only to non-woody grassland at Tier 1, with explicit caveats for woody savannas in the 2019 Refinement.
+Forest fire CO<sub>2</sub> is not excluded from national inventories. It is captured through the carbon stock change framework because fire emissions and regrowth removals are not synchronous for woody biomass. The savanna synchrony assumption applies only to non-woody grassland at Tier 1, with explicit caveats for woody savannas in the 2019 Refinement.
 
 ------------------------------------------------------------------------
 

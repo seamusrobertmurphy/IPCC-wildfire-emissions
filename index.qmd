@@ -77,29 +77,16 @@ div.column {
 }
 ```
 
-This resource provides a demonstration of the IPCC Tier 1 method for estimating greenhouse gas emissions from biomass burning, following the 2006 IPCC Guidelines as updated by the 2019 Refinement. The workflow implements Equation 2.27 end-to-end: satellite-based burned area detection, land cover stratification into IPCC fire categories, assignment of default fuel consumption values, and application of emission factors to derive CH~4~, N~2~O, and CO~2~ estimates formatted for UNFCCC reporting. This eBook uses an example AOI derived from the national border of Honduras.
+This resource provides a demonstration of the IPCC Tier 1 method for estimating greenhouse gas emissions from biomass burning, following the 2006 IPCC Guidelines as updated by the 2019 Refinement. The workflow implements Equation 2.27 end-to-end: satellite-based burned area detection, land cover stratification into IPCC fire categories, assignment of default fuel consumption values, and application of emission factors to derive CH<sub>4</sub>, N<sub>2</sub>O, and CO<sub>2</sub> estimates formatted for UNFCCC reporting. This eBook uses an example AOI derived from the national border of Honduras.
 
 The methodology presented here addresses key challenges in fire emissions accounting: inter-annual variability in natural disturbances, the managed land proxy approach for anthropogenic attribution, uncertainty quantification across multiple data sources, and the balance between immediate emissions and subsequent carbon removals. Each chapter builds systematically from data acquisition through quality control, providing transparent, reproducible workflows suitable for national greenhouse gas inventory reporting and validation.
 
-#### 01 Burn Area  {.unnumbered}
+#### Guide Outline
 
-Extract MODIS MCD64A1 data, apply quality filters, aggregate temporally and spatially, handle missing data, and validate against alternative fire products.
-
-#### 02 Fuel Stratification {.unnumbered}
-
-Classify burned pixels into Forest (Humid Tropical, Other[^index-1]), Savanna, and Organic Soil categories using MODIS land cover and auxiliary datasets.
-
-#### 03 Fuel Consumption {.unnumbered}
-
-Assign IPCC default fuel consumption values based on vegetation type and climate zone stratification, calculate total burned biomass.
-
-#### 04 Emission Factors {.unnumbered}
-
-Apply IPCC emission factors (Table 2.5) to compute CH₄ and N₂O emissions via Equation 2.27, account for forest CO₂ through carbon stock changes, convert to CO₂-equivalents, and format outputs for UNFCCC CRF reporting.
-
-#### 05 Uncertainty & Reporting (Pending) {.unnumbered}
-
-Cross-validation with UNFCCC data, uncertainty propagation, sensitivity analysis, and documentation for NGHGI reporting.
+1.  [Burned Area](https://seamusrobertmurphy.quarto.pub/ipcc-fire-emissions/01-burn-area/): Extract and validate MODIS MCD64A1 burned area for Honduras 2010; apply uncertainty filters; compute annual burned area by land cover type, aggregate temporally and spatially, handle missing data, and validate against alternative fire products.
+2.  [Fuel Stratification](https://seamusrobertmurphy.quarto.pub/ipcc-fire-emissions/02-fuel-stratification/): Classify burned pixels into IPCC fire and fuel categories (forest, savanna, organic soil) according to Tier 1 land cover, climate and agroecological zones.
+3.  [Fuel Consumption](https://seamusrobertmurphy.quarto.pub/ipcc-fire-emissions/03-fuel-consumption/): Assign IPCC Tier 1 default fuel consumption values (M<sub>B</sub> × C<sub>f</sub> by vegetation type and climate zone.
+4.  [Emission Factors](https://seamusrobertmurphy.quarto.pub/ipcc-fire-emissions/04-emission-factors/): Apply IPCC emission factors (G) to compute CH<sub>4</sub>, N<sub>2</sub>, and CO<sub>2</sub> emissions; convert to CO<sub>2</sub>-equivalents; format for CRF reporting.
 
 ------------------------------------------------------------------------
 
@@ -113,29 +100,29 @@ $$
 
 Where:
 
--   L~fire~ = greenhouse gas emissions from fire (tonnes of CH₄, N₂O, or CO₂)
+-   L<sub>fire</sub> = greenhouse gas emissions from fire (tonnes of CH<sub>4</sub>, N<sub>2</sub>O, or CO<sub>2</sub>)
 -   A = area burnt (ha)
--   M~B~ = mass of fuel available for combustion (tonnes ha⁻¹)
--   C~f~ = combustion factor (dimensionless, proportion of fuel consumed)
--   G~ef~ = emission factor (g kg⁻¹ dry matter burnt)
+-   M<sub>B</sub> = mass of fuel available for combustion (tonnes ha⁻¹)
+-   C<sub>f</sub> = combustion factor (dimensionless, proportion of fuel consumed)
+-   G<sub>ef</sub> = emission factor (g kg⁻¹ dry matter burnt)
 
 #### Vegetation-Specific Applications
 
 Forest Fires:
 
--   Only non-CO₂ emissions (CH₄, N₂O) are reported
--   CO₂ emissions excluded as they are captured in carbon stock change calculations
+-   Only non-CO<sub>2</sub> emissions (CH<sub>4</sub>, N<sub>2</sub>O) are reported
+-   CO<sub>2</sub> emissions excluded as they are captured in carbon stock change calculations
 -   Applies to fires in Evergreen, Deciduous, and Mixed Forest land cover types
 
 Savanna Fires:
 
--   Non-CO₂ emissions only (CH₄, N₂O)
--   Assumes CO₂ balance through annual vegetation regrowth
+-   Non-CO<sub>2</sub> emissions only (CH<sub>2</sub>, N<sub>2</sub>O)
+-   Assumes CO<sub>2</sub> balance through annual vegetation regrowth
 -   Covers Grassland, Savanna, Woody Savanna, and Shrubland types
 
 Organic Soil Fires:
 
--   Reports both CO₂ and CH₄ emissions
+-   Reports both CO<sub>2</sub> and CH<sub>4</sub> emissions
 -   Uses IPCC Wetlands Supplement parameters [@ipcc2013Supplement20062014]
 -   Currently validated for Southeast Asia only
 
@@ -166,7 +153,7 @@ The FAOSTAT Emissions from Fires domain provides spatially- and temporally strat
 
 -   Covers the complete time series 1990–2024
 -   Updates annually with new satellite observations
--   Disseminates activity data and emission estimates (kt CH₄, N₂O, CO₂)
+-   Disseminates activity data and emission estimates (kt CH<sub>4</sub>, N<sub>2</sub>O, CO<sub>2</sub>)
 -   Provides regional aggregations for Annex I / non-Annex I country groups
 -   Integrates country-reported data from UNFCCC submissions for validation
 
@@ -259,9 +246,9 @@ Multi-Source Fire Validation:
 
 -   Fire Detection: MODIS active fire products (MCD14ML, MYD14) vs. burned area (MCD64A1)
 -   Land Cover: MODIS MCD12Q1 vs. national forest inventories
--   Emission Factors: IPCC defaults ~~vs. regional measurements from literature~~[^index-2]
+-   Emission Factors: IPCC defaults vs. regional measurements from literature
 
-#### Tier Advancement Pathways
+#### Tiered Enhancements
 
 Countries may use FAOSTAT as a stepping stone to higher-tier methods:
 
@@ -552,8 +539,6 @@ var countries = ee.FeatureCollection("FAO/GAUL/2015/level0");
 [^index-1]: <https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch03_Land%20Representation.pdf#page=11>
 
     <https://www.fao.org/4/ap861e/ap861e00.pdf#page=12>
-
-[^index-2]: Note to self: 2025 wishlist
 
 [^index-3]: Paged Link: <https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf#page=71>
 
