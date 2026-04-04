@@ -896,7 +896,7 @@ during GEE setup, then produce a chloropleth map.
 
 # Use the peak fire year for a meaningful map
 burn_2020 <- mcd64$
-  filter(ee$Filter$calendarRange(2020L, 220L, "year"))$
+  filter(ee$Filter$calendarRange(2020L, 2020L, "year"))$
   filterBounds(aoi_country_ee$geometry())$
   map(faostat_filter)$
   select("BurnDate")$
@@ -937,8 +937,6 @@ county_sf <- dplyr::left_join(
 )
 
 
-
-library(ggplot2)
 ggplot(county_sf) +
   geom_sf(aes(fill = burned_area_ha), colour = "white", linewidth = 0.3) +
   scale_fill_viridis_c(

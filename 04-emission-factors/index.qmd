@@ -11,8 +11,8 @@ format:
     highlight-style: pygments
     page-layout: article
 
-editor_options: 
-  markdown: 
+editor_options:
+  markdown:
     wrap: 60
 engine: knitr
 bibliography: ../references/references.bib
@@ -38,46 +38,31 @@ oxide (N~2~O), following IPCC Tier 1 reporting requirements.
 #| comment: NA
 
 easypackages::packages(
-  "bslib", 
-  "cols4all", "covr", "cowplot", 
-  "dendextend", "digest","DiagrammeR","dtwclust", "downlit", 
-  "e1071", "exactextractr","elevatr", 
+  "bslib",
+  "cols4all", "covr", "cowplot",
+  "dendextend", "digest","DiagrammeR","dtwclust", "downlit",
+  "e1071", "exactextractr","elevatr",
   "FNN", "future", "forestdata",
-  "gdalcubes", "gdalUtilities", "geojsonsf", "geos", "ggplot2", "ggstats", 
-  "ggspatial", "ggmap", "ggplotify", "ggpubr", "ggrepel", "giscoR", 
+  "gdalcubes", "gdalUtilities", "geojsonsf", "geos", "ggplot2", "ggstats",
+  "ggspatial", "ggmap", "ggplotify", "ggpubr", "ggrepel", "giscoR",
   "hdf5r", "httr", "httr2", "htmltools",
-  "jsonlite", 
-  "kohonen", 
+  "jsonlite",
+  "kohonen", "knitr",
   "leaflet.providers", "leafem", "libgeos","luz","lwgeom", "leaflet", "leafgl",
-  "mapedit", "mapview", "maptiles", "methods", "mgcv", 
-  "ncdf4", "nnet", 
-  "openxlsx", "parallel", "plotly", 
-  "randomForest", "rasterVis", "raster", "Rcpp", "RcppArmadillo", 
-  "RcppCensSpatial","rayshader", "RcppEigen", "RcppParallel", 
-  "RColorBrewer", "reactable", "rgl", "rsconnect","RStoolbox", "rts", 
-  "s2", "sf", "scales", "sits","spdep", "stars", "stringr","supercells", 
-  "terra", "testthat", "tidyverse", "tidyterra","tools", 
-  "tmap", "tmaptools", "terrainr", 
+  "mapedit", "mapview", "maptiles", "methods", "mgcv",
+  "ncdf4", "nnet",
+  "openxlsx", "parallel", "plotly",
+  "randomForest", "rasterVis", "raster", "Rcpp", "RcppArmadillo",
+  "RcppCensSpatial","rayshader", "RcppEigen", "RcppParallel",
+  "RColorBrewer", "reactable", "rgl", "rsconnect","RStoolbox", "rts", "reticulate",
+  "s2", "sf", "scales", "sits","spdep", "stars", "stringr","supercells",
+  "terra", "testthat", "tidyverse", "tidyterra","tools",
+  "tmap", "tmaptools", "terrainr",
   "xgboost",
   prompt = F)
 
-# Disable spherical geometry
+#mapviewOptions(fgb = FALSE)
 sf::sf_use_s2(use_s2 = FALSE)
-
-# Point environment to your configured python
-reticulate::use_python("/opt/local/bin/python", required=T)
-
-# Initialise Earth Engine
-ee <- reticulate::import("ee")
-ee$Initialize(project = "murphys-deforisk")
-cat("GEE initialised\n")
-
-# Helper Function to visualize EE tile in tmap/leaflet
-ee_tile_url <- function(ee_image, vis_params) {
-  ee_image$getMapId(vis_params)$tile_fetcher$url_format}
-
-# EE FeatureCollection => sf
-ee_to_sf <- function(fc) {geojsonsf::geojson_sf(jsonlite::toJSON(fc$getInfo(), auto_unbox=T))}
 ```
 
 ```{r}
@@ -87,18 +72,18 @@ ee_to_sf <- function(fc) {geojsonsf::geojson_sf(jsonlite::toJSON(fc$getInfo(), a
 #| comment: NA
 
 options(repos = c(CRAN = "https://cloud.r-project.org"),
-        htmltools.dir.version = FALSE, 
+        htmltools.dir.version = FALSE,
         htmltools.preserve.raw = FALSE
         )
 
 knitr::opts_chunk$set(
-  echo = TRUE, 
-  message = FALSE, 
+  echo = TRUE,
+  message = FALSE,
   warning = FALSE,
-  error = FALSE, 
-  comment = NA, 
+  error = FALSE,
+  comment = NA,
   tidy.opts = list(width.cutoff = 60)
-  ) 
+  )
 ```
 
 ```{css, echo=FALSE, class.source = 'foldable'}
@@ -113,7 +98,7 @@ div.column {
   display: block;
   height:200px;
   width: 200px;
-  background-image: url('https://raw.githubusercontent.com/seamusrobertmurphy/IPCC-wildfire-emissions/refs/heads/main/04-emission-factors/assets/ef-uncertainty-aa.png');
+  background-image: url('https://raw.githubusercontent.com/seamusrobertmurphy/map-templates/refs/heads/main/assets/outputs/01-site-map.png');
   background-size: contain;
   background-position: 50% 50%;
   padding-top: 80px !important;
@@ -185,6 +170,128 @@ peat burned
 
 ------------------------------------------------------------
 
+## GEE Initialisation {#sec-emissions-gee-init}
+
+```{r}
+#| label: emissions-gee-setup
+#| warning: false
+#| message: false
+#| error: false
+
+# Point environment to your configured python
+reticulate::use_python("/opt/local/bin/python", required=T)
+
+# Initialise Earth Engine
+ee <- reticulate::import("ee")
+ee$Initialize(project = "murphys-deforisk")
+cat("GEE initialised\n")
+
+# Helper: visualize EE tile in tmap/leaflet
+ee_tile_url <- function(ee_image, vis_params) {
+  ee_image$getMapId(vis_params)$tile_fetcher$url_format
+}
+
+# Helper: EE FeatureCollection => sf
+ee_to_sf <- function(fc) {
+  geojsonsf::geojson_sf(
+    jsonlite::toJSON(fc$getInfo(), auto_unbox = TRUE))
+}
+
+# Load AOI boundaries from FAO GAUL
+aoi_country_ee <- ee$FeatureCollection("FAO/GAUL/2015/level0")$
+  filter(ee$Filter$eq("ADM0_NAME", "Honduras"))
+aoi_states_ee  <- ee$FeatureCollection("FAO/GAUL/2015/level1")$
+  filter(ee$Filter$eq("ADM0_NAME", "Honduras"))
+aoi_country_sf <- ee_to_sf(aoi_country_ee)
+aoi_states_sf  <- ee_to_sf(aoi_states_ee)
+
+cat("AOI loaded:", aoi_country_ee$size()$getInfo(), "country,",
+    aoi_states_ee$size()$getInfo(), "states\n")
+```
+
+### Upstream Inputs from Chapters 1-3 {#sec-emissions-upstream}
+
+```{r}
+#| label: emissions-upstream-inputs
+#| code-summary: "Load burned area (Ch1), vegetation masks (Ch2), fuel consumption (Ch3)"
+
+# --- Chapter 1: Burned area (MCD64A1) ---
+mcd64 <- ee$ImageCollection("MODIS/061/MCD64A1")
+burned_2010 <- mcd64$
+  filterBounds(aoi_country_ee$geometry())$
+  filterDate("2010-01-01", "2010-12-31")
+
+# FAOSTAT quality filter (matching Ch1)
+faostat_filter <- function(image) {
+  unc  <- image$select("Uncertainty")
+  burn <- image$select("BurnDate")
+  mask <- unc$lt(20L)$And(burn$gt(0L))
+  image$updateMask(mask)
+}
+
+# Annual burned mask for 2010
+annual_burned_2010 <- burned_2010$
+  map(faostat_filter)$
+  select("BurnDate")$max()$gt(0L)$selfMask()
+
+# --- Chapter 2: Land cover & vegetation masks ---
+lc_2010 <- ee$ImageCollection("MODIS/061/MCD12Q1")$
+  select("LC_Type1")$
+  filterDate("2010-01-01", "2010-12-31")$
+  first()$
+  clip(aoi_country_ee$geometry())
+
+# Forest mask (IGBP 1-5)
+forest_mask <- lc_2010$gte(1L)$And(lc_2010$lte(5L))
+
+# Savanna/grassland mask (IGBP 6-10)
+savanna_mask <- lc_2010$gte(6L)$And(lc_2010$lte(10L))
+
+# Climate-based humid tropical delineation
+bio <- ee$Image("WORLDCLIM/V1/BIO")
+precip <- bio$select("bio12")
+temp   <- bio$select("bio01")
+
+tropical <- temp$gt(180L)
+moist    <- precip$gt(1500L)
+humid_tropical_mask <- tropical$And(moist)
+
+# Forest sub-types
+humid_tropical_forest <- forest_mask$And(humid_tropical_mask)
+other_forest          <- forest_mask$And(humid_tropical_mask$Not())
+
+# Climate zones
+boreal    <- temp$lt(0L)
+temperate <- temp$gte(0L)$And(temp$lte(180L))
+
+# --- Chapter 3: Fuel consumption raster ---
+fuel_consumption <- ee$Image(0)$rename("fuel_consumption")
+htf_mask <- forest_mask$And(humid_tropical_mask)
+fuel_consumption <- fuel_consumption$where(htf_mask, 43.1)
+forest_boreal <- forest_mask$And(boreal)$And(humid_tropical_mask$Not())
+fuel_consumption <- fuel_consumption$where(forest_boreal, 18.5)
+forest_temperate <- forest_mask$And(temperate)$And(humid_tropical_mask$Not())
+fuel_consumption <- fuel_consumption$where(forest_temperate, 23.7)
+forest_tropical <- forest_mask$And(tropical)$And(humid_tropical_mask$Not())
+fuel_consumption <- fuel_consumption$where(forest_tropical, 32.6)
+fuel_consumption <- fuel_consumption$where(savanna_mask, 7.0)
+
+# Apply to burned areas
+fuel_burned <- fuel_consumption$
+  updateMask(annual_burned_2010)$
+  clip(aoi_country_ee$geometry())
+
+# Pixel area helper
+pixelArea_ha <- ee$Image$pixelArea()$divide(10000L)
+
+# Biomass burned per pixel (t DM)
+biomass_per_pixel <- fuel_burned$multiply(pixelArea_ha)
+
+cat("Upstream inputs loaded: MCD64A1 + MCD12Q1 + WorldClim + fuel raster\n")
+```
+
+------------------------------------------------------------
+
 ## Methane (CH₄) Emissions {#sec-emissions-ch4}
 
 ### CH₄ Emission Mechanisms {#sec-ch4-mechanisms}
@@ -234,64 +341,49 @@ Uncertainty: ±30-40% (IPCC Table 2.5)
 
 #### Calculation Example {#sec-ch4-forest-calc}
 
-Portugal Temperate Forest Fires (2023):
+Honduras Tropical Forest Fires (2010):
 
 Given:
 
--   Biomass burned: 1,072 Gg DM (from Chapter 3)
--   Emission factor: 4.7 g CH₄ kg⁻¹ DM
+-   Biomass burned from Chapter 3 (GEE-derived)
+-   Emission factor: 6.8 g CH₄ kg⁻¹ DM (tropical forest)
 
 Calculation: $$
 \begin{aligned}
 L_{CH_4} &= \text{Biomass} \times G_{ef} \times 10^{-3} \\
-&= 1,072,000 \text{ t DM} \times 4.7 \text{ g kg}^{-1} \times 10^{-3} \\
-&= 1,072,000 \times 1000 \text{ kg} \times 4.7 \text{ g kg}^{-1} \times 10^{-3} \text{ t g}^{-1} \\
-&= 5,038 \text{ tonnes CH}_4 \\
-&= 5.04 \text{ Gg CH}_4
+&= \text{Biomass (t DM)} \times 1000 \text{ (kg/t)} \times 6.8 \text{ (g kg}^{-1}\text{)} \times 10^{-6} \text{ (t/g)} \\
+&= \text{Biomass (Gg)} \times 6.8 \text{ Gg CH}_4
 \end{aligned}
 $$
 
 ```{r}
-#| comment: NA
-#| warning: false
-#| message: false
-#| error: false
-#| eval: true
 #| label: ch4-forest-calculation
-#| code-summary: "Calculate forest CH₄ emissions"
+#| code-summary: "Calculate forest CH₄ emissions — Honduras 2010"
 
+# Compute forest biomass from GEE
+forest_biomass <- biomass_per_pixel$
+  updateMask(forest_mask)$
+  reduceRegion(
+    reducer   = ee$Reducer$sum(),
+    geometry  = aoi_country_ee$geometry(),
+    scale     = 500L,
+    maxPixels = 1e9
+  )$getInfo()
 
-# Input data (see Ch.3)
-forest_data <- data.frame(
-  country = "Portugal",
-  year = 2023,
-  fire_category = "Forest",
-  vegetation_type = "Other_Forest",
-  climate_zone = "Temperate",
-  biomass_burned_Gg = 1.072  # Gigagrams (1000 tonnes)
-)
+forest_biomass_t <- forest_biomass[["fuel_consumption"]] %||% 0
+forest_biomass_Gg <- forest_biomass_t / 1000
 
-# IPCC emission factor
-EF_CH4_temperate_forest <- 4.7  # g kg⁻¹
+# IPCC emission factor (tropical forest)
+EF_CH4_tropical_forest <- 6.8  # g kg⁻��
 
 # Calculate CH₄ emissions
-forest_ch4 <- forest_data %>%
-  mutate(
-    # Convert Gg to kg: 1 Gg = 10^9 g = 10^6 kg
-    biomass_kg = biomass_burned_Gg * 1e6,
-    
-    # Calculate emissions: kg × (g kg⁻¹) × 10⁻³ (g to kg) = kg CH₄
-    CH4_kg = biomass_kg * EF_CH4_temperate_forest / 1000,
-    
-    # Convert to Gg: kg / 10^6 = Gg
-    CH4_Gg = CH4_kg / 1e6,
-    
-    # Alternative direct calculation
-    CH4_Gg_direct = biomass_burned_Gg * EF_CH4_temperate_forest
-  )
+# Gg DM × g/kg = Gg × g/kg (numerically equivalent)
+forest_CH4_Gg <- forest_biomass_Gg * EF_CH4_tropical_forest
 
-print(forest_ch4$CH4_Gg)
-# Result: 5.04 Gg CH₄
+cat("Honduras 2010 — Forest CH₄ Emissions\n")
+cat("  Forest biomass burned:", round(forest_biomass_Gg, 2), "Gg DM\n")
+cat("  EF (tropical):       ", EF_CH4_tropical_forest, "g kg⁻¹\n")
+cat("  CH₄ emissions:       ", round(forest_CH4_Gg, 3), "Gg CH₄\n")
 ```
 
 ### Savanna CH₄ Emissions {#sec-ch4-savanna}
@@ -316,46 +408,35 @@ Why savanna CH₄ \< forest CH₄:
 
 #### Calculation Example {#sec-ch4-savanna-calc}
 
-Portugal Savanna Fires (2023):
-
-Given:
-
--   Biomass burned: 57 Gg DM
--   Emission factor: 2.3 g CH₄ kg⁻¹
-
-Calculation: $$
-L_{CH_4} = 57 \text{ Gg DM} \times 2.3 \text{ g kg}^{-1} = 131 \text{ Mg CH}_4 = 0.13 \text{ Gg CH}_4
-$$
+Honduras Savanna Fires (2010):
 
 ```{r}
-#| comment: NA
-#| warning: false
-#| message: false
-#| error: false
-#| eval: true
 #| label: ch4-savanna-calculation
-#| code-summary: "Calculate savanna CH₄ emissions"
+#| code-summary: "Calculate savanna CH₄ emissions — Honduras 2010"
 
-# Input data
-savanna_data <- data.frame(
-  country = "Portugal",
-  year = 2023,
-  fire_category = "Savanna",
-  vegetation_type = "Grassland",
-  biomass_burned_Gg = 0.057
-)
+# Compute savanna biomass from GEE
+savanna_biomass <- biomass_per_pixel$
+  updateMask(savanna_mask)$
+  reduceRegion(
+    reducer   = ee$Reducer$sum(),
+    geometry  = aoi_country_ee$geometry(),
+    scale     = 500L,
+    maxPixels = 1e9
+  )$getInfo()
+
+savanna_biomass_t <- savanna_biomass[["fuel_consumption"]] %||% 0
+savanna_biomass_Gg <- savanna_biomass_t / 1000
 
 # IPCC emission factor
 EF_CH4_savanna <- 2.3  # g kg⁻¹
 
 # Calculate CH₄ emissions
-savanna_ch4 <- savanna_data %>%
-  mutate(
-    CH4_Gg = biomass_burned_Gg * EF_CH4_savanna
-  )
+savanna_CH4_Gg <- savanna_biomass_Gg * EF_CH4_savanna
 
-print(savanna_ch4$CH4_Gg)
-# Result: 0.13 Gg CH₄
+cat("Honduras 2010 — Savanna CH₄ Emissions\n")
+cat("  Savanna biomass burned:", round(savanna_biomass_Gg, 3), "Gg DM\n")
+cat("  EF (savanna):          ", EF_CH4_savanna, "g kg⁻¹\n")
+cat("  CH₄ emissions:         ", round(savanna_CH4_Gg, 4), "Gg CH₄\n")
 ```
 
 ### Organic Soil CH₄ Emissions {#sec-ch4-organic}
@@ -370,18 +451,14 @@ Tropical Peatland (5.7 g CH₄ kg⁻¹):
 Southeast Asia only (per FAOSTAT):
 
 ```{r}
-#| comment: NA
-#| warning: false
-#| message: false
-#| error: false
 #| eval: true
 #| label: ch4-organic-calculation
-#| code-summary: "Calculate organic soil CH₄ emissions"
+#| code-summary: "Calculate organic soil CH₄ emissions (reference example)"
 
-# Example: Indonesia peat fires
+# Example: Indonesia peat fires (reference — not Honduras)
 indonesia_peat <- data.frame(
   country = "Indonesia",
-  year = 2023,
+  year = 2015,
   fire_category = "Organic_Soil",
   biomass_burned_Gg = 125  # Example
 )
@@ -391,8 +468,8 @@ EF_CH4_peat <- 5.7  # g kg⁻¹
 indonesia_ch4 <- indonesia_peat %>%
   mutate(CH4_Gg = biomass_burned_Gg * EF_CH4_peat)
 
-print(indonesia_ch4$CH4_Gg)
-# Result: 712 Gg CH₄ (if 125 Gg biomass burned)
+cat("Reference — Indonesia peat CH₄:", indonesia_ch4$CH4_Gg, "Gg\n")
+cat("Note: Honduras has negligible peatland fire activity\n")
 ```
 
 ------------------------------------------------------------
@@ -426,52 +503,38 @@ Key factors:
 
 #### Emission Factors by Forest Type {#sec-n2o-forest-ef}
 
-Temperate/Boreal Forests (0.26 g N₂O kg⁻¹):
-
--   Moderate emission factors
--   Conifer needles: Low N content (\~0.5%)
--   Moderate combustion temperatures
-
 Tropical Forests (0.20 g N₂O kg⁻¹):
 
 -   Lower emission factors (surprising given high N content)
 -   Explanation: High temperature flaming combustion
 -   More N₂ produced instead of N₂O
 
+Temperate/Boreal Forests (0.26 g N₂O kg⁻¹):
+
+-   Moderate emission factors
+-   Conifer needles: Low N content (\~0.5%)
+-   Moderate combustion temperatures
+
 Uncertainty: ±50-60% (highest among all emission factors)
 
 #### Calculation Example {#sec-n2o-forest-calc}
 
-Portugal Temperate Forest Fires (2023):
+Honduras Tropical Forest Fires (2010):
 
 ```{r}
-#| comment: NA
-#| warning: false
-#| message: false
-#| error: false
-#| eval: true
 #| label: n2o-forest-calculation
-#| code-summary: "Calculate forest N₂O emissions"
+#| code-summary: "Calculate forest N₂O emissions — Honduras 2010"
 
-# Input data
-forest_data <- data.frame(
-  country = "Portugal",
-  year = 2023,
-  fire_category = "Forest",
-  biomass_burned_Gg = 1.072
-)
-
-# IPCC emission factor
-EF_N2O_temperate_forest <- 0.26  # g kg⁻¹
+# IPCC emission factor (tropical forest)
+EF_N2O_tropical_forest <- 0.20  # g kg⁻¹
 
 # Calculate N₂O emissions
-forest_n2o <- forest_data %>%
-  mutate(
-    N2O_Gg = biomass_burned_Gg * EF_N2O_temperate_forest
-  )
+forest_N2O_Gg <- forest_biomass_Gg * EF_N2O_tropical_forest
 
-print(forest_n2o$N2O_Gg)
-# Result: 0.28 Gg N₂O (280 tonnes)
+cat("Honduras 2010 — Forest N₂O Emissions\n")
+cat("  Forest biomass burned:", round(forest_biomass_Gg, 2), "Gg DM\n")
+cat("  EF (tropical):       ", EF_N2O_tropical_forest, "g kg⁻¹\n")
+cat("  N₂O emissions:       ", round(forest_N2O_Gg, 4), "Gg N₂O\n")
 ```
 
 ### Savanna N₂O Emissions {#sec-n2o-savanna}
@@ -485,36 +548,22 @@ Savanna/Grassland (0.21 g N₂O kg⁻¹):
 -   Legume abundance
 
 ```{r}
-#| comment: NA
-#| warning: false
-#| message: false
-#| error: false
-#| eval: true
 #| label: n2o-savanna-calculation
-#| code-summary: "Calculate savanna N₂O emissions"
-
-# Input data
-savanna_data <- data.frame(
-  country = "Portugal",
-  year = 2023,
-  fire_category = "Savanna",
-  biomass_burned_Gg = 0.057
-)
+#| code-summary: "Calculate savanna N₂O emissions — Honduras 2010"
 
 # IPCC emission factor
 EF_N2O_savanna <- 0.21  # g kg⁻¹
 
 # Calculate N₂O emissions
-savanna_n2o <- savanna_data %>%
-  mutate(
-    N2O_Gg = biomass_burned_Gg * EF_N2O_savanna
-  )
+savanna_N2O_Gg <- savanna_biomass_Gg * EF_N2O_savanna
 
-print(savanna_n2o$N2O_Gg)
-# Result: 0.012 Gg N₂O (12 tonnes)
+cat("Honduras 2010 — Savanna N₂O Emissions\n")
+cat("  Savanna biomass burned:", round(savanna_biomass_Gg, 3), "Gg DM\n")
+cat("  EF (savanna):          ", EF_N2O_savanna, "g kg⁻¹\n")
+cat("  N₂O emissions:         ", round(savanna_N2O_Gg, 5), "Gg N₂O\n")
 ```
 
-### Organic Soil N₂O Emissions {#sec-n2o-organic}
+### Organic Soil N���O Emissions {#sec-n2o-organic}
 
 NOT ESTIMATED for organic soil fires (IPCC 2014 Wetlands
 Supplement):
@@ -535,7 +584,7 @@ FAOSTAT approach: N₂O = 0 for organic soil fires
 
 ## Carbon Dioxide (CO₂) Emissions {#sec-emissions-co2}
 
-### CO₂ Reporting Logic {#sec-co2-logic}
+### CO��� Reporting Logic {#sec-co2-logic}
 
 IPCC Tier 1 Rule:
 
@@ -562,7 +611,7 @@ Why CO₂ is excluded:
 
 3.  IPCC methodology (2006 Guidelines, Vol. 4, Ch. 2):
 
-    -   Fire emissions reported: Non-CO₂ only (CH₄, N₂O)
+    -   Fire emissions reported: Non-CO₂ only (CH₄, N���O)
     -   Carbon stock changes reported: All carbon fluxes
         including fire impacts
 
@@ -603,59 +652,22 @@ incomplete carbon conversion)
 Uncertainty: Very low (±8 g kg⁻¹) — CO₂/C ratio is
 stoichiometric
 
-#### Calculation Example {#sec-co2-organic-calc}
-
-Indonesia Peat Fires:
-
-```{r}
-#| eval: false
-#| label: co2-organic-calculation
-#| code-summary: "Calculate organic soil CO₂ emissions"
-
-# Input data
-indonesia_peat <- data.frame(
-  country = "Indonesia",
-  year = 2023,
-  fire_category = "Organic_Soil",
-  biomass_burned_Gg = 125  # Example value
-)
-
-# IPCC emission factor
-EF_CO2_peat <- 1703  # g kg⁻¹
-
-# Calculate CO₂ emissions
-peat_co2 <- indonesia_peat %>%
-  mutate(
-    CO2_Gg = biomass_burned_Gg * EF_CO2_peat
-  )
-
-print(peat_co2$CO2_Gg)
-# Result: 212,875 Gg CO₂ (212.9 Tg CO₂)
-
-# This is MASSIVE compared to non-CO₂ emissions
-# Example: 2015 Indonesia fires released ~1.75 Gt CO₂ equivalent
-```
-
 ------------------------------------------------------------
 
 ## Reproducible Workflow {#sec-emissions-workflow}
 
-### Consolidated Script {#sec-emissions-pipeline}
+### Consolidated Emissions Calculation {#sec-emissions-pipeline}
 
 ```{r}
-#| eval: false
 #| label: emissions-complete-workflow
-#| code-summary: "End-to-end emissions calculation"
-
-# IPCC Tier 1 Fire Emissions Script
-# ============================================================
+#| code-summary: "End-to-end emissions calculation — Honduras 2010"
 
 library(tidyverse)
 
 # 1. Load IPCC Emission Factors
 emission_factors <- tribble(
   ~fire_category, ~climate_zone, ~gas, ~EF_g_kg, ~uncertainty_pct,
-  
+
   # Forest Fires
   "Forest", "Tropical", "CH4", 6.8, 30,
   "Forest", "Tropical", "N2O", 0.20, 50,
@@ -663,42 +675,44 @@ emission_factors <- tribble(
   "Forest", "Temperate", "N2O", 0.26, 60,
   "Forest", "Boreal", "CH4", 4.7, 40,
   "Forest", "Boreal", "N2O", 0.26, 60,
-  
+
   # Savanna Fires
   "Savanna", "All", "CH4", 2.3, 40,
   "Savanna", "All", "N2O", 0.21, 50,
-  
+
   # Organic Soil Fires
   "Organic_Soil", "Tropical", "CO2", 1703, 0.5,
   "Organic_Soil", "Tropical", "CH4", 5.7, 95
 )
 
-# 2. Load Fueld Consumption Data (Ch.3)
-fuel_consumption <- read.csv("Portugal_FuelConsumption_2023.csv")
+# 2. Build fuel consumption data from GEE results (Ch3)
+fuel_consumption_data <- tribble(
+  ~country, ~year, ~fire_category, ~vegetation_type, ~climate_zone,
+  ~area_ha, ~biomass_burned_Gg,
 
-# Data structure of dunmmy CSV:
-# country | year | fire_category | vegetation_type | climate_zone | area_ha | biomass_burned_Gg
+  "Honduras", 2010, "Forest", "Humid_Tropical_Forest", "Tropical",
+  NA_real_, forest_biomass_Gg,
+
+  "Honduras", 2010, "Savanna", "Savanna_Mixed", "All",
+  NA_real_, savanna_biomass_Gg
+)
 
 # 3. Calculate Emissions by Gas
-emissions <- fuel_consumption %>%
-  # Join with emission factors
+emissions <- fuel_consumption_data %>%
   left_join(
     emission_factors,
     by = c("fire_category", "climate_zone")
   ) %>%
-  # Calculate emissions for each gas
   mutate(
     emissions_Gg = biomass_burned_Gg * EF_g_kg
   ) %>%
-  # Select relevant columns
   select(country, year, fire_category, vegetation_type, climate_zone,
-         area_ha, biomass_burned_Gg, gas, EF_g_kg, emissions_Gg, uncertainty_pct)
+         biomass_burned_Gg, gas, EF_g_kg, emissions_Gg, uncertainty_pct)
 
 # 4. Summarize by GHG & Category
 emissions_summary <- emissions %>%
   group_by(country, year, fire_category, gas) %>%
   summarise(
-    total_area_ha = sum(area_ha),
     total_biomass_Gg = sum(biomass_burned_Gg),
     total_emissions_Gg = sum(emissions_Gg),
     .groups = "drop"
@@ -706,8 +720,8 @@ emissions_summary <- emissions %>%
 
 print(emissions_summary)
 
-# 5. Convert to CO2e using AR5 GWPs (Without AR6 feedbacks)
-GWP_CH4 <- 28   
+# 5. Convert to CO₂-eq using AR5 GWPs (without feedbacks)
+GWP_CH4 <- 28
 GWP_N2O <- 265
 
 emissions_co2eq <- emissions_summary %>%
@@ -734,68 +748,35 @@ print(total_co2eq)
 # 6. Export
 write.csv(
   emissions,
-  "Portugal_FireEmissions_2023_detailed.csv",
-  row.names = FALSE
-)
-
-write.csv(
-  emissions_summary,
-  "Portugal_FireEmissions_2023_summary.csv",
+  "Honduras_FireEmissions_2010_detailed.csv",
   row.names = FALSE
 )
 
 write.csv(
   emissions_co2eq,
-  "Portugal_FireEmissions_2023_CO2eq.csv",
+  "Honduras_FireEmissions_2010_CO2eq.csv",
   row.names = FALSE
 )
 ```
 
 ```{r}
-#| eval: true
-#| label: emissions-portugal-example
-#| echo: false
-
-# Example results table
-portugal_results <- tribble(
-  ~fire_category, ~gas, ~emissions_Gg, ~CO2eq_Gg,
-  
-  "Forest", "CH4", 5.04, 141,
-  "Forest", "N2O", 0.28, 74,
-  "Savanna", "CH4", 0.13, 3.6,
-  "Savanna", "N2O", 0.012, 3.2
-)
-
-portugal_summary <- portugal_results %>%
-  summarise(
-    total_CH4_Gg = sum(emissions_Gg[gas == "CH4"]),
-    total_N2O_Gg = sum(emissions_Gg[gas == "N2O"]),
-    total_CO2eq_Gg = sum(CO2eq_Gg),
-    total_CO2eq_Mt = total_CO2eq_Gg / 1000
-  )
+#| label: emissions-honduras-summary-table
+#| code-summary: "Summary tables — Honduras 2010"
 
 library(knitr)
+
 kable(
-  portugal_results,
-  caption = "Portugal 2023 Fire Emissions by GHG & Category",
-  digits = 2
+  emissions_co2eq %>% select(fire_category, gas, total_emissions_Gg, CO2eq_Gg),
+  caption = "Honduras 2010 Fire Emissions by GHG & Category",
+  digits = 4
 )
 
 kable(
-  portugal_summary,
-  caption = "Portugal 2023 Tier 1 Total Fire Emissions",
-  digits = 2
+  total_co2eq,
+  caption = "Honduras 2010 Tier 1 Total Fire Emissions",
+  digits = 4
 )
 ```
-
-Interpretation:
-
--   Total CH₄: 5.17 Gg (forest dominates due to higher
-    biomass burned)
--   Total N₂O: 0.29 Gg - Total CO₂-eq: 222 Gg = 0.22 Mt
-    CO₂-eq
--   Forest fires account for \~97% of total CO₂-equivalent
-    emissions
 
 ------------------------------------------------------------
 
@@ -834,55 +815,39 @@ $$
 \text{CO}_2\text{-eq (Gg)} = \sum_{i=1}^{n} \text{Emissions}_i \text{ (Gg)} \times \text{GWP}_i
 $$
 
-Example: Portugal 2023: $$
-\begin{aligned}
-\text{CO}_2\text{-eq} &= (\text{CH}_4 \times 28) + (\text{N}_2\text{O} \times 265) \\
-&= (5.17 \text{ Gg} \times 28) + (0.29 \text{ Gg} \times 265) \\
-&= 145 \text{ Gg} + 77 \text{ Gg} \\
-&= 222 \text{ Gg CO}_2\text{-eq} \\
-&= 0.22 \text{ Mt CO}_2\text{-eq}
-\end{aligned}
-$$
-
 ```{r}
-#| eval: true
 #| label: co2eq-calculation
-#| code-summary: "Convert emissions to CO₂-equivalents"
+#| code-summary: "Convert emissions to CO₂-equivalents — Honduras 2010"
 
 library(tidyverse)
 
-# Emissions by gas
-emissions_by_gas <- tribble(
-  ~gas, ~emissions_Gg,
-  "CH4", 5.17,
-  "N2O", 0.29
-)
-
-# GWPs (IPCC AR5)
-GWP <- c(CO2 = 1, CH4 = 28, N2O = 265)
-
-# Calculate CO₂-eq
-emissions_co2eq <- emissions_by_gas %>%
-  mutate(
-    GWP = GWP[gas],
-    CO2eq_Gg = emissions_Gg * GWP
+# Aggregate emissions by gas
+emissions_by_gas <- emissions_co2eq %>%
+  group_by(gas) %>%
+  summarise(
+    emissions_Gg = sum(total_emissions_Gg),
+    CO2eq_Gg = sum(CO2eq_Gg),
+    .groups = "drop"
   )
 
-total_co2eq <- sum(emissions_co2eq$CO2eq_Gg)
-
-print(emissions_co2eq)
-print(paste("Total CO₂-eq:", round(total_co2eq, 1), "Gg"))
+cat("Honduras 2010 — CO₂-Equivalents\n")
+for (i in seq_len(nrow(emissions_by_gas))) {
+  cat(sprintf("  %s: %.4f Gg → %.2f Gg CO₂-eq\n",
+    emissions_by_gas$gas[i],
+    emissions_by_gas$emissions_Gg[i],
+    emissions_by_gas$CO2eq_Gg[i]))
+}
+cat("  Total:", round(sum(emissions_by_gas$CO2eq_Gg), 2), "Gg CO₂-eq\n")
 
 # Visualize
-library(ggplot2)
-ggplot(emissions_co2eq, aes(x = gas, y = CO2eq_Gg, fill = gas)) +
+ggplot(emissions_by_gas, aes(x = gas, y = CO2eq_Gg, fill = gas)) +
   geom_col() +
-  geom_text(aes(label = paste0(round(CO2eq_Gg, 0), " Gg")), 
+  geom_text(aes(label = paste0(round(CO2eq_Gg, 1), " Gg")),
             vjust = -0.5, fontface = "bold") +
   scale_fill_manual(values = c("CH4" = "orange", "N2O" = "red")) +
   labs(
     title = "Fire Emissions by Gas (CO₂-equivalents)",
-    subtitle = "Portugal 2023 - Forest and Savanna Fires",
+    subtitle = "Honduras 2010 — Forest and Savanna Fires",
     x = "Greenhouse Gas",
     y = "Emissions (Gg CO₂-eq)",
     fill = "Gas"
@@ -930,69 +895,64 @@ consumption)
 ### Monte Carlo Uncertainty Propagation {#sec-uncertainty-montecarlo}
 
 ```{r}
-#| eval: true
 #| label: uncertainty-montecarlo
-#| code-summary: "Monte Carlo simulation for uncertainty"
+#| code-summary: "Monte Carlo simulation — Honduras tropical forest CH₄"
 
 library(tidyverse)
 
-# Set parameters (Portugal Forest Fires example)
+# Parameters: Honduras Humid Tropical Forest
 n_simulations <- 10000
 
-# Mean values
-area_mean <- 45230  # ha
-MB_mean <- 50.4     # t DM ha⁻¹
-Cf_mean <- 0.47
-EF_CH4_mean <- 4.7  # g kg⁻¹
+# Mean values (from Ch1-3 GEE results)
+MB_mean <- 119.6    # t DM ha⁻¹ (humid tropical)
+Cf_mean <- 0.36
+EF_CH4_mean <- 6.8  # g kg⁻¹ (tropical forest)
 
-# Uncertainties (as standard deviations, assuming normal distributions)
-# IPCC gives 95% CI → SD ≈ CI/1.96
-area_sd <- area_mean * 0.30 / 1.96
-MB_sd <- MB_mean * 0.50 / 1.96
-Cf_sd <- Cf_mean * 0.25 / 1.96
-EF_CH4_sd <- EF_CH4_mean * 0.35 / 1.96
+# Uncertainties (SD = 95% CI / 1.96)
+MB_sd <- 52.4 / 1.96
+Cf_sd <- 0.09 / 1.96
+EF_CH4_sd <- 2.0 / 1.96
 
-# Generate random samples
+# Generate random samples (area fixed from GEE)
 set.seed(42)
 simulations <- data.frame(
-  area = rnorm(n_simulations, area_mean, area_sd),
   MB = rnorm(n_simulations, MB_mean, MB_sd),
   Cf = rnorm(n_simulations, Cf_mean, Cf_sd),
   EF_CH4 = rnorm(n_simulations, EF_CH4_mean, EF_CH4_sd)
 ) %>%
-  # Ensure no negative values
   mutate(
-    area = pmax(0, area),
     MB = pmax(0, MB),
-    Cf = pmin(1, pmax(0, Cf)),  # Bound between 0 and 1
-    EF_CH4 = pmax(0, EF_CH4)
-  ) %>%
-  # Calculate emissions
-  mutate(
-    biomass_Gg = area * MB * Cf / 1000,
-    CH4_Gg = biomass_Gg * EF_CH4
+    Cf = pmin(1, pmax(0, Cf)),
+    EF_CH4 = pmax(0, EF_CH4),
+    # MB_Cf = fuel consumed (t DM ha⁻¹)
+    # Emissions per ha = MB × Cf × EF × 10⁻³ (kg CH₄ ha⁻¹)
+    CH4_kg_per_ha = MB * Cf * EF_CH4,
+    # Relative to central estimate
+    ratio = CH4_kg_per_ha / (MB_mean * Cf_mean * EF_CH4_mean)
   )
 
 # Summary statistics
-ch4_mean <- mean(simulations$CH4_Gg)
-ch4_sd <- sd(simulations$CH4_Gg)
-ch4_ci_lower <- quantile(simulations$CH4_Gg, 0.025)
-ch4_ci_upper <- quantile(simulations$CH4_Gg, 0.975)
+ratio_mean <- mean(simulations$ratio)
+ratio_ci_lower <- quantile(simulations$ratio, 0.025)
+ratio_ci_upper <- quantile(simulations$ratio, 0.975)
 
-cat(sprintf("CH₄ Emissions: %.2f ± %.2f Gg (95%% CI: %.2f - %.2f)\n",
-            ch4_mean, ch4_sd, ch4_ci_lower, ch4_ci_upper))
+cat(sprintf("Honduras HTF CH₄ — Relative uncertainty\n"))
+cat(sprintf("  Mean ratio: %.2f\n", ratio_mean))
+cat(sprintf("  95%% CI:    [%.2f, %.2f]\n",
+            ratio_ci_lower, ratio_ci_upper))
+cat(sprintf("  i.e. -%d%% to +%d%% around central estimate\n",
+            round((1 - ratio_ci_lower) * 100),
+            round((ratio_ci_upper - 1) * 100)))
 
 # Visualize distribution
-ggplot(simulations, aes(x = CH4_Gg)) +
+ggplot(simulations, aes(x = CH4_kg_per_ha)) +
   geom_histogram(bins = 50, fill = "steelblue", alpha = 0.7) +
-  geom_vline(xintercept = ch4_mean, color = "red", linewidth = 1, linetype = "dashed") +
-  geom_vline(xintercept = c(ch4_ci_lower, ch4_ci_upper), 
-             color = "darkred", linewidth = 0.8, linetype = "dotted") +
+  geom_vline(xintercept = MB_mean * Cf_mean * EF_CH4_mean,
+             color = "red", linewidth = 1, linetype = "dashed") +
   labs(
-    title = "Uncertainty Distribution: Forest CH₄ Emissions",
-    subtitle = sprintf("Mean = %.2f Gg, 95%% CI = [%.2f, %.2f] Gg", 
-                      ch4_mean, ch4_ci_lower, ch4_ci_upper),
-    x = "CH₄ Emissions (Gg)",
+    title = "Uncertainty Distribution: Tropical Forest CH₄ Emissions",
+    subtitle = "Honduras — Monte Carlo (10,000 simulations)",
+    x = "CH₄ Emissions (kg per ha burned)",
     y = "Frequency"
   ) +
   theme_minimal()
@@ -1005,97 +965,98 @@ ggplot(simulations, aes(x = CH4_Gg)) +
 ### Pixel-Level Emissions Calculation {#sec-emissions-gee-pixel}
 
 ```{r}
-#| eval: false
 #| label: emissions-gee-spatial
-#| code-summary: "Create spatially-explicit emissions maps"
+#| code-summary: "Create spatially-explicit emissions maps — Honduras 2010"
 
-library(rgee)
-ee_Initialize()
-
-# Load inputs (from previous chapters)
-# annual_burn_2023: Binary burned/unburned raster
-# fuel_consumption: Fuel consumption raster (t DM ha⁻¹)
-# lc_2023: Land cover classification
-
-# 1. CALCULATE BIOMASS PER PIXEL -------------------------------
-pixel_area_ha <- ee$Image$pixelArea()$divide(10000)
-
-# Biomass burned per pixel (tonnes DM)
-biomass_per_pixel <- fuel_consumption$
-  multiply(pixel_area_ha)$
-  updateMask(annual_burn_2023)
-
-# 2. CREATE EMISSION FACTOR RASTERS ---------------------------
+# 1. CREATE EMISSION FACTOR RASTERS
 # CH₄ emission factors by vegetation type
-EF_CH4 <- ee$Image(0)$rename("EF_CH4")
-
-# Forest: Temperate (4.7 g kg⁻¹)
-forest_mask <- lc_2023$gte(1)$And(lc_2023$lte(5))
-temperate <- [temperate climate mask from Chapter 2]
-EF_CH4 <- EF_CH4$where(forest_mask$And(temperate), 4.7)
-
-# Savanna: All (2.3 g kg⁻¹)
-savanna_mask <- lc_2023$gte(6)$And(lc_2023$lte(10))
-EF_CH4 <- EF_CH4$where(savanna_mask, 2.3)
+EF_CH4_img <- ee$Image(0)$rename("EF_CH4")
+EF_CH4_img <- EF_CH4_img$
+  where(forest_mask$And(tropical), 6.8)$
+  where(forest_mask$And(tropical$Not()), 4.7)$
+  where(savanna_mask, 2.3)
 
 # N₂O emission factors
-EF_N2O <- ee$Image(0)$rename("EF_N2O")
-EF_N2O <- EF_N2O$
-  where(forest_mask$And(temperate), 0.26)$
+EF_N2O_img <- ee$Image(0)$rename("EF_N2O")
+EF_N2O_img <- EF_N2O_img$
+  where(forest_mask$And(tropical), 0.20)$
+  where(forest_mask$And(tropical$Not()), 0.26)$
   where(savanna_mask, 0.21)
 
-# 3. CALCULATE EMISSIONS PER PIXEL ----------------------------
-# CH₄ emissions (kg CH₄)
-# biomass (t) × EF (g kg⁻¹) = t × 1000 kg/t × g/kg / 1000 g/kg = kg
+# 2. CALCULATE EMISSIONS PER PIXEL
+# CH₄ emissions (kg): biomass (t) × 1000 (kg/t) × EF (g/kg) / 1000 (g→kg)
 CH4_per_pixel <- biomass_per_pixel$
-  multiply(1000)$           # t to kg
-  multiply(EF_CH4)$         # kg × g/kg
-  divide(1000)$             # g to kg
-  rename("CH4_kg")
+  multiply(EF_CH4_img)$
+  rename("CH4_kg")$
+  clip(aoi_country_ee$geometry())
 
-# N₂O emissions (kg N₂O)
+# N₂O emissions (kg)
 N2O_per_pixel <- biomass_per_pixel$
-  multiply(1000)$
-  multiply(EF_N2O)$
-  divide(1000)$
-  rename("N2O_kg")
+  multiply(EF_N2O_img)$
+  rename("N2O_kg")$
+  clip(aoi_country_ee$geometry())
 
-# 4. VISUALIZE EMISSIONS --------------------------------------
-# CH₄ emissions
+# 3. VISUALIZE WITH TMAP
 ch4_vis <- list(
-  min = 0,
-  max = 50,  # kg CH₄ per pixel
-  palette = c('yellow', 'orange', 'red', 'darkred')
+  min = 0L, max = 50L,
+  palette = c("yellow", "orange", "red", "darkred")
 )
-
-Map$addLayer(CH4_per_pixel, ch4_vis, "CH₄ Emissions (kg per pixel)")
-
-# N₂O emissions
 n2o_vis <- list(
-  min = 0,
-  max = 5,  # kg N₂O per pixel
-  palette = c('lightblue', 'blue', 'darkblue', 'purple')
+  min = 0L, max = 5L,
+  palette = c("lightblue", "blue", "darkblue", "purple")
 )
 
-Map$addLayer(N2O_per_pixel, n2o_vis, "N₂O Emissions (kg per pixel)")
+tmap::tmap_mode("view")
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  tmap::tm_tiles(
+    ee_tile_url(CH4_per_pixel$selfMask(), ch4_vis),
+    group = "CH₄ Emissions (kg per pixel)"
+  ) +
+  tmap::tm_tiles(
+    ee_tile_url(N2O_per_pixel$selfMask(), n2o_vis),
+    group = "N₂O Emissions (kg per pixel)"
+  ) +
+  tmap::tm_add_legend(
+    type = "polygons",
+    fill = c("orange", "red", "blue", "purple"),
+    labels = c("CH₄ Low", "CH₄ High", "N₂O Low", "N₂O High"),
+    title = "GHG Emissions (kg/pixel)"
+  ) +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tmap::tm_basemap("Esri.WorldImagery")
+```
 
-# 5. AGGREGATE BY REGION --------------------------------------
-countries <- ee$FeatureCollection("FAO/GAUL/2015/level0")
-portugal <- countries$filter(ee$Filter$eq("ADM0_NAME", "Portugal"))
+```{r}
+#| label: emissions-gee-aggregate
+#| code-summary: "Aggregate pixel-level emissions — Honduras 2010"
 
-# Total CH₄ emissions (convert to Gg)
+# Total CH₄ emissions
 CH4_total <- CH4_per_pixel$
   reduceRegion(
-    reducer = ee$Reducer$sum(),
-    geometry = portugal,
-    scale = 500,
+    reducer   = ee$Reducer$sum(),
+    geometry  = aoi_country_ee$geometry(),
+    scale     = 500L,
     maxPixels = 1e9
-  )
+  )$getInfo()
 
-# Convert kg to Gg: kg / 1e6 = Gg
-CH4_Gg <- CH4_total$getInfo()$CH4_kg / 1e6
+# Total N₂O emissions
+N2O_total <- N2O_per_pixel$
+  reduceRegion(
+    reducer   = ee$Reducer$sum(),
+    geometry  = aoi_country_ee$geometry(),
+    scale     = 500L,
+    maxPixels = 1e9
+  )$getInfo()
 
-print(paste("Total CH₄ emissions:", round(CH4_Gg, 2), "Gg"))
+CH4_Gg <- (CH4_total[["CH4_kg"]] %||% 0) / 1e6
+N2O_Gg <- (N2O_total[["N2O_kg"]] %||% 0) / 1e6
+
+cat("Honduras 2010 — GEE Pixel-Level Emissions\n")
+cat("  Total CH₄:", round(CH4_Gg, 4), "Gg\n")
+cat("  Total N��O:", round(N2O_Gg, 5), "Gg\n")
+cat("  CH₄ CO₂-eq:", round(CH4_Gg * 28, 2), "Gg\n")
+cat("  N₂O CO₂-eq:", round(N2O_Gg * 265, 2), "Gg\n")
+cat("  Total CO₂-eq:", round(CH4_Gg * 28 + N2O_Gg * 265, 2), "Gg\n")
 ```
 
 ------------------------------------------------------------
@@ -1123,21 +1084,16 @@ Required tables for fire emissions:
     -   CH₄ emissions (Gg)
 
 ```{r}
-#| eval: false
 #| label: emissions-crf-format
-#| code-summary: "Format emissions for UNFCCC CRF reporting"
+#| code-summary: "Format emissions for UNFCCC CRF reporting — Honduras 2010"
 
 library(tidyverse)
-
-# Load complete emissions data
-emissions <- read.csv("Portugal_FireEmissions_2023_detailed.csv")
 
 # Format for CRF Table 4.C (Forest Land)
 crf_4c <- emissions %>%
   filter(fire_category == "Forest") %>%
   group_by(country, year) %>%
   summarise(
-    area_burned_ha = sum(area_ha),
     biomass_burned_t = sum(biomass_burned_Gg) * 1000,
     CH4_Gg = sum(emissions_Gg[gas == "CH4"]),
     N2O_Gg = sum(emissions_Gg[gas == "N2O"]),
@@ -1154,7 +1110,6 @@ crf_4f <- emissions %>%
   filter(fire_category == "Savanna") %>%
   group_by(country, year) %>%
   summarise(
-    area_burned_ha = sum(area_ha),
     biomass_burned_t = sum(biomass_burned_Gg) * 1000,
     CH4_Gg = sum(emissions_Gg[gas == "CH4"]),
     N2O_Gg = sum(emissions_Gg[gas == "N2O"]),
@@ -1169,19 +1124,18 @@ crf_4f <- emissions %>%
 # Combine for full CRF submission
 crf_fires <- bind_rows(crf_4c, crf_4f)
 
-# Export in CRF-compatible format
+# Export
 write.csv(
   crf_fires,
-  "Portugal_2023_CRF_Fires.csv",
+  "Honduras_2010_CRF_Fires.csv",
   row.names = FALSE
 )
 
-# Display formatted table
 library(knitr)
 kable(
   crf_fires,
-  caption = "UNFCCC CRF Tables 4.C and 4.F - Fire Emissions",
-  digits = c(0, 0, 0, 0, 2, 3, 0, 0, 0)
+  caption = "UNFCCC CRF Tables 4.C and 4.F — Honduras 2010 Fire Emissions",
+  digits = c(0, 0, 0, 4, 5, 0, 0, 0)
 )
 ```
 
