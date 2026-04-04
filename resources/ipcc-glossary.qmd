@@ -1,0 +1,28 @@
+## IPCC Glossary
+
+-   **Activity Data:** Data on the magnitude of a human activity resulting in emissions or removals taking place during a given period of time.
+-   **Anaerobic:** Conditions in which oxygen is not readily available. These conditions are important for the production of methane emissions. Whenever organic material decomposes in anaerobic conditions, such as in landfills, flooded rice fields, etc., methane is likely to be formed.
+-   **Andosol:** A soil developed in volcanic ash. Generally andosols have good drainage and are prone to fertility problems.
+-   **Bootstrap Technique**: A type of computationally intensive statistical method which typically uses repeated resampling from a set of data to assess variability of parameter estimates.
+-   **Back-casting**: The opposite of forecasting. Predicting conditions in the past from current conditions.
+-   **Bias:** A systematic error of the observation method, whose magnitude in most cases is unknown. It can be introduced by using measuring equipment that is improperly calibrated, by selecting items from a wrong population or by favoring certain elements of a population.
+-   **Carbon Dioxide Equivalent:** (CO~2~e) A measure used to compare different greenhouse gases based on their contribution to radiative forcing. The UNFCCC currently uses global warming potentials (GWPs) as factors to calculate carbon dioxide equivalent.
+-   **Coefficient of Variation** The ratio of the population standard deviation, $\sigma_x$, and mean, $\mu_x$, where $v_x = \sigma_x / \mu_x$. It is often used to express the standard deviation as a percentage of the mean.
+-   **Confidence Interval:** The range that encloses the true value of an unknown fixed quantity with a specified confidence. Typically, a 95 percent confidence interval is assumed (90% requied in ART-TREES Standard)
+-   **Decision Tree**: A flow chart describing the specific ordered steps which need to be followed to develop an inventory or an inventory component in accordance with the principles of good practice.
+-   **Emission Factor:** A coefficient that quantifies the emissions or removals of a gas per unit activity. Emission factors are often based on a sample of measurement data, averaged to develop a representative rate of emission for a given activity level under a given set of operating conditions.
+-   **Global Warming Potentials:** (GWP) are calculated as the ratio of the radiative forcing of one kilogram greenhouse gas emitted to the atmosphere to that from one kilogramme CO2 over a period of time (e.g., 100 years).
+-   **Ground Truth:** A term used for data obtained by measurements on the ground, usually as validation for remote sensing, e.g., satellite data.
+-   **Monte Carlo Method**:[^glossary-terms-1] The statistical method recommended to analyse the uncertainty of the inventory. It performs the inventory calculation many times by computer, each time with the uncertain emission factors or model parameters and activity data chosen randomly within the distribution of uncertainties specified by the user.
+-   **Normal Distribution**: A probability distribution (also known as Gaussian) defined by two parameters: the mean ($\mu$) and the standard deviation ($\sigma$). It is often assumed for symmetric uncertainties.
+-   **Oxidation:** Chemically transform of a substance by combining it with oxygen.
+-   **Population:** The population is the totality of items under consideration. In the case of a random variable, the probability distribution is considered to define the population of that variable.
+-   **Probability Density Function:** (PDF) A function that describes the range and relative likelihood of possible values. The PDF is used to describe uncertainty in the estimate of a quantity that is a fixed constant whose value is not exactly known.
+-   **Removals:** Removal of greenhouse gases and/or their precursors from the atmosphere by a sink.
+-   **Standard Deviation**: The positive square root of the variance. It is a measure of the dispersion or spread of the data around the mean.
+-   **Uncertainty:** A state of incomplete knowledge that can result from a lack of information or from disagreement about what is known or even knowable. It may have many types of sources, from imprecision in the data to ambiguously defined concepts or terminology, incomplete understanding of critical processes, or uncertain projections of human behavior.
+-   **Sink:** Any process, activity or mechanism which removes a greenhouse gas, an aerosol, or a precursor of a greenhouse gas from the atmosphere. (UNFCCC Article 1.8) Notation in the final stages of reporting is the negative (-) sign.
+-   **Validation** The establishment of sound approach and foundation. In the context of emission inventories, validation involves checking to ensure that the inventory has been compiled correctly in line with reporting instructions and guidelines.
+-   **Verification** The collection of activities and procedures that can be followed during the planning and development, or after completion of an inventory that can help to establish its reliability for the intended applications of that inventory.
+
+[^glossary-terms-1]: See subsection "A4 Primer on Monte Carlo Methods"

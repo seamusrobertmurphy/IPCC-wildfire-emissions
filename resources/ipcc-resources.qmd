@@ -1,0 +1,32 @@
+---
+editor: 
+  markdown: 
+    wrap: 100
+---
+
+## IPCC Resources
+
+#### IPCC Guidelines & Key Sections
+
+| Resource | Description | Source |
+|---------------------------------------------------------|-------------------------------------------------------|--------------|
+| IPCC 2006, Vol. 4 |  |  |
+| Ch.2 Generic Methodologies | Eq.2.9 Calculation of biomass retention & growth post-conversion | [Link](https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/4_Volume4/V4_02_Ch2_Generic.pdf#page=15) |
+| Ch.3 Representation of Lands | S.3.2 Six land-use categories recommended for estimating GHG emissions from LULC | [Link](https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/4_Volume4/V4_03_Ch3_Representation.pdf#page=6.9) |
+| IPCC 2019, Vol. 4 |  |  |
+| Ch.2 Generic Methodologies | Eq 2.25 Annual SOC stock change in mineral soils | [Link](https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf#page=33) |
+|  | Tbl.2.3 Default reference condition of SOC stocks to soil & climate | [Link](https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch02_Generic%20Methods.pdf#page=35) |
+| Ch.3 Representation of Lands | Tb.3.1 List of IPCC categories: land, climate, soil, mgt, activity | [Link](https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch03_Land%20Representation.pdf#page=11) |
+|  | Pg.3.1 Tier 1 sampling approaches decision tree | [Link](https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch03_Land%20Representation.pdf#page=21) |
+|  | Tb.3.6X Approach 1-3 to IPCC land-use classification & sampling | [Link](https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch03_Land%20Representation.pdf#page=20) |
+|  | Tb.3.4 Approach 2 land change matrix to avoid double-counting | [Link](https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch03_Land%20Representation.pdf#page=17) |
+|  | Pg.3A5 Climate zone delineation & updated datasets | [Link](https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch03_Land%20Representation.pdf#page=47) |
+|  | Tb.3A.1 Global land-cover datasets listed by IPCC in 2017 | [Link](https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch03_Land%20Representation.pdf#page=35) |
+| Ch.4 Forest Land | Tb.4.4 R:S below to above-ground biomass ratio by climate & region | [Link](https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch04_Forest%20Land.pdf#page=18) |
+| Ch.5 Cropland | Tb.5.5 Relative stock change factors for mgt. activity in croplands | [Link](https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch05_Cropland.pdf#page=27) |
+|  | Tb.5.8 Default AGB carbon stocks retained on cropland in year 1 | [Link](https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch05_Cropland.pdf#page=41.9) |
+|  | Tb.5.10 Soil stock change factors for conversion to cropland | [Link](https://www.ipcc-nggip.iges.or.jp/public/2019rf/pdf/4_Volume4/19R_V4_Ch05_Cropland.pdf#page=45) |
+| Ch.6 Grasslands | Tbl 6.4 Default biomass stocks on converted grasslands | [Link](https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/4_Volume4/V4_06_Ch6_Grassland.pdf#page=27) |
+| Ch.9 Other Land | Ch.9: Near-zero SOC retention assigned to mining in "Other Lands" | [Link](https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/4_Volume4/V4_09_Ch9_Other_Land.pdf#page=7) |
+| IPCC 2013 Wetland Supplement | Tb.1.1 Look-up table for wetlands by vegetation and soil type | [Link](https://www.ipcc.ch/site/assets/uploads/2018/03/Wetlands_Supplement_Entire_Report.pdf#page=30) |
+| IPCC 2023 AR6 Updated GWPs | Tb.7.15 Updated GWPs for N₂O and fossil-specific CH₄ \*\*\* | [Link](https://www.ipcc.ch/report/ar6/wg1/downloads/report/IPCC_AR6_WGI_Chapter07.pdf#page=95) |
