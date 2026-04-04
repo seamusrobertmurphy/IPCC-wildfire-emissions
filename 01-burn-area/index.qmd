@@ -1259,7 +1259,7 @@ knitr::kable(
 
 ## Reproducible Workflow {#sec-ba-workflow-summary}
 
-### Complete Processing Pipeline {#sec-ba-pipeline}
+### Consolidated Script {#sec-ba-pipeline}
 
 ```{r}
 #| eval: false
@@ -1331,7 +1331,7 @@ ggplot(results_df, aes(x = year, y = burned_area_ha)) +
   theme(plot.title=element_text(face="bold",size=14),plot.subtitle = element_text(size=10,color="gray40"))
 ```
 
-### Data Export Formats {#sec-ba-export-formats}
+### Output Format {#sec-ba-export-formats}
 
 For NGHGI Reporting:
 
@@ -1364,7 +1364,7 @@ write.csv(
 )
 ```
 
-### Quality Control Checklist {#sec-ba-qc-checklist}
+### QC Checklist {#sec-ba-qc-checklist}
 
 Pre-processing:
 

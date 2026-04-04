@@ -136,7 +136,7 @@ Tier 1 Approach: Use IPCC default values stratified by:
 Forest Fires (IPCC 2019 Table 2.4):
 
 | Forest Type | M~B~ (t DM ha⁻¹) | C~f~ | M~B~ × C~f~ |
-|----|----|----|----|
+|-------------|---------|--------|-------|
 | Humid Tropical Forest | 119.6 ± 52.4 | 0.36 ± 0.09 | 43.1 |
 | Other Forest (Boreal) | 41.0 ± 25.3 | 0.45 ± 0.15 | 18.5 |
 | Other Forest (Temperate) | 50.4 ± 30.8 | 0.47 ± 0.14 | 23.7 |
@@ -145,7 +145,7 @@ Forest Fires (IPCC 2019 Table 2.4):
 Savanna Fires (IPCC 2019 Table 2.4):
 
 | Vegetation Type | Season | M~B~ (t DM ha⁻¹) | C~f~ | M~B~ × C~f~ |
-|----|----|----|----|----|
+|------------|------|---------|--------|------|
 | Savanna Woodland | Early | 9.0 ± 7.5 | 0.29 ± 0.09 | 2.6 |
 | Savanna Woodland | Late | 9.0 ± 7.5 | 0.51 ± 0.15 | 4.6 |
 | Savanna Grassland | Early | 6.8 ± 6.0 | 0.31 ± 0.09 | 2.1 |
@@ -420,7 +420,7 @@ Complete Consumption (C~f~ = 1.0):
 ### Workflow: Vegetation Type to Fuel Values {#sec-fuel-workflow}
 
 ```{r}
-#| eval: false
+#| eval: true
 #| label: fuel-lookup-table
 #| code-summary: "Create IPCC fuel consumption lookup table"
 
@@ -503,7 +503,8 @@ print(fires_with_fuel)
 ### Example: Portugal 2023 {#sec-fuel-example-portugal}
 
 ```{r}
-#| eval: false
+#| eval: true
+#| echo: false
 #| label: fuel-portugal-example
 #| code-summary: "Complete fuel consumption calculation - Portugal"
 
@@ -538,10 +539,6 @@ portugal_summary <- portugal_fuel %>%
 
 print(portugal_summary)
 
-# Result:
-# fire_category  total_area_ha  total_biomass_Gg
-# Forest              45,230           1,072
-# Savanna             12,450              57
 ```
 
 ------------------------------------------------------------
@@ -551,7 +548,7 @@ print(portugal_summary)
 ### Creating Fuel Consumption Rasters {#sec-fuel-gee-rasters}
 
 ```{r}
-#| eval: false
+#| eval: true
 #| label: fuel-gee-rasters
 #| code-summary: "Generate spatially-explicit fuel consumption maps"
 
@@ -629,7 +626,7 @@ Map$addLayer(
 ### Seasonal Stratification for Savannas {#sec-fuel-gee-seasonal}
 
 ```{r}
-#| eval: false
+#| eval: true
 #| label: fuel-seasonal-stratification
 #| code-summary: "Apply seasonal fuel consumption to savannas"
 
@@ -769,7 +766,7 @@ values:
 -   IPCC values derived from limited field studies
 -   Geographic bias toward well-studied regions (North
     America, Australia)
--   Underrepresentation of tropical systems
+-   Under-representation of tropical systems
 
 3\. Fire Severity Variability:
 
@@ -823,7 +820,7 @@ uncertainty through country-specific data.
 ### Sensitivity Analysis {#sec-fuel-sensitivity}
 
 ```{r}
-#| eval: false
+#| eval: true
 #| label: fuel-sensitivity-analysis
 #| code-summary: "Assess sensitivity to fuel consumption parameters"
 
@@ -881,7 +878,7 @@ When available, countries can use:
 Example: Portugal:
 
 ```{r}
-#| eval: false
+#| eval: true
 #| label: fuel-tier2-example
 #| code-summary: "Using country-specific fuel data"
 
@@ -894,12 +891,13 @@ portugal_fuel_data <- tribble(
 )
 
 # These values would replace IPCC defaults for Portuguese forests
-# Result: Reduced uncertainty (~±25% instead of ±50%)
+# Result: Reduced uncertainty (~±25% over ±50%)
+print(portugal_fuel_data)
 ```
 
-### Fire Severity Stratification (Tier 2+) {#sec-fuel-severity}
+### Tier 2+ Fire Severity Stratification (Pending) {#sec-fuel-severity}
 
-Fire severity classes (from satellite indices):
+Fire severity classes:
 
 | Severity | dNBR Range  | C~f~ Multiplier |
 |----------|-------------|-----------------|
@@ -913,10 +911,7 @@ Fire severity classes (from satellite indices):
 #| label: fuel-severity-stratification
 #| code-summary: "Stratify fuel consumption by fire severity"
 
-# Calculate dNBR (from Landsat or Sentinel-2)
-# (See Chapter 1 for NBR calculation example)
-
-# Example: Use dNBR to adjust Cf
+# Calculate dNBR from Landsat or Sentinel-2 to adjust Cf
 dnbr <- [calculated dNBR image]
 
 # Define severity classes
@@ -957,12 +952,8 @@ Where:
 #| label: fuel-moisture-correction
 #| code-summary: "Adjust Cf for fuel moisture content"
 
-# Load ERA5 relative humidity or precipitation data
-# (Example: use as proxy for fuel moisture)
-
-# Simplified relationship
-# High precipitation → High fuel moisture → Low Cf
-
+# Load ERA5 relative humidity or precipitation data as proxy for fuel moisture
+# i.e. high precipitation → High fuel moisture → Low Cf
 precip_monthly <- ee$ImageCollection("ECMWF/ERA5/MONTHLY")$
   select("total_precipitation")
 
@@ -983,14 +974,14 @@ precip_annual <- precip_monthly$
 
 ------------------------------------------------------------
 
-## Integration with Emissions Calculation {#sec-fuel-integration}
+## Integrated Emissions Calculations {#sec-fuel-integration}
 
-### Preparing Outputs for Chapter 4 {#sec-fuel-to-chapter4}
+### Output Formats {#sec-fuel-to-chapter4}
 
 Required data structure:
 
 ```{r}
-#| eval: false
+#| eval: true
 #| label: fuel-output-structure
 #| code-summary: "Format fuel consumption data for emissions calculation"
 
@@ -1019,7 +1010,7 @@ write.csv(
 print(fuel_output)
 ```
 
-### Quality Control Checklist {#sec-fuel-qc-checklist}
+### QC Checklist {#sec-fuel-qc-checklist}
 
 Pre-calculation:
 

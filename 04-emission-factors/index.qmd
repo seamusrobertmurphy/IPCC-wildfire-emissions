@@ -145,7 +145,7 @@ Key IPCC sources:
 Forest Fires (IPCC 2019 Table 2.5):
 
 | Forest Type | CH₄ (g kg⁻¹) | N₂O (g kg⁻¹) | CO (g kg⁻¹)\* | NO~x~ (g kg⁻¹)\* |
-|----|----|----|----|----|
+|------------|------------|------------|------------|------------|
 | Tropical Forest | 6.8 ± 2.0 | 0.20 ± 0.10 | 93 ± 38 | 3.9 ± 2.4 |
 | Temperate Forest | 4.7 ± 1.9 | 0.26 ± 0.15 | 107 ± 37 | 3.0 ± 1.4 |
 | Boreal Forest | 4.7 ± 1.9 | 0.26 ± 0.15 | 107 ± 37 | 3.0 ± 1.4 |
@@ -155,7 +155,7 @@ Forest Fires (IPCC 2019 Table 2.5):
 Savanna Fires (IPCC 2019 Table 2.5):
 
 | Vegetation Type | CH₄ (g kg⁻¹) | N₂O (g kg⁻¹) | CO (g kg⁻¹)\* | NO~x~ (g kg⁻¹)\* |
-|----|----|----|----|----|
+|------------|------------|------------|------------|------------|
 | Savanna/Grassland | 2.3 ± 0.9 | 0.21 ± 0.10 | 65 ± 20 | 3.9 ± 2.4 |
 
 Organic Soil Fires (IPCC 2014 Wetlands Supplement Table
@@ -237,13 +237,16 @@ L_{CH_4} &= \text{Biomass} \times G_{ef} \times 10^{-3} \\
 $$
 
 ```{r}
-#| eval: false
+#| comment: NA
+#| warning: false
+#| message: false
+#| error: false
+#| eval: true
 #| label: ch4-forest-calculation
 #| code-summary: "Calculate forest CH₄ emissions"
 
-library(tidyverse)
 
-# Input data (from Chapter 3)
+# Input data (see Ch.3)
 forest_data <- data.frame(
   country = "Portugal",
   year = 2023,
@@ -310,7 +313,11 @@ L_{CH_4} = 57 \text{ Gg DM} \times 2.3 \text{ g kg}^{-1} = 131 \text{ Mg CH}_4 =
 $$
 
 ```{r}
-#| eval: false
+#| comment: NA
+#| warning: false
+#| message: false
+#| error: false
+#| eval: true
 #| label: ch4-savanna-calculation
 #| code-summary: "Calculate savanna CH₄ emissions"
 
@@ -348,7 +355,11 @@ Tropical Peatland (5.7 g CH₄ kg⁻¹):
 Southeast Asia only (per FAOSTAT):
 
 ```{r}
-#| eval: false
+#| comment: NA
+#| warning: false
+#| message: false
+#| error: false
+#| eval: true
 #| label: ch4-organic-calculation
 #| code-summary: "Calculate organic soil CH₄ emissions"
 
@@ -419,7 +430,11 @@ Uncertainty: ±50-60% (highest among all emission factors)
 Portugal Temperate Forest Fires (2023):
 
 ```{r}
-#| eval: false
+#| comment: NA
+#| warning: false
+#| message: false
+#| error: false
+#| eval: true
 #| label: n2o-forest-calculation
 #| code-summary: "Calculate forest N₂O emissions"
 
@@ -455,7 +470,11 @@ Savanna/Grassland (0.21 g N₂O kg⁻¹):
 -   Legume abundance
 
 ```{r}
-#| eval: false
+#| comment: NA
+#| warning: false
+#| message: false
+#| error: false
+#| eval: true
 #| label: n2o-savanna-calculation
 #| code-summary: "Calculate savanna N₂O emissions"
 
@@ -505,8 +524,8 @@ FAOSTAT approach: N₂O = 0 for organic soil fires
 
 IPCC Tier 1 Rule:
 
-| Fire Category | Report CO₂? | Rationale |
-|----|----|----|
+| Fire Category | CO₂ Reported | Rationale |
+|--------------------|--------------------|--------------------|
 | Forest Fires | ❌ | Captured in carbon stock changes (Chapter 4.2, Forest Land) |
 | Savanna Fires | ❌ | Assumed balanced by annual regrowth |
 | Organic Soil Fires | ✅ | Permanent carbon loss (peat does not regrow in \<20 years) |
@@ -554,9 +573,7 @@ millennia and is not rapidly replaced by regrowth."
 
 #### Emission Factor {#sec-co2-organic-ef}
 
-Tropical Peatland (1703 g CO₂ kg⁻¹):
-
-Derivation: $$
+Tropical Peatland (1703 g CO₂ kg⁻¹): $$
 \begin{aligned}
 \text{Carbon content of peat} &= 0.50 \text{ kg C per kg DM} \\
 \text{Molecular weight ratio} &= \frac{44 \text{ (CO}_2)}{12 \text{ (C)}} = 3.67 \\
@@ -573,7 +590,7 @@ stoichiometric
 
 #### Calculation Example {#sec-co2-organic-calc}
 
-Indonesia Peat Fires (example):
+Indonesia Peat Fires:
 
 ```{r}
 #| eval: false
@@ -606,23 +623,21 @@ print(peat_co2$CO2_Gg)
 
 ------------------------------------------------------------
 
-## Complete Emissions Calculation Workflow {#sec-emissions-workflow}
+## Reproducible Workflow {#sec-emissions-workflow}
 
-### Integrated Processing Pipeline {#sec-emissions-pipeline}
+### Consolidated Script {#sec-emissions-pipeline}
 
 ```{r}
 #| eval: false
 #| label: emissions-complete-workflow
 #| code-summary: "End-to-end emissions calculation"
 
-# ============================================================
-# IPCC Tier 1 Fire Emissions Calculation
-# Integrates: Chapters 1 (Area) + 2 (Vegetation) + 3 (Fuel) + 4 (Emissions)
+# IPCC Tier 1 Fire Emissions Script
 # ============================================================
 
 library(tidyverse)
 
-# 1. LOAD IPCC EMISSION FACTORS --------------------------------
+# 1. Load IPCC Emission Factors
 emission_factors <- tribble(
   ~fire_category, ~climate_zone, ~gas, ~EF_g_kg, ~uncertainty_pct,
   
@@ -643,14 +658,13 @@ emission_factors <- tribble(
   "Organic_Soil", "Tropical", "CH4", 5.7, 95
 )
 
-# 2. LOAD FUEL CONSUMPTION DATA (from Chapter 3) ----------------
+# 2. Load Fueld Consumption Data (Ch.3)
 fuel_consumption <- read.csv("Portugal_FuelConsumption_2023.csv")
 
-# Example structure:
-# country | year | fire_category | vegetation_type | climate_zone | 
-# area_ha | biomass_burned_Gg
+# Data structure of dunmmy CSV:
+# country | year | fire_category | vegetation_type | climate_zone | area_ha | biomass_burned_Gg
 
-# 3. CALCULATE EMISSIONS BY GAS ----------------------------------
+# 3. Calculate Emissions by Gas
 emissions <- fuel_consumption %>%
   # Join with emission factors
   left_join(
@@ -665,7 +679,7 @@ emissions <- fuel_consumption %>%
   select(country, year, fire_category, vegetation_type, climate_zone,
          area_ha, biomass_burned_Gg, gas, EF_g_kg, emissions_Gg, uncertainty_pct)
 
-# 4. SUMMARIZE BY GAS AND CATEGORY ------------------------------
+# 4. Summarize by GHG & Category
 emissions_summary <- emissions %>%
   group_by(country, year, fire_category, gas) %>%
   summarise(
@@ -677,9 +691,8 @@ emissions_summary <- emissions %>%
 
 print(emissions_summary)
 
-# 5. CONVERT TO CO₂-EQUIVALENTS ---------------------------------
-# Global Warming Potentials (IPCC AR5, 100-year horizon)
-GWP_CH4 <- 28   # Without climate-carbon feedbacks
+# 5. Convert to CO2e using AR5 GWPs (Without AR6 feedbacks)
+GWP_CH4 <- 28   
 GWP_N2O <- 265
 
 emissions_co2eq <- emissions_summary %>%
@@ -703,7 +716,7 @@ total_co2eq <- emissions_co2eq %>%
 
 print(total_co2eq)
 
-# 6. EXPORT RESULTS ----------------------------------------------
+# 6. Export
 write.csv(
   emissions,
   "Portugal_FireEmissions_2023_detailed.csv",
@@ -723,10 +736,8 @@ write.csv(
 )
 ```
 
-### Example Output: Portugal 2023 {#sec-emissions-example}
-
 ```{r}
-#| eval: false
+#| eval: true
 #| label: emissions-portugal-example
 #| echo: false
 
@@ -751,13 +762,13 @@ portugal_summary <- portugal_results %>%
 library(knitr)
 kable(
   portugal_results,
-  caption = "Portugal 2023 Fire Emissions by Gas and Category",
+  caption = "Portugal 2023 Fire Emissions by GHG & Category",
   digits = 2
 )
 
 kable(
   portugal_summary,
-  caption = "Portugal 2023 Total Fire Emissions",
+  caption = "Portugal 2023 Tier 1 Total Fire Emissions",
   digits = 2
 )
 ```
@@ -782,11 +793,11 @@ gas relative to 1 kg of CO₂ over specified time horizon
 
 IPCC Assessment Report 5 (AR5) - 100-year GWPs:
 
-| Gas | GWP (without climate-carbon feedbacks) | GWP (with feedbacks) |
-|----|----|----|
-| CO₂ | 1 (by definition) | 1 |
-| CH₄ | 28 | 34 |
-| N₂O | 265 | 298 |
+| Gas | GWP (without feedback) | GWP (with feedback) |
+|-----|------------------------|---------------------|
+| CO₂ | 1 (by definition)      | 1                   |
+| CH₄ | 28                     | 34                  |
+| N₂O | 265                    | 298                 |
 
 FAOSTAT uses AR5 without feedbacks: GWP~CH4~ = 28, GWP~N2O~
 = 265
@@ -819,7 +830,7 @@ Example: Portugal 2023: $$
 $$
 
 ```{r}
-#| eval: false
+#| eval: true
 #| label: co2eq-calculation
 #| code-summary: "Convert emissions to CO₂-equivalents"
 
@@ -904,7 +915,7 @@ consumption)
 ### Monte Carlo Uncertainty Propagation {#sec-uncertainty-montecarlo}
 
 ```{r}
-#| eval: false
+#| eval: true
 #| label: uncertainty-montecarlo
 #| code-summary: "Monte Carlo simulation for uncertainty"
 

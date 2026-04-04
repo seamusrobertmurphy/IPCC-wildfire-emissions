@@ -1059,7 +1059,7 @@ Post-classification:
 
 ## Reproducible Workflow {#sec-veg-workflow}
 
-### Integrated Pipeline {#sec-veg-pipeline}
+### Consolidated Script {#sec-veg-pipeline}
 
 ```{r}
 #| eval: false
