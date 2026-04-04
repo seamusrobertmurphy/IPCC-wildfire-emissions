@@ -30,20 +30,17 @@ Each chapter corresponds to one component of the equation, progressing from burn
 
 ## Chapters
 
-| Chapter | Description |
-|-------------------------------|-----------------------------------------|
-| [01 Burned Area](https://seamusrobertmurphy.quarto.pub/ipcc-fire-emissions/01-burn-area/) | Extract and validate MODIS MCD64A1 burned area for Honduras 2010; apply uncertainty filters; compute annual burned area by land cover type |
-| [02 Fuel Stratification](https://seamusrobertmurphy.quarto.pub/ipcc-fire-emissions/02-fuel-stratification/) | Classify burned pixels into IPCC fire categories (forest, savanna, organic soil) using MODIS land cover and WorldClim climate zones |
-| [03 Fuel Consumption](https://seamusrobertmurphy.quarto.pub/ipcc-fire-emissions/03-fuel-consumption/) | Assign IPCC Tier 1 default fuel consumption values (M~B~ × C~f~ by vegetation type and climate zone |
-| [04 Emission Factors](https://seamusrobertmurphy.quarto.pub/ipcc-fire-emissions/04-emission-factors/) | Apply IPCC emission factors (G) to compute CH~4~, N~2~O, and CO~2~ emissions; convert to CO~2~-equivalents; format for CRF reporting |
-| [References](https://seamusrobertmurphy.quarto.pub/ipcc-fire-emissions/references/) | Full bibliography of IPCC guidelines, methodological sources, and remote sensing references |
+1.  [Burned Area](https://seamusrobertmurphy.quarto.pub/ipcc-fire-emissions/01-burn-area/): Extract and validate MODIS MCD64A1 burned area for Honduras 2010; apply uncertainty filters; compute annual burned area by land cover type
+2.  [Fuel Stratification](https://seamusrobertmurphy.quarto.pub/ipcc-fire-emissions/02-fuel-stratification/): Classify burned pixels into IPCC fire and fuel categories (forest, savanna, organic soil) according to Tier 1 land cover, climate and agroecological zones.
+3.  [Fuel Consumption](https://seamusrobertmurphy.quarto.pub/ipcc-fire-emissions/03-fuel-consumption/): Assign IPCC Tier 1 default fuel consumption values (M~B~ × C~f~ by vegetation type and climate zone.
+4.  [Emission Factors](https://seamusrobertmurphy.quarto.pub/ipcc-fire-emissions/04-emission-factors/): Apply IPCC emission factors (G) to compute CH~4~, N~2~O, and CO~2~ emissions; convert to CO~2~-equivalents; format for CRF reporting.
 
 ------------------------------------------------------------------------
 
 ## Data Sources
 
 | Dataset | Source | Use |
-|-------------------------|------------------------|-------------------------------------|
+|---------------------|--------------------|-------------------------------|
 | MCD64A1 C6.1 | [MODIS via GEE](https://developers.google.com/earth-engine/datasets/catalog/MODIS_061_MCD64A1) | Monthly burned area (500 m) |
 | MCD12Q1 C6.1 | [MODIS via GEE](https://developers.google.com/earth-engine/datasets/catalog/MODIS_061_MCD12Q1) | IGBP land cover classification |
 | WorldClim V1 | [WorldClim via GEE](https://developers.google.com/earth-engine/datasets/catalog/WORLDCLIM_V1_BIO) | Bioclimatic variables for climate zone delineation |
@@ -114,7 +111,7 @@ quarto render
 This project implements the correct IPCC treatment of CO~2~ from fire, which differs by fire type:
 
 | Fire Type | CO~2~ Reported? | Method | IPCC Source |
-|----------------|:--------------:|-----------------------------|-----------------------|
+|----------------|:--------------:|-----------------------|------------------|
 | Forest | Yes | Carbon stock changes (Eq. 2.7–2.14) | 2006 GL, Vol. 4, §4.2.4 |
 | Savanna | No | Synchrony assumed for non-woody grassland | 2019 Ref, Vol. 4, §2.4 |
 | Organic Soil | Yes | Separate G~ef~ via Eq. 2.27 | 2013 Wetlands Supplement |
@@ -141,7 +138,7 @@ Forest fire CO<sub>2</sub> is not excluded from national inventories. It is capt
 #### IPCC Resources
 
 | Resource | Description | Source |
-|-----------------------|------------------------------------------------------|---------------|
+|----------------|---------------------------------------|----------------|
 | IPCC 2006, Vol. 4 |  |  |
 | Ch.2 Generic Methodologies | Eq.2.9 Calculation of biomass retention & growth post-conversion | [Link](https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/4_Volume4/V4_02_Ch2_Generic.pdf#page=15) |
 | Ch.3 Representation of Lands | S.3.2 Six land-use categories recommended for estimating GHG emissions from LULC | [Link](https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/4_Volume4/V4_03_Ch3_Representation.pdf#page=6.9) |
