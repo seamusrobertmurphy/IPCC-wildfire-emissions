@@ -61,8 +61,23 @@ easypackages::packages(
   "xgboost",
   prompt = F)
 
-#mapviewOptions(fgb = FALSE)
+# Disable spherical geometry
 sf::sf_use_s2(use_s2 = FALSE)
+
+# Point environment to your configured python
+reticulate::use_python("/opt/local/bin/python", required=T)
+
+# Initialise Earth Engine
+ee <- reticulate::import("ee")
+ee$Initialize(project = "murphys-deforisk")
+cat("GEE initialised\n")
+
+# Helper Function to visualize EE tile in tmap/leaflet
+ee_tile_url <- function(ee_image, vis_params) {
+  ee_image$getMapId(vis_params)$tile_fetcher$url_format}
+
+# EE FeatureCollection => sf
+ee_to_sf <- function(fc) {geojsonsf::geojson_sf(jsonlite::toJSON(fc$getInfo(), auto_unbox = TRUE))}
 ```
 
 ```{r}
@@ -99,7 +114,7 @@ div.column {
   height:200px;
   width: 200px;
   background-image: url('https://raw.githubusercontent.com/seamusrobertmurphy/IPCC-wildfire-emissions/refs/heads/main/02-fuel-stratification/assets/aa_burn_trend.png');
-  background-size: contain;
+  background-size: contain;2
   background-position: 50% 50%;
   padding-top: 80px !important;
   background-repeat: no-repeat;
@@ -136,7 +151,7 @@ Tier 1 Approach: Use IPCC default values stratified by:
 Forest Fires (IPCC 2019 Table 2.4):
 
 | Forest Type | M~B~ (t DM ha⁻¹) | C~f~ | M~B~ × C~f~ |
-|-------------|---------|--------|-------|
+|----|----|----|----|
 | Humid Tropical Forest | 119.6 ± 52.4 | 0.36 ± 0.09 | 43.1 |
 | Other Forest (Boreal) | 41.0 ± 25.3 | 0.45 ± 0.15 | 18.5 |
 | Other Forest (Temperate) | 50.4 ± 30.8 | 0.47 ± 0.14 | 23.7 |
@@ -145,7 +160,7 @@ Forest Fires (IPCC 2019 Table 2.4):
 Savanna Fires (IPCC 2019 Table 2.4):
 
 | Vegetation Type | Season | M~B~ (t DM ha⁻¹) | C~f~ | M~B~ × C~f~ |
-|------------|------|---------|--------|------|
+|----|----|----|----|----|
 | Savanna Woodland | Early | 9.0 ± 7.5 | 0.29 ± 0.09 | 2.6 |
 | Savanna Woodland | Late | 9.0 ± 7.5 | 0.51 ± 0.15 | 4.6 |
 | Savanna Grassland | Early | 6.8 ± 6.0 | 0.31 ± 0.09 | 2.1 |
@@ -548,7 +563,7 @@ print(portugal_summary)
 ### Creating Fuel Consumption Rasters {#sec-fuel-gee-rasters}
 
 ```{r}
-#| eval: true
+#| eval: false
 #| label: fuel-gee-rasters
 #| code-summary: "Generate spatially-explicit fuel consumption maps"
 

@@ -1,0 +1,11 @@
+"fire_category","vegetation_type","climate_zone","season","MB_tDM_ha","Cf","MB_Cf"
+"Forest","Humid_Tropical_Forest","Tropical_Moist",NA,119.6,0.36,43.1
+"Forest","Other_Forest","Boreal",NA,41,0.45,18.5
+"Forest","Other_Forest","Temperate",NA,50.4,0.47,23.7
+"Forest","Other_Forest","Tropical",NA,69.4,0.47,32.6
+"Savanna","Savanna_Woodland","All","Early",9,0.29,2.6
+"Savanna","Savanna_Woodland","All","Late",9,0.51,4.6
+"Savanna","Savanna_Grassland","All","Early",6.8,0.31,2.1
+"Savanna","Savanna_Grassland","All","Late",6.8,0.83,5.6
+"Savanna","Other_Grassland","All",NA,13.4,0.52,7
+"Organic_Soil","Tropical_Peatland","Tropical",NA,41.2,1,41.2

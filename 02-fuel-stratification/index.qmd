@@ -61,8 +61,28 @@ easypackages::packages(
   "xgboost",
   prompt = F)
 
-#mapviewOptions(fgb = FALSE)
-sf::sf_use_s2(use_s2 = FALSE)
+# Disable spherical/obloid geometry 
+sf::sf_use_s2(use_s2 = F)
+
+# Assign working directory to current location
+knitr::opts_knit$set(root.dir = here::here()) 
+
+# Point environment to your configured python
+reticulate::use_python("/opt/local/bin/python", required=T)
+
+# Initialise Earth Engine
+ee <- reticulate::import("ee")
+ee$Initialize(project = "murphys-deforisk")
+cat("GEE initialised\n")
+
+# Helper Function to visualize EE tile in tmap/leaflet
+ee_tile_url <- function(ee_image, vis_params) {
+  ee_image$getMapId(vis_params)$tile_fetcher$url_format}
+
+# EE FeatureCollection => sf
+ee_to_sf <- function(fc) {
+  geojsonsf::geojson_sf(
+    jsonlite::toJSON(fc$getInfo(), auto_unbox = TRUE))}
 ```
 
 ```{r}
