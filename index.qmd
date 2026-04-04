@@ -281,121 +281,23 @@ Countries can quantify whether trends in anthropogenic fire emissions diverge fr
 
 ## Uncertainty Considerations
 
-#### Sources of Uncertainty
+Each term in the IPCC emission equation introduces uncertainty that compounds across the calculation chain. At Tier 1, cumulative uncertainty is typically ±30% for burned area, ±30–40% for CO₂ emissions, and ±50% for CH₄ and N₂O.
 
-### 1. Activity Data Uncertainty
+Activity data (burned area): MCD64A1 retains only pixels with uncertainty \< 20%, but global burned area may still be underestimated by 20–30% due to small fires missed at 500m resolution, canopy obscuration, cloud contamination, and rapid regrowth masking burn scars [@giglio2010assessing].
 
-Satellite detection limitations:
+Land classification: MCD12Q1 achieves \~75% global accuracy, with confusion between woody savannas and forests directly affecting which fuel consumption values are assigned (Table 2.4 ranges: 2.6–163.6 t ha⁻¹).
 
--   Small fires (\< 500m): May be missed by MODIS 500m pixels
--   Canopy-obscured fires: Difficult to detect in dense forests
--   Smoldering fires: Peat fires may not produce strong thermal signatures
--   Cloud contamination: Persistent cloud cover reduces observation frequency
--   Rapid vegetation regrowth: Short time lag between fire and regrowth obscures burn scars
+Fuel consumption and combustion factors: IPCC defaults (Tables 2.4, 2.6) carry standard errors of 30–50% of mean values, reflecting natural variability across vegetation types, fire intensity, and fuel moisture conditions.
 
-MCD64A1 applies quality filters:
+Emission factors: IPCC defaults (Table 2.5) based on [@andreae2001emission] represent global averages with standard deviations of 20–60%, influenced by the balance between flaming and smoldering combustion.
 
--   Only pixels with uncertainty \< 20% are included
--   Commission/omission errors vary by biome
--   Global burned area may be underestimated by 20-30% [@giglio2010assessing]
+Organic soil fires carry particularly high uncertainty due to detection challenges, limited field validation outside Southeast Asia, and difficulty distinguishing surface from subsurface peat combustion.
 
-### 2. Land Classification Uncertainty
+#### Uncertainty Reduction and Inter-Annual Variability
 
-MODIS MCD12Q1 accuracy:
+Countries can reduce uncertainty by integrating national fire databases with satellite data, conducting field campaigns for fuel loads and combustion factors, developing regional emission factors, and implementing Tier 2/3 methods. Methodological enhancements include multi-sensor fusion (MODIS + VIIRS + Sentinel), sub-pixel burned area algorithms, and burn severity mapping.
 
--   Overall accuracy: \~75% globally
--   Confusion between woody savannas and forests
--   Temporal lag in land-use change detection
--   Mixed pixels in heterogeneous landscapes
-
-Impact on emissions: Misclassification affects fuel consumption values (Table 2.4 ranges: 2.6 to 163.6 t ha⁻¹).
-
-### 3. Fuel Consumption Uncertainty
-
-IPCC default values (Table 2.4) reflect:
-
--   High natural variability: Standard errors 30-50% of mean
--   Limited data for some vegetation types
--   Climate dependency: Values vary by FAO-FRA Ecological Zones, but within-zone heterogeneity remains
-
-Example uncertainties (Mean ± SE):
-
--   Primary Tropical Forest: 119.6 ± (range: 83.9 to 163.6) t ha⁻¹
--   Savanna Woodland: 2.6 ± 0.1 (early dry season) to 4.6 ± 1.5 (late dry season) t ha⁻¹
-
-### 4. Combustion Factor Uncertainty
-
-Proportion of fuel consumed (Table 2.6):
-
--   Influenced by fire intensity, fuel moisture, weather conditions
--   Variability within vegetation types: SD often 0.1-0.2 (for factors ranging 0.2-0.9)
--   Incomplete combustion of coarse woody debris vs. near-complete combustion of grasses
-
-### 5. Emission Factor Uncertainty
-
-IPCC defaults (Table 2.5) based on [@andreae2001emission]:
-
--   Values represent global averages across fire types
--   Standard deviations: 20-60% of mean values
--   Influenced by combustion efficiency (flaming vs. smoldering)
-
-Example (Savanna fires):
-
--   CO₂: 1613 ± 95 g kg⁻¹
--   CH₄: 2.3 ± 0.9 g kg⁻¹
--   N₂O: 0.21 ± 0.10 g kg⁻¹
-
-#### Uncertainty Aggregation
-
-For IPCC Tier 1, cumulative uncertainty typically:
-
--   Activity data: ±30% for burned area
--   Emission estimates: ±50% for CH₄ and N₂O, ±30-40% for CO₂
-
-Organic soil fires have particularly high uncertainty:
-
--   Remote sensing detection challenges
--   Limited field validation outside Southeast Asia
--   Difficulty distinguishing surface fires from subsurface peat combustion
--   Unknown proportion of fires on drained vs. undrained peatlands
-
-#### Uncertainty Reduction
-
-Country-Specific Improvements:
-
-1.  Integrate national fire databases with satellite observations
-2.  Conduct field campaigns to measure fuel loads and combustion factors
-3.  Develop regional emission factors from smoke sampling
-4.  Implement Tier 2/3 methods in high-emission areas
-
-Methodological Enhancements:
-
-1.  Multi-sensor fusion (MODIS + VIIRS + Sentinel)
-2.  Sub-pixel burned area algorithms
-3.  Burn severity mapping for combustion factors
-4.  Seasonal stratification of fuel moisture
-
-#### Managing Inter-Annual Variability
-
-High IAV from natural disturbances complicates trend analysis:
-
--   Wildfires can cause 2-3 orders of magnitude annual variation
--   Obscures anthropogenic emission trends
--   Challenges mitigation policy evaluation
-
-Optional Disaggregation Approach [@ipccChapter2Generic2019][^index-2]:
-
-Countries may separate:
-
--   Natural disturbance component: Emissions beyond normal variability or 95% CI
--   Anthropogenic component: Remaining managed land fluxes
-
-This disaggregation:
-
--   Improves clarity of human activity impacts
--   Maintains MLP total for official reporting
--   Requires documentation of methods and thresholds
--   Assumes eventual balance between disturbance emissions and regrowth
+High inter-annual variability (IAV) from natural disturbances, which can cause 2–3 orders of magnitude variation, complicates trend analysis and policy evaluation. Countries may optionally disaggregate natural disturbance emissions (beyond normal variability or 95% CI) from anthropogenic managed-land fluxes, improving clarity while maintaining MLP totals for official reporting [@ipccChapter2Generic2019][^index-2].
 
 ------------------------------------------------------------------------
 

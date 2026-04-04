@@ -968,7 +968,7 @@ ggplot(simulations, aes(x = CH4_kg_per_ha)) +
 #| label: emissions-gee-spatial
 #| code-summary: "Create spatially-explicit emissions maps — Honduras 2010"
 
-# 1. CREATE EMISSION FACTOR RASTERS
+# 1. Derive Emission Factor Rasters
 # CH₄ emission factors by vegetation type
 EF_CH4_img <- ee$Image(0)$rename("EF_CH4")
 EF_CH4_img <- EF_CH4_img$
@@ -983,7 +983,7 @@ EF_N2O_img <- EF_N2O_img$
   where(forest_mask$And(tropical$Not()), 0.26)$
   where(savanna_mask, 0.21)
 
-# 2. CALCULATE EMISSIONS PER PIXEL
+# 2. Calculate Emissions Per Pixel
 # CH₄ emissions (kg): biomass (t) × 1000 (kg/t) × EF (g/kg) / 1000 (g→kg)
 CH4_per_pixel <- biomass_per_pixel$
   multiply(EF_CH4_img)$
@@ -996,7 +996,7 @@ N2O_per_pixel <- biomass_per_pixel$
   rename("N2O_kg")$
   clip(aoi_country_ee$geometry())
 
-# 3. VISUALIZE WITH TMAP
+# 3. Visualize
 ch4_vis <- list(
   min = 0L, max = 50L,
   palette = c("yellow", "orange", "red", "darkred")
@@ -1086,8 +1086,6 @@ Required tables for fire emissions:
 ```{r}
 #| label: emissions-crf-format
 #| code-summary: "Format emissions for UNFCCC CRF reporting — Honduras 2010"
-
-library(tidyverse)
 
 # Format for CRF Table 4.C (Forest Land)
 crf_4c <- emissions %>%

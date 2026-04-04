@@ -238,7 +238,7 @@ cat("AOI loaded:", aoi_country_ee$size()$getInfo(), "country,",
 Forest Classes (1-5):
 
 | Class | Name | IPCC Category | Fuel Consumption (t ha⁻¹) |
-|-------------|----------------|--------------------|-------------|
+|----|----|----|----|
 | 1 | Evergreen Needleleaf Forests | Other Forest | 41.0 (mean) |
 | 2 | Evergreen Broadleaf Forests | Humid Tropical Forest | 119.6 (mean) |
 | 3 | Deciduous Needleleaf Forests | Other Forest | 41.0 (mean) |
@@ -339,7 +339,7 @@ Known Classification Issues:
 Regional Accuracy [@sulla2018user]:
 
 | Region        | Overall Accuracy | Forest Accuracy | Savanna Accuracy |
-|---------------|---------------|---------------|---------------|
+|---------------|------------------|-----------------|------------------|
 | Africa        | 73%              | 68%             | 78%              |
 | South America | 77%              | 82%             | 71%              |
 | Europe        | 79%              | 86%             | 65%              |
