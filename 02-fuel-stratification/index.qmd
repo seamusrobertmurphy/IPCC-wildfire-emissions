@@ -238,7 +238,7 @@ cat("AOI loaded:", aoi_country_ee$size()$getInfo(), "country,",
 Forest Classes (1-5):
 
 | Class | Name | IPCC Category | Fuel Consumption (t ha⁻¹) |
-|-------|----------------------|--------------------------|--------------|
+|-------------|----------------|--------------------|-------------|
 | 1 | Evergreen Needleleaf Forests | Other Forest | 41.0 (mean) |
 | 2 | Evergreen Broadleaf Forests | Humid Tropical Forest | 119.6 (mean) |
 | 3 | Deciduous Needleleaf Forests | Other Forest | 41.0 (mean) |
@@ -248,7 +248,7 @@ Forest Classes (1-5):
 Grassland/Savanna Classes (6-10):
 
 | Class | Name | IPCC Category | Fuel Consumption (t ha⁻¹) |
-|---------|----------------|------------------|---------------------|
+|----|----|----|----|
 | 6 | Closed Shrublands | Savanna (Shrubland) | 14.3 (mean) |
 | 7 | Open Shrublands | Savanna (Shrubland) | 14.3 (mean) |
 | 8 | Woody Savannas | Savanna (Woody) | 2.6-4.6 (season) |
@@ -258,7 +258,7 @@ Grassland/Savanna Classes (6-10):
 Excluded Classes:
 
 | Class | Name | Reason for Exclusion |
-|----------|-----------------------------|----------------------------|
+|----|----|----|
 | 0 | Water | Not burnable |
 | 11 | Permanent Wetlands | Handled separately if Histosol |
 | 12 | Croplands | Agricultural fires (separate category) |
@@ -272,8 +272,8 @@ Excluded Classes:
 
 ```{r}
 #| message: false
-#| error: false
 #| warning: false
+#| error: false
 #| comment: NA
 #| label: veg-mcd12q1-access
 #| code-summary: "Load MODIS Land Cover"
@@ -281,14 +281,14 @@ Excluded Classes:
 # Load land cover collection
 landCover <- ee$ImageCollection("MODIS/061/MCD12Q1")
 
-# Select IGBP classification (Type 1) for 2010 (matching Ch1 burn year)
-lc_2010 <- landCover$
+# Select IGBP classification (Type 1) for 2020 (matching Ch1 burn year)
+lc_2020 <- landCover$
   select("LC_Type1")$
-  filterDate("2010-01-01", "2010-12-31")$
+  filterDate("2020-01-01", "2020-12-31")$
   first()$
   clip(aoi_country_ee$geometry())
 
-cat("Land cover bands:", paste(lc_2010$bandNames()$getInfo(),
+cat("Land cover bands:", paste(lc_2020$bandNames()$getInfo(),
     collapse = ", "), "\n")
 
 # IGBP palette
@@ -299,15 +299,30 @@ lc_vis <- list(
     '05450a', '086a10', '54a708', '78d203', '009900',  # Forests 1-5
     'c6b044', 'dcd159', 'dade48', 'fbff13', 'b6ff05',  # Savanna/Grass 6-10
     '27ff87', 'c24f44', 'a5a5a5', 'ff6d4c', '69fff8',  # Other 11-15
-    'f9ffa4', '1c0dff'                                   # Barren/Unclass 16-17
+    'f9ffa4', '1c0dff'                                 # Barren/Unclass 16-17
   )
 )
 
 tmap::tmap_mode("view")
 tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
-  tmap::tm_tiles(ee_tile_url(lc_2010, lc_vis),group = "IGBP Land Cover 2010") +
+  tmap::tm_tiles(ee_tile_url(lc_2020, lc_vis),group = "IGBP Land Cover 2020") +
   tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
-  tmap::tm_basemap("Esri.WorldImagery")
+  tmap::tm_add_legend(
+    type = "polygons",
+    fill = c("#05450a", "#086a10", "#54a708", "#78d203", "#009900",
+             "#c6b044", "#dcd159", "#dade48", "#fbff13", "#b6ff05",
+             "#27ff87", "#c24f44", "#a5a5a5", "#ff6d4c", "#69fff8",
+             "#f9ffa4", "#1c0dff"),
+    labels = c("1 Evergreen Needleleaf", "2 Evergreen Broadleaf",
+               "3 Deciduous Needleleaf", "4 Deciduous Broadleaf",
+               "5 Mixed Forests", "6 Closed Shrublands",
+               "7 Open Shrublands", "8 Woody Savannas",
+               "9 Savannas", "10 Grasslands",
+               "11 Permanent Wetlands", "12 Croplands",
+               "13 Urban", "14 Cropland/Veg Mosaic",
+               "15 Snow/Ice", "16 Barren", "17 Unclassified"),
+    title = "IGBP Land Cover (2020)") +
+	tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 ### Land Cover Validation and Uncertainty {#sec-veg-lc-uncertainty}
@@ -364,7 +379,7 @@ igbp_labels <- c(
 )
 
 # Frequency histogram of IGBP classes
-lc_hist <- lc_2010$reduceRegion(
+lc_hist <- lc_2020$reduceRegion(
   reducer  = ee$Reducer$frequencyHistogram(),
   geometry = aoi_country_ee$geometry(),
   scale    = 500L,
@@ -380,7 +395,7 @@ lc_df$label <- igbp_labels[as.character(lc_df$class)]
 lc_df$area_ha <- round(lc_df$pixels * 25, 1)  # 500m pixel ~ 25 ha
 lc_df <- lc_df[order(-lc_df$pixels), ]
 
-cat("Honduras 2010 — IGBP Land Cover Distribution\n")
+cat("Honduras 2020 — IGBP Land Cover Distribution\n")
 for (i in seq_len(nrow(lc_df))) {
   cat(sprintf("  Class %2d %-25s: %7d pixels (%9.0f ha)\n",
     lc_df$class[i], lc_df$label[i],
@@ -399,7 +414,7 @@ for (i in seq_len(nrow(lc_df))) {
 #| code-summary: "Classify forest fires"
 
 # Define forest classes (IGBP 1-5)
-forest_mask <- lc_2010$gte(1L)$And(lc_2010$lte(5L))$rename("forest_mask")
+forest_mask <- lc_2020$gte(1L)$And(lc_2020$lte(5L))$rename("forest_mask")
 
 # Count forest pixels
 forest_count <- forest_mask$selfMask()$reduceRegion(
@@ -418,6 +433,11 @@ cat("Forest area (approx):",
 tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
   tmap::tm_tiles(ee_tile_url(forest_mask$selfMask()$clip(aoi_country_ee$geometry()),
   	list(palette = "086a10", min = 1L, max = 1L)), group = "Forest (IGBP 1-5)") +
+  tmap::tm_add_legend(
+    type = "polygons",
+    fill = "#086a10",
+    labels = "Forest (IGBP 1-5)",
+    title = "Forest Cover (2020)") +
   tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
   tmap::tm_basemap("Esri.WorldImagery")
 ```
@@ -426,7 +446,7 @@ tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
 
 #### FAO-FRA Global Ecological Zones {#sec-veg-fao-ecozones}
 
-Dataset: FAO-FRA Global Ecological Zones 2010 Update
+Dataset: FAO-FRA Global Ecological Zones 2020 Update
 
 Tropical Moist Zones (for Humid Tropical Forest):
 
@@ -490,6 +510,12 @@ tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
       list(palette = "orange", min = 1L, max = 1L)
     ), group = "Other Forest"
   ) +
+  tmap::tm_add_legend(
+    type = "polygons",
+    fill = c("darkgreen", "orange"),
+    labels = c("Humid Tropical Forest", "Other Forest"),
+    title = "Forest Type Classification"
+  ) +
   tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
   tmap::tm_basemap("Esri.WorldImagery")
 ```
@@ -500,11 +526,11 @@ tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
 #| label: veg-forest-area-calc
 #| code-summary: "Calculate forest fire areas by type"
 
-# Load burned area from Chapter 1 (2010)
+# Load burned area from Chapter 1 (2020)
 mcd64 <- ee$ImageCollection("MODIS/061/MCD64A1")
-burned_2010 <- mcd64$
+burned_2020 <- mcd64$
   filterBounds(aoi_country_ee$geometry())$
-  filterDate("2010-01-01", "2010-12-31")
+  filterDate("2020-01-01", "2020-12-31")
 
 # FAOSTAT quality filter (matching Ch1)
 faostat_filter <- function(image) {
@@ -514,19 +540,19 @@ faostat_filter <- function(image) {
   image$updateMask(mask)
 }
 
-# Annual burned mask for 2010
-annual_burned_2010 <- burned_2010$
+# Annual burned mask for 2020
+annual_burned_2020 <- burned_2020$
   map(faostat_filter)$
   select("BurnDate")$max()$gt(0L)$selfMask()
 
 # Overlay with vegetation masks
-htf_fires_2010    <- annual_burned_2010$updateMask(humid_tropical_forest)
-other_fires_2010  <- annual_burned_2010$updateMask(other_forest)
+htf_fires_2020    <- annual_burned_2020$updateMask(humid_tropical_forest)
+other_fires_2020  <- annual_burned_2020$updateMask(other_forest)
 
 # Calculate areas (ha)
 pixelArea_ha <- ee$Image$pixelArea()$divide(10000L)
 
-htf_area <- htf_fires_2010$
+htf_area <- htf_fires_2020$
   multiply(pixelArea_ha)$
   reduceRegion(
     reducer   = ee$Reducer$sum(),
@@ -535,7 +561,7 @@ htf_area <- htf_fires_2010$
     maxPixels = 1e9
   )$getInfo()
 
-of_area <- other_fires_2010$
+of_area <- other_fires_2020$
   multiply(pixelArea_ha)$
   reduceRegion(
     reducer   = ee$Reducer$sum(),
@@ -544,7 +570,7 @@ of_area <- other_fires_2010$
     maxPixels = 1e9
   )$getInfo()
 
-cat("Honduras 2010 — Forest Fire Areas\n")
+cat("Honduras 2020 — Forest Fire Areas\n")
 cat("  Humid Tropical Forest fires:",
     round(htf_area[["BurnDate"]] %||% 0, 1), "ha\n")
 cat("  Other Forest fires:         ",
@@ -554,15 +580,21 @@ cat("  Other Forest fires:         ",
 tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
   tmap::tm_tiles(
     ee_tile_url(
-      htf_fires_2010$clip(aoi_country_ee$geometry()),
+      htf_fires_2020$clip(aoi_country_ee$geometry()),
       list(palette = "darkred", min = 0L, max = 1L)
     ), group = "Humid Tropical Forest Fires"
   ) +
   tmap::tm_tiles(
     ee_tile_url(
-      other_fires_2010$clip(aoi_country_ee$geometry()),
+      other_fires_2020$clip(aoi_country_ee$geometry()),
       list(palette = "orange", min = 0L, max = 1L)
     ), group = "Other Forest Fires"
+  ) +
+  tmap::tm_add_legend(
+    type = "polygons",
+    fill = c("darkred", "orange"),
+    labels = c("Humid Tropical Forest Fires", "Other Forest Fires"),
+    title = "Forest Fire Areas (2020)"
   ) +
   tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
   tmap::tm_basemap("Esri.WorldImagery")
@@ -579,14 +611,14 @@ tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
 #| code-summary: "Classify savanna fires by vegetation type"
 
 # Savanna/grassland classes (IGBP 6-10)
-savanna_mask <- lc_2010$gte(6L)$And(lc_2010$lte(10L))
+savanna_mask <- lc_2020$gte(6L)$And(lc_2020$lte(10L))
 
 # Individual sub-type masks
-grassland_mask     <- lc_2010$eq(10L)
-savanna_only_mask  <- lc_2010$eq(9L)
-woody_savanna_mask <- lc_2010$eq(8L)
-open_shrub_mask    <- lc_2010$eq(7L)
-closed_shrub_mask  <- lc_2010$eq(6L)
+grassland_mask     <- lc_2020$eq(10L)
+savanna_only_mask  <- lc_2020$eq(9L)
+woody_savanna_mask <- lc_2020$eq(8L)
+open_shrub_mask    <- lc_2020$eq(7L)
+closed_shrub_mask  <- lc_2020$eq(6L)
 
 # Count pixels by sub-type
 savanna_stats <- ee$Image$cat(
@@ -602,7 +634,7 @@ savanna_stats <- ee$Image$cat(
   maxPixels = 1e9
 )$getInfo()
 
-cat("Honduras 2010 — Savanna/Grassland Sub-Types\n")
+cat("Honduras 2020 — Savanna/Grassland Sub-Types\n")
 cat("  Grasslands:       ", savanna_stats$grassland, "pixels\n")
 cat("  Savannas:         ", savanna_stats$savanna, "pixels\n")
 cat("  Woody Savannas:   ", savanna_stats$woody_savanna, "pixels\n")
@@ -610,9 +642,9 @@ cat("  Open Shrublands:  ", savanna_stats$open_shrub, "pixels\n")
 cat("  Closed Shrublands:", savanna_stats$closed_shrub, "pixels\n")
 
 # Overlay with burned area
-savanna_fires_2010 <- annual_burned_2010$updateMask(savanna_mask)
+savanna_fires_2020 <- annual_burned_2020$updateMask(savanna_mask)
 
-sav_area <- savanna_fires_2010$
+sav_area <- savanna_fires_2020$
   multiply(pixelArea_ha)$
   reduceRegion(
     reducer   = ee$Reducer$sum(),
@@ -633,9 +665,15 @@ tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
   ) +
   tmap::tm_tiles(
     ee_tile_url(
-      savanna_fires_2010$clip(aoi_country_ee$geometry()),
+      savanna_fires_2020$clip(aoi_country_ee$geometry()),
       list(palette = "red", min = 0L, max = 1L)
-    ), group = "Savanna Fires 2010"
+    ), group = "Savanna Fires 2020"
+  ) +
+  tmap::tm_add_legend(
+    type = "polygons",
+    fill = c("#fbff13", "red"),
+    labels = c("Savanna/Grassland (IGBP 6-10)", "Savanna Fires 2020"),
+    title = "Savanna Classification & Fires"
   ) +
   tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
   tmap::tm_basemap("Esri.WorldImagery")
@@ -682,8 +720,8 @@ cat("  Temperate pixels:", zone_stats$temperate, "\n")
 cat("  Boreal pixels:   ", zone_stats$boreal, "\n")
 
 # Apply climate stratification to savanna fires
-savanna_tropical  <- savanna_fires_2010$updateMask(tropical_zone)
-savanna_temperate <- savanna_fires_2010$updateMask(temperate_zone)
+savanna_tropical  <- savanna_fires_2020$updateMask(tropical_zone)
+savanna_temperate <- savanna_fires_2020$updateMask(temperate_zone)
 
 sav_trop_area <- savanna_tropical$
   multiply(pixelArea_ha)$
@@ -703,7 +741,7 @@ sav_temp_area <- savanna_temperate$
     maxPixels = 1e9
   )$getInfo()
 
-cat("Honduras 2010 — Savanna Fires by Climate Zone\n")
+cat("Honduras 2020 — Savanna Fires by Climate Zone\n")
 cat("  Tropical savanna fires: ",
     round(sav_trop_area[["BurnDate"]] %||% 0, 1), "ha\n")
 cat("  Temperate savanna fires:",
@@ -758,8 +796,8 @@ extractBurnMonth <- function(mcd64_image) {
   burn_date$addBands(month_band)
 }
 
-# Apply to 2010 collection
-mcd64_with_months <- burned_2010$
+# Apply to 2020 collection
+mcd64_with_months <- burned_2020$
   map(faostat_filter)$
   map(extractBurnMonth)
 
@@ -775,8 +813,8 @@ early_season <- month_composite$gte(2L)$And(month_composite$lte(3L))
 late_season  <- month_composite$gte(4L)$And(month_composite$lte(5L))
 
 # Calculate areas for savanna fires by season
-savanna_early <- savanna_fires_2010$updateMask(early_season)
-savanna_late  <- savanna_fires_2010$updateMask(late_season)
+savanna_early <- savanna_fires_2020$updateMask(early_season)
+savanna_late  <- savanna_fires_2020$updateMask(late_season)
 
 early_area <- savanna_early$
   multiply(pixelArea_ha)$
@@ -796,7 +834,7 @@ late_area <- savanna_late$
     maxPixels = 1e9
   )$getInfo()
 
-cat("Honduras 2010 — Seasonal Savanna Fire Areas\n")
+cat("Honduras 2020 — Seasonal Savanna Fire Areas\n")
 cat("  Early dry season (Feb-Mar):",
     round(early_area[["BurnDate"]] %||% 0, 1), "ha\n")
 cat("  Late dry season (Apr-May): ",
@@ -820,7 +858,7 @@ cat("  Late dry season (Apr-May): ",
 #| code-summary: "Identify organic soil fires"
 
 # Proxy approach: Permanent wetlands (IGBP 11) in lowland tropics
-wetlands_mask <- lc_2010$eq(11L)
+wetlands_mask <- lc_2020$eq(11L)
 
 # Elevation threshold for lowlands
 elevation <- ee$Image("USGS/SRTMGL1_003")
@@ -841,10 +879,10 @@ cat("Honduras — Organic Soil Proxy\n")
 cat("  Lowland wetland pixels:", org_count[["LC_Type1"]] %||% 0, "\n")
 
 # Overlay with burned area
-organic_fires_2010 <- annual_burned_2010$
+organic_fires_2020 <- annual_burned_2020$
   updateMask(organic_soil_mask)
 
-org_area <- organic_fires_2010$
+org_area <- organic_fires_2020$
   multiply(pixelArea_ha)$
   reduceRegion(
     reducer   = ee$Reducer$sum(),
@@ -915,7 +953,7 @@ until more validation data available
 ### GLAD Forest Height Validation {#sec-veg-glad-height}
 
 ```{r}
-#| eval: false 
+#| eval: true 
 #| label: veg-glad-height-validation
 #| code-summary: "Validate forest classification with GLAD canopy height"
 
@@ -978,6 +1016,12 @@ tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
       glad_only$selfMask()$clip(aoi_country_ee$geometry()),
       list(palette = "red", min = 1L, max = 1L)
     ), group = "Hansen-only Forest"
+  ) +
+  tmap::tm_add_legend(
+    type = "polygons",
+    fill = c("green", "blue", "red"),
+    labels = c("Both Agree: Forest", "MODIS-only Forest", "Hansen-only Forest"),
+    title = "Forest Classification Agreement"
   ) +
   tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
   tmap::tm_basemap("Esri.WorldImagery")
@@ -1082,26 +1126,18 @@ Post-classification:
 ### Consolidated Script {#sec-veg-pipeline}
 
 ```{r}
-#| eval: false
+#| eval: true
 #| label: veg-complete-workflow
-#| code-summary: "End-to-end vegetation classification — Honduras 2010"
+#| code-summary: "End-to-end vegetation classification — Honduras 2020"
 
-# ============================================================
 # IPCC Tier 1 Vegetation Classification Pipeline
-# Integrates: MCD64A1 + MCD12Q1 + WorldClim
-# ============================================================
+# ============================================================\
 
-# --- All inputs already loaded above ---
-# annual_burned_2010  : binary burned mask (from FAOSTAT filter)
-# lc_2010             : IGBP land cover
-# forest_mask         : IGBP classes 1-5
-# humid_tropical_mask : WorldClim tropical + moist
-# savanna_mask        : IGBP classes 6-10
 
 # 1. Classify Burns
 # Unclassified: burned but not forest or savanna
 unclassified_mask <- forest_mask$Or(savanna_mask)$Not()
-unclassified_fires <- annual_burned_2010$updateMask(unclassified_mask)
+unclassified_fires <- annual_burned_2020$updateMask(unclassified_mask)
 
 # 2. Areas Estimates
 calcArea <- function(fire_img, label) {
@@ -1116,13 +1152,13 @@ calcArea <- function(fire_img, label) {
   round(result[["BurnDate"]] %||% 0, 1)
 }
 
-total_burned_ha <- calcArea(annual_burned_2010, "Total")
-htf_ha          <- calcArea(htf_fires_2010, "HTF")
-of_ha           <- calcArea(other_fires_2010, "Other Forest")
-sav_ha          <- calcArea(savanna_fires_2010, "Savanna")
+total_burned_ha <- calcArea(annual_burned_2020, "Total")
+htf_ha          <- calcArea(htf_fires_2020, "HTF")
+of_ha           <- calcArea(other_fires_2020, "Other Forest")
+sav_ha          <- calcArea(savanna_fires_2020, "Savanna")
 unclass_ha      <- calcArea(unclassified_fires, "Unclassified")
 
-cat("Honduras 2010 — IPCC Vegetation Classification Summary\n")
+cat("Honduras 2020 — IPCC Vegetation Classification Summary\n")
 cat(sprintf("  %-30s %10.1f ha\n", "Total burned area:", total_burned_ha))
 cat(sprintf("  %-30s %10.1f ha\n", "Humid Tropical Forest fires:", htf_ha))
 cat(sprintf("  %-30s %10.1f ha\n", "Other Forest fires:", of_ha))
@@ -1139,21 +1175,27 @@ tmap::tm_shape(aoi_states_sf) + tmap::tm_borders(col = "MAP_COLORS", lwd = 1) +
   tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
   tmap::tm_tiles(
     ee_tile_url(
-      htf_fires_2010$clip(aoi_country_ee$geometry()),
+      htf_fires_2020$clip(aoi_country_ee$geometry()),
       list(palette = "darkred", min = 0L, max = 1L)
     ), group = "Humid Tropical Forest Fires"
   ) +
   tmap::tm_tiles(
     ee_tile_url(
-      other_fires_2010$clip(aoi_country_ee$geometry()),
+      other_fires_2020$clip(aoi_country_ee$geometry()),
       list(palette = "ff8800", min = 0L, max = 1L)
     ), group = "Other Forest Fires"
   ) +
   tmap::tm_tiles(
     ee_tile_url(
-      savanna_fires_2010$clip(aoi_country_ee$geometry()),
+      savanna_fires_2020$clip(aoi_country_ee$geometry()),
       list(palette = "ffff00", min = 0L, max = 1L)
     ), group = "Savanna Fires"
+  ) +
+  tmap::tm_add_legend(
+    type = "polygons",
+    fill = c("darkred", "#ff8800", "#ffff00"),
+    labels = c("Humid Tropical Forest Fires", "Other Forest Fires", "Savanna Fires"),
+    title = "IPCC Fire Classification (2020)"
   ) +
   tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
   tmap::tm_basemap("Esri.WorldImagery")
@@ -1164,14 +1206,14 @@ tmap::tm_shape(aoi_states_sf) + tmap::tm_borders(col = "MAP_COLORS", lwd = 1) +
 Required outputs for fuel biomass calculation (Chapter 3):
 
 ```{r}
-#| eval: false
+#| eval: true
 #| label: veg-output-format
 #| code-summary: "Output table for Chapter 3"
 
 # Build results data frame
 output_table <- data.frame(
   country = "Honduras",
-  year = 2010L,
+  year = 2020L,
   fire_type = c("Humid_Tropical_Forest", "Other_Forest",
                 "Savanna", "Organic_Soil"),
   burned_area_ha = c(htf_ha, of_ha, sav_ha, 0),
@@ -1185,7 +1227,7 @@ output_table <- data.frame(
   )
 )
 
-knitr::kable(output_table,caption = "2010 Vegetation Classification Output",digits=1)
+knitr::kable(output_table,caption = "2020 Vegetation Classification Output",digits=1)
 ```
 
 ------------------------------------------------------------

@@ -11,8 +11,8 @@ format:
     highlight-style: pygments
     page-layout: article
 
-editor_options: 
-  markdown: 
+editor_options:
+  markdown:
     wrap: 60
 engine: knitr
 bibliography: ../references/references.bib
@@ -29,7 +29,7 @@ combined with burned area and vegetation classifications
 from Chapters 1-2, determine the total biomass burned in
 fire events.
 
-### Environment Setup
+### Environment Setup {.unnumbered}
 
 ```{r}
 #| warning: false
@@ -38,46 +38,31 @@ fire events.
 #| comment: NA
 
 easypackages::packages(
-  "bslib", 
-  "cols4all", "covr", "cowplot", 
-  "dendextend", "digest","DiagrammeR","dtwclust", "downlit", 
-  "e1071", "exactextractr","elevatr", 
+  "bslib",
+  "cols4all", "covr", "cowplot",
+  "dendextend", "digest","DiagrammeR","dtwclust", "downlit",
+  "e1071", "exactextractr","elevatr",
   "FNN", "future", "forestdata",
-  "gdalcubes", "gdalUtilities", "geojsonsf", "geos", "ggplot2", "ggstats", 
-  "ggspatial", "ggmap", "ggplotify", "ggpubr", "ggrepel", "giscoR", 
+  "gdalcubes", "gdalUtilities", "geojsonsf", "geos", "ggplot2", "ggstats",
+  "ggspatial", "ggmap", "ggplotify", "ggpubr", "ggrepel", "giscoR",
   "hdf5r", "httr", "httr2", "htmltools",
-  "jsonlite", 
-  "kohonen", 
+  "jsonlite",
+  "kohonen", "knitr",
   "leaflet.providers", "leafem", "libgeos","luz","lwgeom", "leaflet", "leafgl",
-  "mapedit", "mapview", "maptiles", "methods", "mgcv", 
-  "ncdf4", "nnet", 
-  "openxlsx", "parallel", "plotly", 
-  "randomForest", "rasterVis", "raster", "Rcpp", "RcppArmadillo", 
-  "RcppCensSpatial","rayshader", "RcppEigen", "RcppParallel", 
-  "RColorBrewer", "reactable", "rgl", "rsconnect","RStoolbox", "rts", 
-  "s2", "sf", "scales", "sits","spdep", "stars", "stringr","supercells", 
-  "terra", "testthat", "tidyverse", "tidyterra","tools", 
-  "tmap", "tmaptools", "terrainr", 
+  "mapedit", "mapview", "maptiles", "methods", "mgcv",
+  "ncdf4", "nnet",
+  "openxlsx", "parallel", "plotly",
+  "randomForest", "rasterVis", "raster", "Rcpp", "RcppArmadillo",
+  "RcppCensSpatial","rayshader", "RcppEigen", "RcppParallel",
+  "RColorBrewer", "reactable", "rgl", "rsconnect","RStoolbox", "rts", "reticulate",
+  "s2", "sf", "scales", "sits","spdep", "stars", "stringr","supercells",
+  "terra", "testthat", "tidyverse", "tidyterra","tools",
+  "tmap", "tmaptools", "terrainr",
   "xgboost",
   prompt = F)
 
-# Disable spherical geometry
+#mapviewOptions(fgb = FALSE)
 sf::sf_use_s2(use_s2 = FALSE)
-
-# Point environment to your configured python
-reticulate::use_python("/opt/local/bin/python", required=T)
-
-# Initialise Earth Engine
-ee <- reticulate::import("ee")
-ee$Initialize(project = "murphys-deforisk")
-cat("GEE initialised\n")
-
-# Helper Function to visualize EE tile in tmap/leaflet
-ee_tile_url <- function(ee_image, vis_params) {
-  ee_image$getMapId(vis_params)$tile_fetcher$url_format}
-
-# EE FeatureCollection => sf
-ee_to_sf <- function(fc) {geojsonsf::geojson_sf(jsonlite::toJSON(fc$getInfo(), auto_unbox = TRUE))}
 ```
 
 ```{r}
@@ -87,18 +72,18 @@ ee_to_sf <- function(fc) {geojsonsf::geojson_sf(jsonlite::toJSON(fc$getInfo(), a
 #| comment: NA
 
 options(repos = c(CRAN = "https://cloud.r-project.org"),
-        htmltools.dir.version = FALSE, 
+        htmltools.dir.version = FALSE,
         htmltools.preserve.raw = FALSE
         )
 
 knitr::opts_chunk$set(
-  echo = TRUE, 
-  message = FALSE, 
+  echo = TRUE,
+  message = FALSE,
   warning = FALSE,
-  error = FALSE, 
-  comment = NA, 
+  error = FALSE,
+  comment = NA,
   tidy.opts = list(width.cutoff = 60)
-  ) 
+  )
 ```
 
 ```{css, echo=FALSE, class.source = 'foldable'}
@@ -114,7 +99,7 @@ div.column {
   height:200px;
   width: 200px;
   background-image: url('https://raw.githubusercontent.com/seamusrobertmurphy/IPCC-wildfire-emissions/refs/heads/main/02-fuel-stratification/assets/aa_burn_trend.png');
-  background-size: contain;2
+  background-size: contain;
   background-position: 50% 50%;
   padding-top: 80px !important;
   background-repeat: no-repeat;
@@ -151,7 +136,7 @@ Tier 1 Approach: Use IPCC default values stratified by:
 Forest Fires (IPCC 2019 Table 2.4):
 
 | Forest Type | M~B~ (t DM ha⁻¹) | C~f~ | M~B~ × C~f~ |
-|----|----|----|----|
+|-------------|---------|--------|-------|
 | Humid Tropical Forest | 119.6 ± 52.4 | 0.36 ± 0.09 | 43.1 |
 | Other Forest (Boreal) | 41.0 ± 25.3 | 0.45 ± 0.15 | 18.5 |
 | Other Forest (Temperate) | 50.4 ± 30.8 | 0.47 ± 0.14 | 23.7 |
@@ -160,7 +145,7 @@ Forest Fires (IPCC 2019 Table 2.4):
 Savanna Fires (IPCC 2019 Table 2.4):
 
 | Vegetation Type | Season | M~B~ (t DM ha⁻¹) | C~f~ | M~B~ × C~f~ |
-|----|----|----|----|----|
+|------------|------|---------|--------|------|
 | Savanna Woodland | Early | 9.0 ± 7.5 | 0.29 ± 0.09 | 2.6 |
 | Savanna Woodland | Late | 9.0 ± 7.5 | 0.51 ± 0.15 | 4.6 |
 | Savanna Grassland | Early | 6.8 ± 6.0 | 0.31 ± 0.09 | 2.1 |
@@ -444,20 +429,20 @@ library(tidyverse)
 # IPCC 2019 Table 2.4 - Default fuel consumption values
 fuel_consumption_table <- tribble(
   ~fire_category, ~vegetation_type, ~climate_zone, ~season, ~MB_tDM_ha, ~Cf, ~MB_Cf,
-  
+
   # Forest Fires
   "Forest", "Humid_Tropical_Forest", "Tropical_Moist", NA, 119.6, 0.36, 43.1,
   "Forest", "Other_Forest", "Boreal", NA, 41.0, 0.45, 18.5,
   "Forest", "Other_Forest", "Temperate", NA, 50.4, 0.47, 23.7,
   "Forest", "Other_Forest", "Tropical", NA, 69.4, 0.47, 32.6,
-  
+
   # Savanna Fires
   "Savanna", "Savanna_Woodland", "All", "Early", 9.0, 0.29, 2.6,
   "Savanna", "Savanna_Woodland", "All", "Late", 9.0, 0.51, 4.6,
   "Savanna", "Savanna_Grassland", "All", "Early", 6.8, 0.31, 2.1,
   "Savanna", "Savanna_Grassland", "All", "Late", 6.8, 0.83, 5.6,
   "Savanna", "Other_Grassland", "All", NA, 13.4, 0.52, 7.0,
-  
+
   # Organic Soil Fires
   "Organic_Soil", "Tropical_Peatland", "Tropical", NA, 41.2, 1.0, 41.2
 )
@@ -472,88 +457,102 @@ write.csv(
 )
 ```
 
-### Matching Vegetation Classifications to Fuel Values {#sec-fuel-matching}
+------------------------------------------------------------
+
+## GEE Initialisation {#sec-fuel-gee-init}
 
 ```{r}
-#| eval: false
-#| label: fuel-value-assignment
-#| code-summary: "Assign fuel consumption values to classified fires"
+#| label: fuel-gee-setup
+#| warning: false
+#| message: false
+#| error: false
 
-library(rgee)
-library(tidyverse)
+# Point environment to your configured python
+reticulate::use_python("/opt/local/bin/python", required=T)
 
-ee_Initialize()
+# Initialise Earth Engine
+ee <- reticulate::import("ee")
+ee$Initialize(project = "murphys-deforisk")
+cat("GEE initialised\n")
 
-# Load vegetation classification results (from Chapter 2)
-# Assuming structure: country, year, fire_type, area_ha, climate_zone, season
+# Helper: visualize EE tile in tmap/leaflet
+ee_tile_url <- function(ee_image, vis_params) {
+  ee_image$getMapId(vis_params)$tile_fetcher$url_format
+}
 
-veg_classification <- read.csv("Portugal_VegetationClassification_2023.csv")
+# Helper: EE FeatureCollection => sf
+ee_to_sf <- function(fc) {
+  geojsonsf::geojson_sf(
+    jsonlite::toJSON(fc$getInfo(), auto_unbox = TRUE))
+}
 
-# Join with fuel consumption table
-fires_with_fuel <- veg_classification %>%
-  # Standardize column names
-  mutate(
-    fire_category = case_when(
-      str_detect(fire_type, "Forest") ~ "Forest",
-      str_detect(fire_type, "Savanna") ~ "Savanna",
-      str_detect(fire_type, "Organic") ~ "Organic_Soil",
-      TRUE ~ "Unknown"
-    ),
-    vegetation_type = fire_type,
-    season = ifelse(is.na(season), NA, season)
-  ) %>%
-  # Join with lookup table
-  left_join(
-    fuel_consumption_table,
-    by = c("fire_category", "vegetation_type", "climate_zone", "season")
-  ) %>%
-  # Calculate total biomass burned
-  mutate(
-    biomass_burned_tDM = area_ha * MB_Cf
-  )
+# Load AOI boundaries from FAO GAUL
+aoi_country_ee <- ee$FeatureCollection("FAO/GAUL/2015/level0")$
+  filter(ee$Filter$eq("ADM0_NAME", "Honduras"))
+aoi_states_ee  <- ee$FeatureCollection("FAO/GAUL/2015/level1")$
+  filter(ee$Filter$eq("ADM0_NAME", "Honduras"))
+aoi_country_sf <- ee_to_sf(aoi_country_ee)
+aoi_states_sf  <- ee_to_sf(aoi_states_ee)
 
-print(fires_with_fuel)
+cat("AOI loaded:", aoi_country_ee$size()$getInfo(), "country,",
+    aoi_states_ee$size()$getInfo(), "states\n")
 ```
 
-### Example: Portugal 2023 {#sec-fuel-example-portugal}
+### Upstream Inputs from Chapters 1-2 {#sec-fuel-upstream}
 
 ```{r}
-#| eval: true
-#| echo: false
-#| label: fuel-portugal-example
-#| code-summary: "Complete fuel consumption calculation - Portugal"
+#| label: fuel-upstream-inputs
+#| code-summary: "Load burned area (Ch1) and vegetation masks (Ch2)"
 
-# Mock data for demonstration
-portugal_fires_2023 <- tribble(
-  ~fire_type, ~area_ha, ~climate_zone, ~season,
-  "Other_Forest", 45230, "Temperate", NA,
-  "Savanna_Grassland", 8200, "Temperate", "Late",
-  "Savanna_Woodland", 4250, "Temperate", "Early"
-)
+# --- Chapter 1: Burned area (MCD64A1) ---
+mcd64 <- ee$ImageCollection("MODIS/061/MCD64A1")
+burned_2010 <- mcd64$
+  filterBounds(aoi_country_ee$geometry())$
+  filterDate("2010-01-01", "2010-12-31")
 
-# Assign fuel values
-portugal_fuel <- portugal_fires_2023 %>%
-  mutate(fire_category = ifelse(str_detect(fire_type, "Forest"), "Forest", "Savanna")) %>%
-  mutate(vegetation_type = fire_type) %>%
-  left_join(
-    fuel_consumption_table,
-    by = c("fire_category", "vegetation_type", "climate_zone", "season")
-  ) %>%
-  mutate(
-    biomass_burned_tDM = area_ha * MB_Cf,
-    biomass_burned_Gg = biomass_burned_tDM / 1000  # Convert to Gigagrams
-  )
+# FAOSTAT quality filter (matching Ch1)
+faostat_filter <- function(image) {
+  unc  <- image$select("Uncertainty")
+  burn <- image$select("BurnDate")
+  mask <- unc$lt(20L)$And(burn$gt(0L))
+  image$updateMask(mask)
+}
 
-# Summarize
-portugal_summary <- portugal_fuel %>%
-  group_by(fire_category) %>%
-  summarise(
-    total_area_ha = sum(area_ha),
-    total_biomass_Gg = sum(biomass_burned_Gg)
-  )
+# Annual burned mask for 2010
+annual_burned_2010 <- burned_2010$
+  map(faostat_filter)$
+  select("BurnDate")$max()$gt(0L)$selfMask()
 
-print(portugal_summary)
+# --- Chapter 2: Land cover & vegetation masks ---
+lc_2010 <- ee$ImageCollection("MODIS/061/MCD12Q1")$
+  select("LC_Type1")$
+  filterDate("2010-01-01", "2010-12-31")$
+  first()$
+  clip(aoi_country_ee$geometry())
 
+# Forest mask (IGBP 1-5)
+forest_mask <- lc_2010$gte(1L)$And(lc_2010$lte(5L))
+
+# Savanna/grassland mask (IGBP 6-10)
+savanna_mask <- lc_2010$gte(6L)$And(lc_2010$lte(10L))
+
+# Climate-based humid tropical delineation
+bio <- ee$Image("WORLDCLIM/V1/BIO")
+precip <- bio$select("bio12")
+temp   <- bio$select("bio01")
+
+tropical <- temp$gt(180L)
+moist    <- precip$gt(1500L)
+humid_tropical_mask <- tropical$And(moist)
+
+# Forest sub-types
+humid_tropical_forest <- forest_mask$And(humid_tropical_mask)
+other_forest          <- forest_mask$And(humid_tropical_mask$Not())
+
+# Pixel area helper
+pixelArea_ha <- ee$Image$pixelArea()$divide(10000L)
+
+cat("Upstream inputs loaded: MCD64A1 + MCD12Q1 + WorldClim\n")
 ```
 
 ------------------------------------------------------------
@@ -563,198 +562,220 @@ print(portugal_summary)
 ### Creating Fuel Consumption Rasters {#sec-fuel-gee-rasters}
 
 ```{r}
-#| eval: false
 #| label: fuel-gee-rasters
 #| code-summary: "Generate spatially-explicit fuel consumption maps"
 
-library(rgee)
-ee_Initialize()
+# Climate zone masks
+boreal    <- temp$lt(0L)
+temperate <- temp$gte(0L)$And(temp$lte(180L))
 
-# Load inputs (from Chapters 1-2)
-annual_burn_2023 <- [burned area raster from Chapter 1]
-lc_2023 <- ee$ImageCollection("MODIS/061/MCD12Q1")$
-  filterDate("2023-01-01", "2023-12-31")$
-  first()$
-  select("LC_Type1")
-
-# Load climate zones
-temp <- ee$Image("WORLDCLIM/V1/BIO")$select("bio01")
-precip <- ee$Image("WORLDCLIM/V1/BIO")$select("bio12")
-
-# Define climate zones
-boreal <- temp$lt(0)
-tropical <- temp$gt(180)
-temperate <- boreal$Not()$And(tropical$Not())
-
-# Define humid tropical
-humid_tropical <- tropical$And(precip$gt(1500))
-
-# Create fuel consumption image
-# Initialize with zeros
+# Create fuel consumption image (M_B × C_f in t DM ha⁻¹)
 fuel_consumption <- ee$Image(0)$rename("fuel_consumption")
 
-# 1. Humid Tropical Forest (MB*Cf = 43.1)
-htf_mask <- lc_2023$gte(1)$And(lc_2023$lte(5))$And(humid_tropical)
+# 1. Humid Tropical Forest (M_B × C_f = 43.1)
+htf_mask <- forest_mask$And(humid_tropical_mask)
 fuel_consumption <- fuel_consumption$where(htf_mask, 43.1)
 
-# 2. Other Forest - Boreal (MB*Cf = 18.5)
-forest_boreal <- lc_2023$gte(1)$And(lc_2023$lte(5))$
-  And(boreal)$
-  And(humid_tropical$Not())
+# 2. Other Forest - Boreal (M_B × C_f = 18.5)
+forest_boreal <- forest_mask$And(boreal)$And(humid_tropical_mask$Not())
 fuel_consumption <- fuel_consumption$where(forest_boreal, 18.5)
 
-# 3. Other Forest - Temperate (MB*Cf = 23.7)
-forest_temperate <- lc_2023$gte(1)$And(lc_2023$lte(5))$
-  And(temperate)$
-  And(humid_tropical$Not())
+# 3. Other Forest - Temperate (M_B × C_f = 23.7)
+forest_temperate <- forest_mask$And(temperate)$And(humid_tropical_mask$Not())
 fuel_consumption <- fuel_consumption$where(forest_temperate, 23.7)
 
-# 4. Other Forest - Tropical (MB*Cf = 32.6)
-forest_tropical <- lc_2023$gte(1)$And(lc_2023$lte(5))$
-  And(tropical)$
-  And(humid_tropical$Not())
+# 4. Other Forest - Tropical Dry (M_B × C_f = 32.6)
+forest_tropical <- forest_mask$And(tropical)$And(humid_tropical_mask$Not())
 fuel_consumption <- fuel_consumption$where(forest_tropical, 32.6)
 
-# 5. Savanna (simplified - use average of 7.0 t DM ha-1)
-savanna_mask <- lc_2023$gte(6)$And(lc_2023$lte(10))
+# 5. Savanna/Grassland (average = 7.0 t DM ha⁻¹)
 fuel_consumption <- fuel_consumption$where(savanna_mask, 7.0)
 
-# Note: For seasonal stratification, need burn date analysis (see next section)
-
 # Apply to burned areas only
-fuel_consumption_burned <- fuel_consumption$updateMask(annual_burn_2023)
+fuel_burned <- fuel_consumption$
+  updateMask(annual_burned_2010)$
+  clip(aoi_country_ee$geometry())
 
 # Visualize
 fuel_vis <- list(
-  min = 0,
-  max = 50,
-  palette = c('yellow', 'orange', 'red', 'darkred')
+  min = 0L, max = 50L,
+  palette = c("yellow", "orange", "red", "darkred")
 )
 
-Map$addLayer(
-  fuel_consumption_burned,
-  fuel_vis,
-  "Fuel Consumption (t DM ha-1)"
-)
+tmap::tmap_mode("view")
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  tmap::tm_tiles(
+    ee_tile_url(fuel_burned, fuel_vis),
+    group = "Fuel Consumption (t DM ha⁻¹)"
+  ) +
+  tmap::tm_add_legend(
+    type = "polygons",
+    fill = c("yellow", "orange", "red", "darkred"),
+    labels = c("Savanna (~7)", "Temperate Forest (~24)",
+               "Tropical Forest (~33)", "Humid Tropical (~43)"),
+    title = "Fuel Consumption (t DM ha⁻¹)"
+  ) +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 ### Seasonal Stratification for Savannas {#sec-fuel-gee-seasonal}
 
 ```{r}
-#| eval: true
 #| label: fuel-seasonal-stratification
 #| code-summary: "Apply seasonal fuel consumption to savannas"
 
-# Extract burn month (from Chapter 1)
+# Extract burn month from MCD64A1
 extractBurnMonth <- function(mcd64_image) {
   burn_date <- mcd64_image$select("BurnDate")
-  img_date <- ee$Date(mcd64_image$get("system:time_start"))
-  month <- img_date$get("month")
-  
+  img_date  <- ee$Date(mcd64_image$get("system:time_start"))
+  month     <- img_date$get("month")
+
   month_band <- ee$Image$constant(month)$
-    updateMask(burn_date$gt(0))$
-    rename("burn_month")
-  
-  return(month_band)
+    updateMask(burn_date$gt(0L))$
+    rename("burn_month")$
+    toInt()
+
+  burn_date$addBands(month_band)
 }
 
-# Apply to collection
-mcd64 <- ee$ImageCollection("MODIS/061/MCD64A1")$
-  filterDate("2023-01-01", "2023-12-31")
+# Apply to 2010 collection (quality-filtered)
+mcd64_with_months <- burned_2010$
+  map(faostat_filter)$
+  map(extractBurnMonth)
 
-burn_months <- mcd64$map(extractBurnMonth)
-burn_month_composite <- burn_months$max()
+# Composite: latest month if pixel burned multiple times
+month_composite <- mcd64_with_months$
+  select("burn_month")$
+  max()
 
-# Define seasons (example: Southern Hemisphere)
-# Early dry season: May-July (months 5-7)
-# Late dry season: August-October (months 8-10)
+# Honduras dry season (Central America)
+# Early dry: Feb-Mar (months 2-3)
+# Late dry:  Apr-May (months 4-5)
+early_season <- month_composite$gte(2L)$And(month_composite$lte(3L))
+late_season  <- month_composite$gte(4L)$And(month_composite$lte(5L))
 
-early_season <- burn_month_composite$gte(5)$And(burn_month_composite$lte(7))
-late_season <- burn_month_composite$gte(8)$And(burn_month_composite$lte(10))
-
-# Apply seasonal fuel consumption to savannas
-savanna_mask <- lc_2023$gte(6)$And(lc_2023$lte(10))
+# Savanna fire subsets
+savanna_fires_2010 <- annual_burned_2010$updateMask(savanna_mask)
 
 # Woody savanna (IGBP class 8)
-woody_savanna <- lc_2023$eq(8)
-woody_early <- woody_savanna$And(early_season)
-woody_late <- woody_savanna$And(late_season)
-
+woody_savanna <- lc_2010$eq(8L)
 # Grassland/savanna (IGBP classes 9-10)
-grassland <- lc_2023$gte(9)$And(lc_2023$lte(10))
-grass_early <- grassland$And(early_season)
-grass_late <- grassland$And(late_season)
+grassland <- lc_2010$gte(9L)$And(lc_2010$lte(10L))
 
 # Create seasonal fuel consumption
-fuel_seasonal <- ee$Image(0)
-
-# Apply values
+fuel_seasonal <- ee$Image(0)$rename("fuel_seasonal")
 fuel_seasonal <- fuel_seasonal$
-  where(woody_early, 2.6)$   # Early woody savanna
-  where(woody_late, 4.6)$    # Late woody savanna
-  where(grass_early, 2.1)$   # Early grassland
-  where(grass_late, 5.6)     # Late grassland
+  where(woody_savanna$And(early_season), 2.6)$
+  where(woody_savanna$And(late_season), 4.6)$
+  where(grassland$And(early_season), 2.1)$
+  where(grassland$And(late_season), 5.6)
 
-# Mask to burned areas
-fuel_seasonal_burned <- fuel_seasonal$updateMask(annual_burn_2023)
+# Mask to burned savanna areas
+fuel_seasonal_burned <- fuel_seasonal$
+  updateMask(savanna_fires_2010)$
+  clip(aoi_country_ee$geometry())
 
 # Visualize
-Map$addLayer(
-  fuel_seasonal_burned,
-  list(min = 0, max = 6, palette = c('lightyellow', 'yellow', 'orange')),
-  "Savanna Fuel Consumption (Seasonal)"
-)
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  tmap::tm_tiles(
+    ee_tile_url(fuel_seasonal_burned,
+      list(min = 0L, max = 6L,
+           palette = c("lightyellow", "yellow", "orange"))),
+    group = "Savanna Fuel Consumption (Seasonal)"
+  ) +
+  tmap::tm_add_legend(
+    type = "polygons",
+    fill = c("lightyellow", "yellow", "orange"),
+    labels = c("Early grassland (2.1)", "Early woody (2.6) / Late woody (4.6)",
+               "Late grassland (5.6)"),
+    title = "Savanna Fuel (t DM ha⁻¹)"
+  ) +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 ### Calculating Total Biomass Burned {#sec-fuel-gee-total}
 
 ```{r}
-#| eval: false
 #| label: fuel-total-biomass
-#| code-summary: "Calculate total biomass burned by country"
+#| code-summary: "Calculate total biomass burned — Honduras 2010"
 
-# Define area of interest
-countries <- ee$FeatureCollection("FAO/GAUL/2015/level0")
-portugal <- countries$filter(ee$Filter$eq("ADM0_NAME", "Portugal"))
+# Biomass burned per pixel (t DM) = fuel_consumption (t ha⁻¹) × area (ha)
+biomass_per_pixel <- fuel_burned$multiply(pixelArea_ha)
 
-# Calculate biomass burned per pixel (t DM)
-# Pixel area in hectares
-pixel_area_ha <- ee$Image$pixelArea()$divide(10000)
-
-# Biomass = Fuel Consumption (t ha-1) × Area (ha)
-biomass_per_pixel <- fuel_consumption_burned$multiply(pixel_area_ha)
-
-# Aggregate by vegetation type
 # Forest biomass
 forest_biomass <- biomass_per_pixel$
-  updateMask(lc_2023$gte(1)$And(lc_2023$lte(5)))$
+  updateMask(forest_mask)$
   reduceRegion(
-    reducer = ee$Reducer$sum(),
-    geometry = portugal,
-    scale = 500,
+    reducer   = ee$Reducer$sum(),
+    geometry  = aoi_country_ee$geometry(),
+    scale     = 500L,
     maxPixels = 1e9
-  )
+  )$getInfo()
 
 # Savanna biomass
 savanna_biomass <- biomass_per_pixel$
-  updateMask(lc_2023$gte(6)$And(lc_2023$lte(10)))$
+  updateMask(savanna_mask)$
   reduceRegion(
-    reducer = ee$Reducer$sum(),
-    geometry = portugal,
-    scale = 500,
+    reducer   = ee$Reducer$sum(),
+    geometry  = aoi_country_ee$geometry(),
+    scale     = 500L,
     maxPixels = 1e9
+  )$getInfo()
+
+forest_t  <- forest_biomass[["fuel_consumption"]] %||% 0
+savanna_t <- savanna_biomass[["fuel_consumption"]] %||% 0
+
+cat("Honduras 2010 — Total Biomass Burned\n")
+cat("  Forest biomass burned: ", round(forest_t / 1000, 1), "Gg DM\n")
+cat("  Savanna biomass burned:", round(savanna_t / 1000, 1), "Gg DM\n")
+cat("  Total:                 ", round((forest_t + savanna_t) / 1000, 1), "Gg DM\n")
+```
+
+### Matching Vegetation Classifications to Fuel Values {#sec-fuel-matching}
+
+```{r}
+#| label: fuel-value-assignment
+#| code-summary: "Assign fuel consumption values to classified fires — Honduras 2010"
+
+# Burned area by vegetation type (from Ch2 overlay)
+htf_fires  <- annual_burned_2010$updateMask(humid_tropical_forest)
+of_fires   <- annual_burned_2010$updateMask(other_forest)
+sav_fires  <- annual_burned_2010$updateMask(savanna_mask)
+
+# Calculate areas (ha)
+htf_area <- htf_fires$multiply(pixelArea_ha)$reduceRegion(
+  reducer = ee$Reducer$sum(), geometry = aoi_country_ee$geometry(),
+  scale = 500L, maxPixels = 1e9)$getInfo()
+of_area <- of_fires$multiply(pixelArea_ha)$reduceRegion(
+  reducer = ee$Reducer$sum(), geometry = aoi_country_ee$geometry(),
+  scale = 500L, maxPixels = 1e9)$getInfo()
+sav_area <- sav_fires$multiply(pixelArea_ha)$reduceRegion(
+  reducer = ee$Reducer$sum(), geometry = aoi_country_ee$geometry(),
+  scale = 500L, maxPixels = 1e9)$getInfo()
+
+htf_ha <- htf_area[["BurnDate"]] %||% 0
+of_ha  <- of_area[["BurnDate"]] %||% 0
+sav_ha <- sav_area[["BurnDate"]] %||% 0
+
+# Apply IPCC default fuel consumption
+honduras_fuel <- tribble(
+  ~fire_category, ~vegetation_type, ~area_ha, ~MB_tDM_ha, ~Cf, ~MB_Cf,
+  "Forest", "Humid_Tropical_Forest", round(htf_ha, 1), 119.6, 0.36, 43.1,
+  "Forest", "Other_Forest",          round(of_ha, 1),  69.4, 0.47, 32.6,
+  "Savanna", "Savanna_Mixed",        round(sav_ha, 1),  7.9, 0.46,  3.6
+) %>%
+  mutate(
+    biomass_burned_tDM = area_ha * MB_Cf,
+    biomass_burned_Gg  = biomass_burned_tDM / 1000
   )
 
-# Extract values
-forest_total_t <- forest_biomass$getInfo()$fuel_consumption
-savanna_total_t <- savanna_biomass$getInfo()$fuel_consumption
+print(honduras_fuel)
 
-# Convert to Gigagrams (Gg) for IPCC reporting
-forest_Gg <- forest_total_t / 1000
-savanna_Gg <- savanna_total_t / 1000
-
-print(paste("Forest biomass burned:", round(forest_Gg, 1), "Gg DM"))
-print(paste("Savanna biomass burned:", round(savanna_Gg, 1), "Gg DM"))
+cat("\nHonduras 2010 — Summary\n")
+cat("  Total burned area:     ", sum(honduras_fuel$area_ha), "ha\n")
+cat("  Total biomass burned:  ", round(sum(honduras_fuel$biomass_burned_Gg), 1), "Gg DM\n")
 ```
 
 ------------------------------------------------------------
@@ -842,10 +863,11 @@ uncertainty through country-specific data.
 library(tidyverse)
 
 # Define parameter ranges (from IPCC confidence intervals)
+# Honduras is predominantly humid tropical forest
 fuel_params <- expand.grid(
-  MB_forest = c(41.0 - 25.3, 50.4, 50.4 + 30.8),  # Temperate forest: low, mean, high
-  Cf_forest = c(0.47 - 0.14, 0.47, 0.47 + 0.14),
-  area_ha = 45230  # Fixed (from Portugal example)
+  MB_forest = c(119.6 - 52.4, 119.6, 119.6 + 52.4),
+  Cf_forest = c(0.36 - 0.09, 0.36, 0.36 + 0.09),
+  area_ha = round(htf_ha, 0)
 )
 
 # Calculate biomass burned for each parameter combination
@@ -853,25 +875,31 @@ fuel_params <- fuel_params %>%
   mutate(
     biomass_tDM = area_ha * MB_forest * Cf_forest,
     biomass_Gg = biomass_tDM / 1000,
-    scenario = paste0("MB=", round(MB_forest, 1), ", Cf=", round(Cf_forest, 2))
+    scenario = paste0("MB=", round(MB_forest, 1),
+                      ", Cf=", round(Cf_forest, 2))
   )
 
 # Visualize sensitivity
-ggplot(fuel_params, aes(x = MB_forest, y = Cf_forest, fill = biomass_Gg)) +
+ggplot(fuel_params, aes(x = MB_forest, y = Cf_forest,
+                        fill = biomass_Gg)) +
   geom_tile() +
-  geom_text(aes(label = round(biomass_Gg, 0)), color = "white", fontface = "bold") +
+  geom_text(aes(label = round(biomass_Gg, 0)),
+            color = "white", fontface = "bold") +
   scale_fill_viridis_c(name = "Biomass\nBurned (Gg)") +
   labs(
     title = "Sensitivity of Biomass Burned to Fuel Parameters",
-    subtitle = "Portugal Temperate Forest Fires (45,230 ha)",
+    subtitle = paste("Honduras Humid Tropical Forest Fires (",
+                     round(htf_ha, 0), "ha)"),
     x = "Fuel Load MB (t DM ha⁻¹)",
     y = "Combustion Factor Cf"
   ) +
   theme_minimal()
 
 # Calculate coefficient of variation
-cv_biomass <- sd(fuel_params$biomass_Gg) / mean(fuel_params$biomass_Gg) * 100
-print(paste("Coefficient of Variation:", round(cv_biomass, 1), "%"))
+cv_biomass <- sd(fuel_params$biomass_Gg) /
+  mean(fuel_params$biomass_Gg) * 100
+cat("Coefficient of Variation:",
+    round(cv_biomass, 1), "%\n")
 ```
 
 ------------------------------------------------------------
@@ -890,24 +918,24 @@ When available, countries can use:
 3.  Field measurements: Post-fire fuel consumption studies
 4.  Remote sensing: LiDAR for 3D fuel structure
 
-Example: Portugal:
+Example: Honduras:
 
 ```{r}
 #| eval: true
 #| label: fuel-tier2-example
 #| code-summary: "Using country-specific fuel data"
 
-# Hypothetical: Portugal National Forest Inventory fuel loads
-portugal_fuel_data <- tribble(
+# Hypothetical: Honduras National Forest Inventory fuel loads
+honduras_fuel_data <- tribble(
   ~forest_type, ~MB_tDM_ha, ~Cf, ~source,
-  "Pinus pinaster", 65.3, 0.52, "National Forest Inventory 2015",
-  "Eucalyptus globulus", 48.7, 0.48, "Field studies (Fernandes et al. 2020)",
-  "Quercus suber", 38.2, 0.41, "Cork Oak Management Database"
+  "Pinus caribaea (lowland pine)", 72.5, 0.42, "ICF National Inventory 2018",
+  "Broadleaf humid forest",       125.3, 0.34, "SIGMOF field plots 2019",
+  "Dry broadleaf / pine-oak",      55.8, 0.45, "La Mosquitia fire studies 2017"
 )
 
-# These values would replace IPCC defaults for Portuguese forests
+# These values would replace IPCC defaults for Honduran forests
 # Result: Reduced uncertainty (~±25% over ±50%)
-print(portugal_fuel_data)
+print(honduras_fuel_data)
 ```
 
 ### Tier 2+ Fire Severity Stratification (Pending) {#sec-fuel-severity}
@@ -927,25 +955,42 @@ Fire severity classes:
 #| code-summary: "Stratify fuel consumption by fire severity"
 
 # Calculate dNBR from Landsat or Sentinel-2 to adjust Cf
-dnbr <- [calculated dNBR image]
+# Pre-fire composite (Jan-Feb 2010)
+prefire <- ee$ImageCollection("LANDSAT/LT05/C02/T1_L2")$
+  filterBounds(aoi_country_ee$geometry())$
+  filterDate("2010-01-01", "2010-02-28")$
+  median()
+
+# Post-fire composite (Jun-Jul 2010)
+postfire <- ee$ImageCollection("LANDSAT/LT05/C02/T1_L2")$
+  filterBounds(aoi_country_ee$geometry())$
+  filterDate("2010-06-01", "2010-07-31")$
+  median()
+
+# Calculate NBR
+calculateNBR <- function(img) {
+  nir  <- img$select("SR_B4")
+  swir <- img$select("SR_B7")
+  nir$subtract(swir)$divide(nir$add(swir))$rename("NBR")
+}
+nbr_pre  <- calculateNBR(prefire)
+nbr_post <- calculateNBR(postfire)
+dnbr     <- nbr_pre$subtract(nbr_post)
 
 # Define severity classes
-low_severity <- dnbr$gte(0.1)$And(dnbr$lt(0.27))
+low_severity      <- dnbr$gte(0.1)$And(dnbr$lt(0.27))
 moderate_severity <- dnbr$gte(0.27)$And(dnbr$lt(0.44))
-high_severity <- dnbr$gte(0.44)
+high_severity     <- dnbr$gte(0.44)
 
-# Adjust combustion factor
-Cf_default <- 0.47  # IPCC Temperate Forest
+# Adjust combustion factor for humid tropical forest
+Cf_default <- 0.36
 Cf_adjusted <- ee$Image(Cf_default)$
   where(low_severity, Cf_default * 0.5)$
   where(high_severity, Cf_default * 1.5)
 
 # Recalculate fuel consumption
-MB <- 50.4  # IPCC Temperate Forest
+MB <- 119.6
 fuel_consumption_adjusted <- ee$Image(MB)$multiply(Cf_adjusted)
-
-# This provides spatially-explicit fuel consumption
-# More accurate than uniform default
 ```
 
 ### Fuel Moisture Effects {#sec-fuel-moisture}
@@ -967,8 +1012,7 @@ Where:
 #| label: fuel-moisture-correction
 #| code-summary: "Adjust Cf for fuel moisture content"
 
-# Load ERA5 relative humidity or precipitation data as proxy for fuel moisture
-# i.e. high precipitation → High fuel moisture → Low Cf
+# Load ERA5 relative humidity or precipitation data
 precip_monthly <- ee$ImageCollection("ECMWF/ERA5/MONTHLY")$
   select("total_precipitation")
 
@@ -977,7 +1021,7 @@ precip_monthly <- ee$ImageCollection("ECMWF/ERA5/MONTHLY")$
 
 # For demonstration: use annual average
 precip_annual <- precip_monthly$
-  filterDate("2023-01-01", "2023-12-31")$
+  filterDate("2010-01-01", "2010-12-31")$
   mean()
 
 # Convert to fuel moisture proxy (simplified)
@@ -1004,21 +1048,21 @@ Required data structure:
 fuel_output <- tribble(
   ~country, ~year, ~fire_category, ~vegetation_type, ~climate_zone, ~season,
   ~area_ha, ~MB_tDM_ha, ~Cf, ~biomass_burned_Gg,
-  
-  "Portugal", 2023, "Forest", "Other_Forest", "Temperate", NA,
-  45230, 50.4, 0.47, 1072,
-  
-  "Portugal", 2023, "Savanna", "Savanna_Woodland", "Temperate", "Early",
-  4250, 9.0, 0.29, 11,
-  
-  "Portugal", 2023, "Savanna", "Savanna_Grassland", "Temperate", "Late",
-  8200, 6.8, 0.83, 46
+
+  "Honduras", 2010, "Forest", "Humid_Tropical_Forest", "Tropical_Moist", NA,
+  round(htf_ha, 0), 119.6, 0.36, round(htf_ha * 43.1 / 1000, 1),
+
+  "Honduras", 2010, "Forest", "Other_Forest", "Tropical", NA,
+  round(of_ha, 0), 69.4, 0.47, round(of_ha * 32.6 / 1000, 1),
+
+  "Honduras", 2010, "Savanna", "Savanna_Mixed", "Tropical", "Late",
+  round(sav_ha, 0), 7.9, 0.46, round(sav_ha * 3.6 / 1000, 1)
 )
 
 # Save for Chapter 4
 write.csv(
   fuel_output,
-  "Portugal_FuelConsumption_2023.csv",
+  "Honduras_FuelConsumption_2010.csv",
   row.names = FALSE
 )
 
@@ -1060,7 +1104,7 @@ Validation:
 
 ## Notes and Next Steps {#sec-fuel-summary}
 
-### Key Takaways {#sec-fuel-takeaways}
+### Key Takeaways {#sec-fuel-takeaways}
 
 1.  Fuel consumption (M~B~ × C~f~) varies by:
 

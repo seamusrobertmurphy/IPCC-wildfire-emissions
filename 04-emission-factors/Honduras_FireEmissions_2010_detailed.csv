@@ -1,0 +1,5 @@
+"country","year","fire_category","vegetation_type","climate_zone","biomass_burned_Gg","gas","EF_g_kg","emissions_Gg","uncertainty_pct"
+"Honduras",2010,"Forest","Humid_Tropical_Forest","Tropical",1682.70576861007,"CH4",6.8,11442.3992265485,30
+"Honduras",2010,"Forest","Humid_Tropical_Forest","Tropical",1682.70576861007,"N2O",0.2,336.541153722014,50
+"Honduras",2010,"Savanna","Savanna_Mixed","All",814.642602593755,"CH4",2.3,1873.67798596564,40
+"Honduras",2010,"Savanna","Savanna_Mixed","All",814.642602593755,"N2O",0.21,171.074946544688,50

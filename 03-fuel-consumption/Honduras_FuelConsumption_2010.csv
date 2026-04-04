@@ -1,0 +1,4 @@
+"country","year","fire_category","vegetation_type","climate_zone","season","area_ha","MB_tDM_ha","Cf","biomass_burned_Gg"
+"Honduras",2010,"Forest","Humid_Tropical_Forest","Tropical_Moist",NA,33689,119.6,0.36,1452
+"Honduras",2010,"Forest","Other_Forest","Tropical",NA,7163,69.4,0.47,233.5
+"Honduras",2010,"Savanna","Savanna_Mixed","Tropical","Late",116378,7.9,0.46,419
