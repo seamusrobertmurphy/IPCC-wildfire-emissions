@@ -88,11 +88,25 @@ def get_aoi(manifest: dict) -> ee.Geometry:
 def build_image(spec: LayerSpec, aoi: ee.Geometry) -> ee.Image:
     """Translate a manifest reducer recipe into an ee.Image."""
     if spec.source_type == "image":
-        img = ee.Image(spec.source).clip(aoi)
+        base = ee.Image(spec.source)
         if spec.reducer == "clip":
-            return img
+            return base.clip(aoi)
+        if spec.reducer == "first":
+            # Single-image "first" means take the whole image as-is.
+            band = spec.band or spec.bands
+            if band is not None:
+                base = base.select(band)
+            return base.clip(aoi).rename(spec.id)
+        if spec.reducer == "mask_gt_30":
+            return (
+                base.select(spec.band)
+                .gt(30)
+                .selfMask()
+                .clip(aoi)
+                .rename(spec.id)
+            )
         raise NotImplementedError(
-            f"{spec.id}: source_type=image only supports reducer=clip"
+            f"{spec.id}: source_type=image reducer {spec.reducer!r} not implemented"
         )
 
     coll = ee.ImageCollection(spec.source).filterBounds(aoi)
@@ -138,8 +152,9 @@ def build_image(spec: LayerSpec, aoi: ee.Geometry) -> ee.Image:
 
     if spec.reducer == "dnbr_pre_post":
         dr = spec.date_range
-        pre_start, pre_end = dr["pre"]
-        post_start, post_end = dr["post"]
+        # YAML parses ISO dates into datetime.date; EE wants strings.
+        pre_start, pre_end = (str(d) for d in dr["pre"])
+        post_start, post_end = (str(d) for d in dr["post"])
 
         def nbr(img):
             nir = img.select("SR_B5").multiply(0.0000275).add(-0.2)

@@ -148,6 +148,7 @@ layers:
 
   - id: hansen_forest_cover_2020_display
     source: UMD/hansen/global_forest_change_2024_v1_12
+    source_type: image
     band: treecover2000
     reducer: mask_gt_30
     scale_m: 100
@@ -160,6 +161,7 @@ layers:
 
   - id: esa_worldcover_2020_display
     source: ESA/WorldCover/v100/2020
+    source_type: image
     band: Map
     reducer: first
     scale_m: 100
