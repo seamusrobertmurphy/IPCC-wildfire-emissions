@@ -253,11 +253,26 @@ legend <- st_sf(label=c("Burned Areas"),geometry=st_sfc(st_point(c(NA_real_, NA_
 
 tmap::tmap_mode("view")
 tmap::tm_shape(aoi_states_sf) + tmap::tm_borders(col="MAP_COLORS", lwd=1) +
-	tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col="white", lwd=1.5) +
-	tmap::tm_tiles(ee_tile_url(all_years_burn, list(palette = "red", min = 0L, max = 1L))) +
-	tmap::tm_add_legend(type="fill",col="red",labels="Burn Area",title="MCD64A1 Burn Areas (2000–2025)") +
-	tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
-	tmap::tm_basemap("Esri.WorldImagery")
+# --- Offline render -------------------------------------------------------
+# The ee_tile_url call above has been retired so the rendered HTML does not
+# break when the tile session expires. Analytical computations against the
+# live `burned_area` ImageCollection continue to run above; only the final
+# display uses the committed COG.
+source(here::here("R", "palettes.R"))
+source(here::here("R", "local_rasters.R"))
+aoi_country_sf <- local_aoi("country")
+aoi_states_sf  <- local_aoi("states")
+
+tmap::tmap_mode("view")
+tmap::tm_shape(aoi_states_sf) + tmap::tm_borders(col = "MAP_COLORS", lwd = 1) +
+  tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  tm_local_mask("mcd64a1_burn_2000_2025_max", "red", title = "Burn Area") +
+  tmap::tm_add_legend(type = "fill", col = "red",
+    labels = "Burn Area",
+    title  = "MCD64A1 Burn Areas (2000–2025)") +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tmap::tm_basemap("Esri.WorldImagery")
+
 ```
 
 #### Multi-Criteria Filtering {#sec-ba-gee-advanced}
@@ -433,13 +448,23 @@ post_burn <- burned_2020$
   map(faostat_filter)$
   select("BurnDate")$max()$gt(0L)$selfMask()$
   clip(aoi_country_ee$geometry())
+# --- Offline render -------------------------------------------------------
+unc  <- local_raster("mcd64a1_uncertainty_2000_2025")
+burn <- local_raster("mcd64a1_burn_2000_2025_max")
+pre_r  <- burn
+post_r <- burn * (unc < 20)
+post_r[post_r == 0] <- NA
 
-tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col="white", lwd=1.5) +
-	tmap::tm_tiles(ee_tile_url(pre_burn, list(palette="red", min=0L,max = 1L)),group = "Before Filter") +
-	tmap::tm_tiles(ee_tile_url(post_burn, list(palette="yellow", min = 0L, max = 1L)),group="After Filter (<20% UNC)") +
-	tmap::tm_add_legend(type="fill", col=c("red","yellow"), labels=c("Before Filter","After Filter (<20% UNC)"), title="Burn Area") +
-	tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size=0.5) +
-	tmap::tm_basemap("Esri.WorldImagery")
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  tm_local_mask(pre_r,  "red",    title = "Pre-filter",
+                group = "Before Filter") +
+  tm_local_mask(post_r, "yellow", title = "Post-filter",
+                group = "After Filter (<20% UNC)") +
+  tmap::tm_add_legend(type = "fill", col = c("red", "yellow"),
+    labels = c("Before Filter", "After Filter (<20% UNC)"), title = "Burn Area") +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tmap::tm_basemap("Esri.WorldImagery")
+
 ```
 
 ### Uncertainty Quantification {#sec-ba-uncertainty-quant}
@@ -515,13 +540,26 @@ cat("  Overlaps:", stats$agree, "pixels\n")
 #cat("  MOD14A1 active fires:", stats$af_only, "pixels\n")
 
 # Visualize
-tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd =1.5) +
-	tmap::tm_tiles(ee_tile_url(agreement,list(palette = "green", min=0L, max = 1L)),group="Overlaps") +
-	tmap::tm_tiles(ee_tile_url(baOnly,list(palette = "blue", min=0L, max =1L)),group = "MCD64A1 burned areas") +
-	tmap::tm_tiles(ee_tile_url(afOnly,list(palette="red",min=0L, max=1L)),group="MOD14A1 active fires") +
-	tmap::tm_add_legend(type = "fill", col = c("green", "blue", "red"), labels = c("Overlaps", "MCD64A1 burned areas", "MOD14A1 active fires"), title = "Fire Detection") +
-	tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size=0.5) +
-	tmap::tm_basemap("Esri.WorldImagery")
+# --- Offline render -------------------------------------------------------
+ba <- local_raster("mcd64a1_burn_2000_2025_max")
+af <- local_raster("mod14a1_active_fires_2020")
+ba_r <- terra::resample(ba, af, method = "near")
+ba_r[is.na(ba_r)] <- 0
+af[is.na(af)] <- 0
+agreement <- ba_r * af; agreement[agreement == 0] <- NA
+baOnly    <- ba_r * (1 - af); baOnly[baOnly == 0] <- NA
+afOnly    <- af * (1 - ba_r); afOnly[afOnly == 0] <- NA
+
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  tm_local_mask(agreement, "green", title = "Both products",     group = "Overlaps") +
+  tm_local_mask(baOnly,    "blue",  title = "MCD64A1 burned",    group = "MCD64A1 burned areas") +
+  tm_local_mask(afOnly,    "red",   title = "MOD14A1 fires",     group = "MOD14A1 active fires") +
+  tmap::tm_add_legend(type = "fill", col = c("green", "blue", "red"),
+    labels = c("Both products", "MCD64A1 only", "MOD14A1 only"),
+    title  = "Burned Area vs Active Fire (2020)") +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tmap::tm_basemap("Esri.WorldImagery")
+
 ```
 
 Landsat-based Products (30m resolution): Higher resolution
@@ -603,12 +641,18 @@ cat("Honduras 2020 burned pixels (annual max):", n_burned[["burned"]], "\n")
 # Visualize
 tile_2020 <- ee_tile_url(annual_burned_2020, 
 	list(palette=c("yellow", "orange", "red"),min=0L, max=1L)) 
+# --- Offline render -------------------------------------------------------
+annual <- local_raster("mcd64a1_burn_annual_2001_2024")
+b2020  <- annual[["burn_2020"]]
+b2020[b2020 == 0] <- NA
 
-tmap::tm_shape(aoi_country_sf) + 
-	tmap::tm_borders(col = "white", lwd=1.5) +
-	tmap::tm_tiles(tile_2020, group = "Burned 2020") +
-	tmap::tm_add_legend(type = "fill", col = "red", labels = "Burned 2020", title = "Annual Burn Area") +
-	tmap::tm_basemap("Esri.WorldImagery")
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  tm_local_mask(b2020, "red", title = "2020 burn pixels") +
+  tmap::tm_add_legend(type = "fill", col = "red",
+    labels = "Burn Area", title = "MCD64A1 (2020)") +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tmap::tm_basemap("Esri.WorldImagery")
+
 ```
 
 #### Multiple Burns Accounting
@@ -652,16 +696,18 @@ for (k in names(hist)) {
 # Visualize
 tile_freq <- ee_tile_url(burnCount$selfMask()$clip(aoi_country_ee$geometry()), list(
   palette = c("yellow", "orange", "red"),min = 1L, max = 3L))
+# --- Offline render -------------------------------------------------------
+annual    <- local_raster("mcd64a1_burn_annual_2001_2024")
+burnCount <- terra::app(annual, sum, na.rm = TRUE)
+burnCount[burnCount == 0] <- NA
 
-tmap::tm_shape(aoi_country_sf) + 
-	tmap::tm_borders(col = "white", lwd = 1.5) +
-	tmap::tm_tiles(tile_freq, group = "Burn Frequency 2020") +
-	tmap::tm_add_legend(
-  type = "polygons",
-  fill = c("yellow", "orange", "red"),
-  labels = c("Burned once", "Burned twice", "Burned 3+ times"),
-  title = "Burn Frequency (2020)") +
-	tmap::tm_basemap("Esri.WorldImagery")
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  tm_local_continuous(burnCount,
+    palette_colours = c("#ffffb2", "#fd8d3c", "#bd0026"),
+    title = "Burn frequency 2001–2024") +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tmap::tm_basemap("Esri.WorldImagery")
+
 ```
 
 ### Time Series Construction {#sec-ba-timeseries}
@@ -1049,18 +1095,34 @@ if (total > 0) {cat("  Agreement rate: ",round(as.integer(
 	val_stats$agree %||% 0) / total * 100, 1), "%\n")}
 
 # Visualize agreement
-tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
-  tmap::tm_tiles(ee_tile_url(agreement$selfMask()$clip(aoi_country_ee$geometry()),
-      list(palette = "green", min = 1L, max = 1L)), group = "Both Agree: Forest") +
-  tmap::tm_tiles(ee_tile_url(modis_only$selfMask()$clip(aoi_country_ee$geometry()),
-      list(palette = "blue", min = 1L, max = 1L)), group = "MODIS-only Forest") +
-  tmap::tm_tiles(ee_tile_url(glad_only$selfMask()$clip(aoi_country_ee$geometry()),
-      list(palette = "red", min = 1L, max = 1L)), group = "Hansen-only Forest") +
-  tmap::tm_add_legend(type = "polygons", fill = c("green", "blue", "red"),
-      labels = c("Both Agree: Forest", "MODIS-only Forest", "Hansen-only Forest"),
-      title = "Forest Cover Agreement") +
-	tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
-  tmap::tm_basemap("Esri.WorldImagery")
+# --- Offline render (falls back to a notice if the display COG is missing)-
+hansen_fp <- here::here("data", "rendered", "hansen_forest_cover_2020_display.tif")
+if (file.exists(hansen_fp)) {
+  ba     <- local_raster("mcd64a1_burn_2000_2025_max")
+  hansen <- local_raster("hansen_forest_cover_2020_display")
+  ba2    <- terra::resample(ba, hansen, method = "near")
+  ba2[is.na(ba2)] <- 0
+  hansen[is.na(hansen)] <- 0
+  agreement  <- ba2 * hansen;       agreement[agreement == 0] <- NA
+  modis_only <- ba2 * (1 - hansen); modis_only[modis_only == 0] <- NA
+  glad_only  <- hansen * (1 - ba2); glad_only[glad_only == 0] <- NA
+
+  tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+    tm_local_mask(agreement,  "green", title = "Burned & forested",
+                  group = "Both layers") +
+    tm_local_mask(modis_only, "blue",  title = "Burned only",
+                  group = "MCD64A1 only") +
+    tm_local_mask(glad_only,  "red",   title = "Forested only",
+                  group = "Hansen GFC only") +
+    tmap::tm_basemap("Esri.WorldImagery")
+} else {
+  htmltools::HTML(paste0(
+    "<em>Hansen GFC display COG not yet available. Run ",
+    "<code>python gee/export_to_asset.py --only hansen_forest_cover_2020_display</code>",
+    " then <code>Rscript gee/download_cogs.R</code> to populate this map.</em>"
+  ))
+}
+
 ```
 
 ### ESA WorldCover Validation {#sec-veg-esri-validation}

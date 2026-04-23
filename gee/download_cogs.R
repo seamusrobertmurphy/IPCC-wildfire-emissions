@@ -141,7 +141,8 @@ download_layer <- function(spec) {
   }
 
   # Assets with many bands blow past the 50 MB per-request limit. Pull in
-  # groups of 6 bands and stack on disk.
+  # groups of 6 bands and stack on disk. Reset names from the original
+  # GEE band list so years like "burn_2020" survive the chunked round-trip.
   band_names <- img$bandNames()$getInfo()
   if (length(band_names) > 6) {
     chunks <- split(band_names, ceiling(seq_along(band_names) / 6))
@@ -150,6 +151,7 @@ download_layer <- function(spec) {
   } else {
     r <- fetch_tif(img)
   }
+  names(r) <- band_names
   terra::writeRaster(
     r,
     filename  = out_fp,
