@@ -16,6 +16,8 @@
 
 suppressPackageStartupMessages({
   library(yaml)
+  library(reticulate)
+  reticulate::use_python("/opt/local/bin/python", required = TRUE)
   library(rgee)
   library(terra)
   library(sf)
