@@ -148,7 +148,7 @@ Each term is stratified by fire category. FAOSTAT reclassifies MODIS MCD12Q1 IGB
 Fire Category
 
 |   | IGBP Source | Non-CO₂ via Eq. 2.27 | CO₂ Treatment |
-|----|----|----|----|
+|------------------|------------------|------------------|------------------|
 | Forest remaining Forest (classes 1–5) | Evergreen/Deciduous Needleleaf & Broadleaf, Mixed | CH₄, N₂O | CO₂ reported via stock-change (Eq. 2.7–2.14) — not synchronous with regrowth[^index-3] |
 | Forest converted to other land | Same classes, land-use change detected | CH₄, N₂O, CO₂ | All gases via Eq. 2.27; reported under new land-use category |
 | Savanna/Grassland (classes 6–10) | Shrublands, Woody Savannas, Savannas, Grasslands | CH₄, N₂O | CO₂ not reported — assumed synchronous with annual regrowth |
@@ -273,8 +273,7 @@ tmap::tmap_mode("view")
 tmap::tm_shape(aoi_country_sf) +
 	tmap::tm_borders(col = "white", lwd = 1.5) +tmap::tm_tiles(ee_tile_url(lc_2020, lc_vis),group = "IGBP 17-Class") +
 	tmap::tm_tiles(ee_tile_url(fire_categories$selfMask(), cat_vis),group = "IPCC Fire Categories") +
-	tmap::tm_tiles(ee_tile_url(all_years_burn, list(palette = "red", min = 0L, max = 1L)),
-  group = "Burn Areas (2000\u20132025)") +
+	tmap::tm_tiles(ee_tile_url(all_years_burn, list(palette = "red", min = 0L, max = 1L)),group = "Burn Areas (2000\u20132025)") +
 	tmap::tm_tiles(ee_tile_url(burn_edges, list(palette = "#FFFF00", min = 0L, max = 1L)),group = "Burn Areas (2000\u20132025)") +
 	tmap::tm_add_legend(polygons = "fill", fill = "red",labels = "Burn Area",title = "MCD64A1 (2000\u20132025)") +
 	tmap::tm_add_legend(polygons = "fill",fill = c("#006400", "#DAA520", "#D3D3D3"),
@@ -335,12 +334,8 @@ strata_vis <- list(min = 1L, max = 4L,
 tmap::tmap_mode("view")
 tmap::tm_shape(aoi_country_sf) +
   tmap::tm_borders(col = "white", lwd = 1.5) +
-tmap::tm_tiles(
-  ee_tile_url(forest_strata, strata_vis),
-  group = "Forest Climate Strata"
-) +
-tmap::tm_add_legend(type = "fill",col = c("#006400", "#9ACD32", "#DAA520", "#4682B4"),
-  labels = c(
+	tmap::tm_tiles(ee_tile_url(forest_strata, strata_vis),group = "Forest Climate Strata") +
+	tmap::tm_add_legend(type = "fill",col = c("#006400", "#9ACD32", "#DAA520", "#4682B4"), labels = c(
     "Tropical Moist (M\u2082 120\u2013164 t/ha)",
     "Tropical Dry (M\u2082 84 t/ha)",
     "Temperate (M\u2082 50 t/ha)",
