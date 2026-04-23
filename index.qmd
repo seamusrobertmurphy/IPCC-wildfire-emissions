@@ -148,7 +148,7 @@ Each term is stratified by fire category. FAOSTAT reclassifies MODIS MCD12Q1 IGB
 Fire Category
 
 |   | IGBP Source | Non-CO₂ via Eq. 2.27 | CO₂ Treatment |
-|------------------|------------------|------------------|------------------|
+|----|----|----|----|
 | Forest remaining Forest (classes 1–5) | Evergreen/Deciduous Needleleaf & Broadleaf, Mixed | CH₄, N₂O | CO₂ reported via stock-change (Eq. 2.7–2.14) — not synchronous with regrowth[^index-3] |
 | Forest converted to other land | Same classes, land-use change detected | CH₄, N₂O, CO₂ | All gases via Eq. 2.27; reported under new land-use category |
 | Savanna/Grassland (classes 6–10) | Shrublands, Woody Savannas, Savannas, Grasslands | CH₄, N₂O | CO₂ not reported — assumed synchronous with annual regrowth |
