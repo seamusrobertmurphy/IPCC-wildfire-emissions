@@ -55,9 +55,13 @@ resolve_cog_path <- function(id) {
 local_raster <- function(id, display_crs = "EPSG:4326") {
   fp <- resolve_cog_path(id)
   r  <- terra::rast(fp)
-  if (!is.null(display_crs) && terra::crs(r, describe = TRUE)$code != sub("EPSG:", "", display_crs)) {
-    method <- if (grepl("display", id)) "bilinear" else "near"
-    r <- terra::project(r, display_crs, method = method)
+  if (!is.null(display_crs)) {
+    current <- terra::crs(r, describe = TRUE)$code
+    want    <- sub("EPSG:", "", display_crs)
+    if (is.na(current) || !identical(as.character(current), want)) {
+      method <- if (grepl("display", id)) "bilinear" else "near"
+      r <- terra::project(r, display_crs, method = method)
+    }
   }
   r
 }
@@ -88,54 +92,53 @@ local_aoi <- function(level = c("country", "states")) {
 #' @param group        leaflet group (defaults to title)
 #' @param alpha        fill opacity; defaults to 0.7 to match original maps
 tm_local_categorical <- function(id, palette, title, group = NULL, alpha = 0.7) {
-  r <- local_raster(id)
+  r   <- local_raster(id)
   grp <- group %||% title
+  r[is.na(r) | r == 0] <- NA
   tmap::tm_shape(r) +
     tmap::tm_raster(
-      palette    = palette$colors,
-      style      = "cat",
-      title      = title,
-      alpha      = alpha,
-      group      = grp,
-      labels     = palette$labels,
-      showNA     = FALSE,
-      colorNA    = NULL
+      col.scale  = tmap::tm_scale_categorical(
+        values       = palette$colors,
+        value.na     = NA,
+        labels       = palette$labels
+      ),
+      col.legend = tmap::tm_legend(title = title, show = !is.null(palette$labels)),
+      col_alpha  = alpha,
+      group      = grp
     )
 }
 
 #' Single-colour mask layer (burn area overlays, active fire dots, etc.).
 #' Treats value 0 / NA as transparent.
 tm_local_mask <- function(id, colour, title, group = NULL, alpha = 0.7) {
-  r <- local_raster(id)
-  r[r == 0] <- NA
+  r <- if (inherits(id, "SpatRaster")) id else local_raster(id)
+  r[is.na(r) | r == 0] <- NA
   grp <- group %||% title
   tmap::tm_shape(r) +
     tmap::tm_raster(
-      palette = colour,
-      style   = "cat",
-      title   = title,
-      alpha   = alpha,
-      group   = grp,
-      showNA  = FALSE,
-      colorNA = NULL
+      col.scale  = tmap::tm_scale_categorical(values = colour, value.na = NA),
+      col.legend = tmap::tm_legend(title = title, show = FALSE),
+      col_alpha  = alpha,
+      group      = grp
     )
 }
 
 #' Continuous raster layer (dNBR, forest cover percent, etc.).
 tm_local_continuous <- function(id, palette_colours, title,
                                 breaks = NULL, group = NULL, alpha = 0.7) {
-  r   <- local_raster(id)
+  r   <- if (inherits(id, "SpatRaster")) id else local_raster(id)
   grp <- group %||% title
+  scale <- if (is.null(breaks)) {
+    tmap::tm_scale_continuous(values = palette_colours)
+  } else {
+    tmap::tm_scale_intervals(values = palette_colours, breaks = breaks)
+  }
   tmap::tm_shape(r) +
     tmap::tm_raster(
-      palette = palette_colours,
-      style   = if (is.null(breaks)) "cont" else "fixed",
-      breaks  = breaks,
-      title   = title,
-      alpha   = alpha,
-      group   = grp,
-      showNA  = FALSE,
-      colorNA = NULL
+      col.scale  = scale,
+      col.legend = tmap::tm_legend(title = title),
+      col_alpha  = alpha,
+      group      = grp
     )
 }
 
@@ -161,9 +164,12 @@ local_fire_categories <- function(id = "mcd12q1_igbp_2020") {
 }
 
 #' Forest strata (tropical moist / dry / temperate / boreal) from IGBP + WorldClim.
+#' WorldClim bio is 1 km; IGBP is 500 m. Resample WorldClim to the IGBP grid so
+#' the boolean operations broadcast across identical extents.
 local_forest_strata <- function() {
-  igbp   <- local_raster("mcd12q1_igbp_2020")
-  bio    <- local_raster("worldclim_bio01_bio12")
+  igbp <- local_raster("mcd12q1_igbp_2020")
+  bio  <- local_raster("worldclim_bio01_bio12")
+  bio  <- terra::resample(bio, igbp, method = "near")
   temp   <- bio[[1]]         # bio01, °C × 10
   precip <- bio[[2]]         # bio12, mm
   forest <- igbp >= 1 & igbp <= 5
