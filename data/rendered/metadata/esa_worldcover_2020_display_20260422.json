@@ -1,0 +1,12 @@
+{
+  "id": "esa_worldcover_2020_display",
+  "asset_id": "projects/murphys-deforisk/assets/ipcc-wildfires/esa_worldcover_2020_display",
+  "local_cog": "esa_worldcover_2020_display.tif",
+  "size_mb": 0.34,
+  "over_50mb": false,
+  "target_crs": "EPSG:32616",
+  "scale_m": 100,
+  "display_only": true,
+  "download_utc": "2026-04-23T02:14:50Z",
+  "rgee_version": "1.1.8"
+}

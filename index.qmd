@@ -46,33 +46,24 @@ knitr::opts_chunk$set(
   error = FALSE, comment = NA,
   tidy.opts = list(width.cutoff = 60))
 
-# GEE initialisation
-reticulate::use_python("/opt/local/bin/python", required = TRUE)
-ee <- reticulate::import("ee")
-ee$Initialize(project = "murphys-deforisk")
+# Previously this chunk initialised rgee / reticulate against Google Earth
+# Engine and pulled AOI + land-cover as live ee objects, then every map below
+# drew its layers from ee_tile_url(). Tile URLs carry a session token that
+# expires within weeks, so rendered pages went blank for the reader.
+#
+# All GEE extraction now runs once in gee/export_to_asset.py and is mirrored
+# to data/rendered/*.tif by gee/download_cogs.R. This chunk loads those
+# committed COGs and vector boundaries, so rendering no longer depends on
+# any live GEE session.
+source(here::here("R", "palettes.R"))
+source(here::here("R", "local_rasters.R"))
 
-# Helpers
-ee_tile_url <- function(ee_image, vis_params) {
-  ee_image$getMapId(vis_params)$tile_fetcher$url_format
-}
-ee_to_sf <- function(fc) {
-  geojsonsf::geojson_sf(jsonlite::toJSON(fc$getInfo(), auto_unbox = TRUE))
-}
+aoi_country_sf <- local_aoi("country")
+aoi_states_sf  <- local_aoi("states")
 
-# AOI
-aoi_country_ee <- ee$FeatureCollection("FAO/GAUL/2015/level0")$
-  filter(ee$Filter$eq("ADM0_NAME", "Honduras"))
-aoi_states_ee  <- ee$FeatureCollection("FAO/GAUL/2015/level1")$
-  filter(ee$Filter$eq("ADM0_NAME", "Honduras"))
-aoi_country_sf <- ee_to_sf(aoi_country_ee)
-aoi_states_sf  <- ee_to_sf(aoi_states_ee)
-
-# IGBP land cover 2020 (used in multiple maps below)
-lc_2020 <- ee$ImageCollection("MODIS/061/MCD12Q1")$
-  select("LC_Type1")$
-  filterDate("2020-01-01", "2020-12-31")$
-  first()$
-  clip(aoi_country_ee$geometry())
+lc_2020        <- local_raster("mcd12q1_igbp_2020")
+all_years_burn <- local_raster("mcd64a1_burn_2000_2025_max")
+burn_edges     <- local_burn_edges()
 ```
 
 ```{css, echo=FALSE, class.source = 'foldable'}
@@ -148,7 +139,7 @@ Each term is stratified by fire category. FAOSTAT reclassifies MODIS MCD12Q1 IGB
 Fire Category
 
 |   | IGBP Source | Non-CO₂ via Eq. 2.27 | CO₂ Treatment |
-|----|----|----|----|
+|------------------|------------------|------------------|------------------|
 | Forest remaining Forest (classes 1–5) | Evergreen/Deciduous Needleleaf & Broadleaf, Mixed | CH₄, N₂O | CO₂ reported via stock-change (Eq. 2.7–2.14) — not synchronous with regrowth[^index-3] |
 | Forest converted to other land | Same classes, land-use change detected | CH₄, N₂O, CO₂ | All gases via Eq. 2.27; reported under new land-use category |
 | Savanna/Grassland (classes 6–10) | Shrublands, Woody Savannas, Savannas, Grasslands | CH₄, N₂O | CO₂ not reported — assumed synchronous with annual regrowth |
@@ -189,54 +180,26 @@ MODIS MCD64A1 C6.1 provides monthly burned area at 500 m from 2001–present. FA
 #| message: false
 #| warning: false
 
-# 25-year burn composite
-mcd64 <- ee$ImageCollection("MODIS/061/MCD64A1")
-all_years_burn <- mcd64$
-  filterBounds(aoi_country_ee$geometry())$
-  filterDate("2000-01-01", "2025-12-31")$
-  select("BurnDate")$max()$gt(0L)$selfMask()$
-  clip(aoi_country_ee$geometry())
-
-
-# Yellow edge outline for burn areas
-burn_binary <- all_years_burn$gt(0L)$unmask(0L)
-burn_edges  <- burn_binary$
-  focal_max(radius = 1L, kernelType = "square")$
-  subtract(burn_binary)$gt(0L)$selfMask()$
-  clip(aoi_country_ee$geometry())
-
-# IPCC Climate Zones
-ipcc_climate <- ee$Image("users/philipaudebert/IPCC/Corrigenda/ipcc_climate_1985-2015_corrigenda_raster")$
-	clip(aoi_country_ee$geometry())
-
-climate_vis <- list(min = 1L, max = 12L,
-  palette = c(
-    "#8B4513", "#1B9E77", "#66A61E", "#E6AB02",
-    "#7570B3", "#A6761D", "#4682B4", "#87CEEB",
-    "#006400", "#8FBC8F", "#B0B0B0", "#E0E0E0")
-  )
 
 tmap::tmap_mode("view")
 tmap::tm_shape(aoi_states_sf) + tmap::tm_borders(col = "MAP_COLORS", lwd = 1) +
-	tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
-	tmap::tm_tiles(ee_tile_url(ipcc_climate$selfMask(), climate_vis),group = "IPCC Climate Zones") +
-	tmap::tm_tiles(ee_tile_url(all_years_burn, list(palette = "red", min = 0L, max = 1L)),group = "Burn Areas (2000\u20132025)") +
-	tmap::tm_tiles(ee_tile_url(burn_edges, list(palette = "#FFFF00", min = 0L, max = 1L)),group = "Burn Areas (2000\u20132025)") +
-	tmap::tm_add_legend(polygons = "fill",
-  fill = c("#8B4513", "#1B9E77", "#66A61E", "#E6AB02",
-          "#7570B3", "#A6761D", "#4682B4", "#87CEEB",
-          "#006400", "#8FBC8F", "#B0B0B0", "#E0E0E0"),
-  labels = c(
-    "1 Tropical Montane",   "2 Tropical Wet",
-    "3 Tropical Moist",     "4 Tropical Dry",
-    "5 Warm Temp. Moist",   "6 Warm Temp. Dry",
-    "7 Cool Temp. Moist",   "8 Cool Temp. Dry",
-    "9 Boreal Moist",       "10 Boreal Dry",
-    "11 Polar Moist",       "12 Polar Dry"),
-  title = "IPCC Climate Zones") +
-	tmap::tm_add_legend(polygons = "fill", fill = "red",labels = "Burn Area",title = "MCD64A1 (2000\u20132025)") +
-	tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
-	tmap::tm_basemap("Esri.WorldImagery")
+  tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  tm_local_categorical("ipcc_climate_zones_honduras", ipcc_climate_palette,
+                       title = "IPCC Climate Zones") +
+  tm_local_mask(all_years_burn, "red",
+                title = "Burn Area",
+                group = "Burn Areas (2000–2025)") +
+  tm_local_mask(burn_edges, "#FFFF00",
+                title = "Burn Edges",
+                group = "Burn Areas (2000–2025)") +
+  tmap::tm_add_legend(polygons = "fill",
+    fill   = ipcc_climate_palette$colors,
+    labels = ipcc_climate_palette$labels,
+    title  = "IPCC Climate Zones") +
+  tmap::tm_add_legend(polygons = "fill", fill = "red",
+    labels = "Burn Area", title = "MCD64A1 (2000–2025)") +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 ### Fire Types by Landcover
@@ -250,41 +213,34 @@ The IGBP 17-class land cover is reclassified into the three fire categories defi
 #| message: false
 #| warning: false
 
-# IGBP 17-class palette
-lc_vis <- list(
-  min = 0L, max = 17L,
-  palette = c(
-    '05450a', '086a10', '54a708', '78d203', '009900',
-    'c6b044', 'dcd159', 'dade48', 'fbff13', 'b6ff05',
-    '27ff87', 'c24f44', 'a5a5a5', 'ff6d4c', '69fff8',
-    'f9ffa4', '1c0dff'
-  )
-)
-
-# Reclassify into 3 fire categories
-fire_categories <- lc_2020$remap(
-    c(1L,2L,3L,4L,5L, 6L,7L,8L,9L,10L, 11L,12L,13L,14L,15L,16L,17L),
-    c(1L,1L,1L,1L,1L, 2L,2L,2L,2L,2L,  3L,3L,3L,3L,3L,3L,3L)
-    )
-
-cat_vis <- list(min = 1L, max = 3L,palette = c("#006400", "#DAA520", "#D3D3D3"))
 
 tmap::tmap_mode("view")
-tmap::tm_shape(aoi_country_sf) +
-	tmap::tm_borders(col = "white", lwd = 1.5) +tmap::tm_tiles(ee_tile_url(lc_2020, lc_vis),group = "IGBP 17-Class") +
-	tmap::tm_tiles(ee_tile_url(fire_categories$selfMask(), cat_vis),group = "IPCC Fire Categories") +
-	tmap::tm_tiles(ee_tile_url(all_years_burn, list(palette = "red", min = 0L, max = 1L)),
-  group = "Burn Areas (2000\u20132025)") +
-	tmap::tm_tiles(ee_tile_url(burn_edges, list(palette = "#FFFF00", min = 0L, max = 1L)),group = "Burn Areas (2000\u20132025)") +
-	tmap::tm_add_legend(polygons = "fill", fill = "red",labels = "Burn Area",title = "MCD64A1 (2000\u20132025)") +
-	tmap::tm_add_legend(polygons = "fill",fill = c("#006400", "#DAA520", "#D3D3D3"),
-  labels = c(
-    "Forest (IGBP 1\u20135)",
-    "Savanna (IGBP 6\u201310)",
-    "Other (IGBP 11\u201317, excluded)"),
-  title = "IPCC Fire Categories (2020)") +
-	tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
-	tmap::tm_basemap("Esri.WorldImagery")
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  tm_local_categorical("mcd12q1_igbp_2020", igbp_palette,
+                       title = "IGBP 17-Class", group = "IGBP 17-Class") +
+  (tmap::tm_shape(local_fire_categories()) +
+     tmap::tm_raster(
+       col.scale  = tmap::tm_scale_categorical(
+         values = fire_categories_palette$colors,
+         labels = fire_categories_palette$labels,
+         value.na = NA),
+       col.legend = tmap::tm_legend(title = "IPCC Fire Categories (2020)"),
+       col_alpha  = 0.7,
+       group      = "IPCC Fire Categories")) +
+  tm_local_mask(all_years_burn, "red",
+                title = "Burn Area",
+                group = "Burn Areas (2000–2025)") +
+  tm_local_mask(burn_edges, "#FFFF00",
+                title = "Burn Edges",
+                group = "Burn Areas (2000–2025)") +
+  tmap::tm_add_legend(polygons = "fill", fill = "red",
+    labels = "Burn Area", title = "MCD64A1 (2000–2025)") +
+  tmap::tm_add_legend(polygons = "fill",
+    fill   = fire_categories_palette$colors,
+    labels = fire_categories_palette$labels,
+    title  = "IPCC Fire Categories (2020)") +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 ### Forest Type by Climate Zones
@@ -307,50 +263,32 @@ Tables 2.4 and 2.6 stratify fuel consumption (M~B~) and combustion factors (C~f~
 #| message: false
 #| warning: false
 
-# Forest mask (IGBP 1-5)
-forest_mask <- lc_2020$gte(1L)$And(lc_2020$lte(5L))
-
-# WorldClim thresholds
-bio    <- ee$Image("WORLDCLIM/V1/BIO")
-temp   <- bio$select("bio01")   # °C * 10
-precip <- bio$select("bio12")   # mm
-
-tropical   <- temp$gt(180L)
-trop_moist <- tropical$And(precip$gt(1500L))
-trop_dry   <- tropical$And(precip$lte(1500L))
-temperate  <- temp$gt(0L)$And(temp$lte(180L))
-boreal     <- temp$lte(0L)
-
-forest_strata <- ee$Image(0L)$
-  where(forest_mask$And(trop_moist), 1L)$
-  where(forest_mask$And(trop_dry),   2L)$
-  where(forest_mask$And(temperate),  3L)$
-  where(forest_mask$And(boreal),     4L)$
-  selfMask()$
-  clip(aoi_country_ee$geometry())
-
-strata_vis <- list(min = 1L, max = 4L,
-  palette = c("#006400", "#9ACD32", "#DAA520", "#4682B4"))
 
 tmap::tmap_mode("view")
-tmap::tm_shape(aoi_country_sf) +
-  tmap::tm_borders(col = "white", lwd = 1.5) +
-tmap::tm_tiles(
-  ee_tile_url(forest_strata, strata_vis),
-  group = "Forest Climate Strata"
-) +
-tmap::tm_add_legend(type = "fill",col = c("#006400", "#9ACD32", "#DAA520", "#4682B4"),
-  labels = c(
-    "Tropical Moist (M\u2082 120\u2013164 t/ha)",
-    "Tropical Dry (M\u2082 84 t/ha)",
-    "Temperate (M\u2082 50 t/ha)",
-    "Boreal (M\u2082 41 t/ha)"),
-  title = "Forest Strata (Tables 2.4/2.5)") +
-	tmap::tm_tiles(ee_tile_url(all_years_burn, list(palette = "red", min = 0L, max = 1L)),group = "Burn Areas (2000-2025)") +
-	tmap::tm_add_legend(polygons = "fill", fill = "red",labels = "Burn Area",title = "MCD64A1 (2020-2025)") +
-	tmap::tm_tiles(ee_tile_url(burn_edges, list(palette = "#FFFF00", min = 0L, max = 1L)),group = "Burn Areas (2000-2025)") +
-	tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
-	tmap::tm_basemap("Esri.WorldImagery")
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  (tmap::tm_shape(local_forest_strata()) +
+     tmap::tm_raster(
+       col.scale  = tmap::tm_scale_categorical(
+         values = forest_strata_palette$colors,
+         labels = forest_strata_palette$labels,
+         value.na = NA),
+       col.legend = tmap::tm_legend(title = "Forest Strata (Tables 2.4/2.5)"),
+       col_alpha  = 0.7,
+       group      = "Forest Climate Strata")) +
+  tm_local_mask(all_years_burn, "red",
+                title = "Burn Area",
+                group = "Burn Areas (2000-2025)") +
+  tm_local_mask(burn_edges, "#FFFF00",
+                title = "Burn Edges",
+                group = "Burn Areas (2000-2025)") +
+  tmap::tm_add_legend(type = "fill",
+    col    = forest_strata_palette$colors,
+    labels = forest_strata_palette$labels,
+    title  = "Forest Strata (Tables 2.4/2.5)") +
+  tmap::tm_add_legend(polygons = "fill", fill = "red",
+    labels = "Burn Area", title = "MCD64A1 (2020-2025)") +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 ### IPCC Soil Zones
@@ -365,34 +303,27 @@ The IPCC soil classification maps global soils into 13 classes derived from the 
 #| warning: false
 sf::sf_use_s2(use_s2 = F)
 
-ipcc_soils <- ee$Image("projects/murphys-deforisk/assets/ipcc_soils")
-ipcc_soils_hnd <- ipcc_soils$clip(aoi_country_ee$geometry())
 
-soil_vis <- list(min = 1L, max = 13L,
-  palette = c(
-    "#E0E0E0", "#A66F03", "#FFD27F", "#FEBDBD", "#2A7200",
-    "#D7D69D", "#676767", "#FFFFBD", "#9B9B9B", "#0083A8",
-    "#8303A7", "#BDE7FF", "black"
-  )
-)
+sf::sf_use_s2(use_s2 = F)
 
 tmap::tmap_mode("view")
-tmap::tm_shape(aoi_country_sf) +
-  tmap::tm_borders(col = "white", lwd = 1.5) +
-	tmap::tm_tiles(ee_tile_url(ipcc_soils_hnd$selfMask(), soil_vis),group = "IPCC Soil Groups") +
-	tmap::tm_add_legend(
-		type = "fill", col = c("#A66F03", "#FFD27F", "#2A7200", "#D7D69D","#FFFFBD", "#0083A8", "#8303A7"),
-		labels = c(
-    "HAC \u2014 High activity clay", "LAC \u2014 Low activity clay",
-    "ORG \u2014 Organic soils", "POD \u2014 Spodic soils",
-    "SAN \u2014 Sandy soils", "VOL \u2014 Volcanic soils",
-    "WET \u2014 Wetland soils"),
-  title = "IPCC Soil Classes (HWSD v2.0)") +
-	tmap::tm_tiles(ee_tile_url(all_years_burn, list(palette="red",min=0L,max=1L)),group = "Burn Areas (2000\u20132025)") +
-	tmap::tm_tiles(ee_tile_url(burn_edges, list(palette = "#FFFF00", min = 0L, max = 1L)),group = "Burn Areas (2020-2025)") +
-	tmap::tm_add_legend(polygons = "fill", fill = "red",labels = "Burn Area",title = "MCD64A1 (2000\u20132025)") +
-	tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
-	tmap::tm_basemap("Esri.WorldImagery")
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  tm_local_categorical("ipcc_soils_honduras", ipcc_soils_palette,
+                       title = "IPCC Soil Groups") +
+  tm_local_mask(all_years_burn, "red",
+                title = "Burn Area",
+                group = "Burn Areas (2000–2025)") +
+  tm_local_mask(burn_edges, "#FFFF00",
+                title = "Burn Edges",
+                group = "Burn Areas (2020-2025)") +
+  tmap::tm_add_legend(type = "fill",
+    col    = ipcc_soils_palette$visible_colors,
+    labels = ipcc_soils_palette$visible_labels,
+    title  = "IPCC Soil Classes (HWSD v2.0)") +
+  tmap::tm_add_legend(polygons = "fill", fill = "red",
+    labels = "Burn Area", title = "MCD64A1 (2000–2025)") +
+  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tmap::tm_basemap("Esri.WorldImagery")
 ```
 
 ------------------------------------------------------------------------

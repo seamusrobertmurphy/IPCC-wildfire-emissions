@@ -304,25 +304,22 @@ lc_vis <- list(
 )
 
 tmap::tmap_mode("view")
+# --- Offline render -------------------------------------------------------
+
+local({
+source(here::here("R", "palettes.R"))
+source(here::here("R", "local_rasters.R"))
+if (!exists("aoi_country_sf")) aoi_country_sf <- local_aoi("country")
+if (!exists("aoi_states_sf"))  aoi_states_sf  <- local_aoi("states")
+
+tmap::tmap_mode("view")
 tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
-  tmap::tm_tiles(ee_tile_url(lc_2020, lc_vis),group = "IGBP Land Cover 2020") +
+  tm_local_categorical("mcd12q1_igbp_2020", igbp_palette,
+                       title = "IGBP 17-Class") +
   tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
-  tmap::tm_add_legend(
-    type = "polygons",
-    fill = c("#05450a", "#086a10", "#54a708", "#78d203", "#009900",
-             "#c6b044", "#dcd159", "#dade48", "#fbff13", "#b6ff05",
-             "#27ff87", "#c24f44", "#a5a5a5", "#ff6d4c", "#69fff8",
-             "#f9ffa4", "#1c0dff"),
-    labels = c("1 Evergreen Needleleaf", "2 Evergreen Broadleaf",
-               "3 Deciduous Needleleaf", "4 Deciduous Broadleaf",
-               "5 Mixed Forests", "6 Closed Shrublands",
-               "7 Open Shrublands", "8 Woody Savannas",
-               "9 Savannas", "10 Grasslands",
-               "11 Permanent Wetlands", "12 Croplands",
-               "13 Urban", "14 Cropland/Veg Mosaic",
-               "15 Snow/Ice", "16 Barren", "17 Unclassified"),
-    title = "IGBP Land Cover (2020)") +
-	tmap::tm_basemap("Esri.WorldImagery")
+  tmap::tm_basemap("Esri.WorldImagery")
+})
+
 ```
 
 ### Land Cover Validation and Uncertainty {#sec-veg-lc-uncertainty}
@@ -430,16 +427,30 @@ cat("Forest area (approx):",
     "thousand ha\n")
 
 # Visualize forest mask
+# --- Offline render -------------------------------------------------------
+
+local({
+source(here::here("R", "palettes.R"))
+source(here::here("R", "local_rasters.R"))
+if (!exists("aoi_country_sf")) aoi_country_sf <- local_aoi("country")
+if (!exists("aoi_states_sf"))  aoi_states_sf  <- local_aoi("states")
+
+igbp <- local_raster("mcd12q1_igbp_2020")
+forest_mask <- igbp >= 1 & igbp <= 5
+forest_mask[!forest_mask] <- NA
+
+tmap::tmap_mode("view")
 tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
-  tmap::tm_tiles(ee_tile_url(forest_mask$selfMask()$clip(aoi_country_ee$geometry()),
-  	list(palette = "086a10", min = 1L, max = 1L)), group = "Forest (IGBP 1-5)") +
-  tmap::tm_add_legend(
-    type = "polygons",
-    fill = "#086a10",
-    labels = "Forest (IGBP 1-5)",
-    title = "Forest Cover (2020)") +
+  tm_local_mask(forest_mask, "#006400", title = "Forest (IGBP 1–5)") +
+  tm_local_mask("mcd64a1_burn_2000_2025_max", "red", title = "Burn Area",
+                group = "Burn Areas") +
+  tmap::tm_add_legend(type = "fill", col = c("#006400", "red"),
+    labels = c("Forest", "Burn Area"),
+    title  = "Forest mask + MCD64A1 burns") +
   tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
   tmap::tm_basemap("Esri.WorldImagery")
+})
+
 ```
 
 ### Humid Tropical Forest Delineation {#sec-veg-humid-tropical}
@@ -497,27 +508,29 @@ cat("  Humid Tropical Forest:", htf_count[["forest_mask"]] %||% 0, "pixels\n")
 cat("  Other Forest:         ", of_count[["forest_mask"]] %||% 0, "pixels\n")
 
 # Visualize
+# --- Offline render -------------------------------------------------------
+
+local({
+source(here::here("R", "palettes.R"))
+source(here::here("R", "local_rasters.R"))
+if (!exists("aoi_country_sf")) aoi_country_sf <- local_aoi("country")
+if (!exists("aoi_states_sf"))  aoi_states_sf  <- local_aoi("states")
+
+strata <- local_forest_strata()
+humid  <- strata == 1; humid[!humid] <- NA
+other  <- strata %in% c(2, 3, 4); other[!other] <- NA
+
+tmap::tmap_mode("view")
 tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
-  tmap::tm_tiles(
-    ee_tile_url(
-      humid_tropical_forest$selfMask()$clip(aoi_country_ee$geometry()),
-      list(palette = "darkgreen", min = 1L, max = 1L)
-    ), group = "Humid Tropical Forest"
-  ) +
-  tmap::tm_tiles(
-    ee_tile_url(
-      other_forest$selfMask()$clip(aoi_country_ee$geometry()),
-      list(palette = "orange", min = 1L, max = 1L)
-    ), group = "Other Forest"
-  ) +
-  tmap::tm_add_legend(
-    type = "polygons",
-    fill = c("darkgreen", "orange"),
-    labels = c("Humid Tropical Forest", "Other Forest"),
-    title = "Forest Type Classification"
-  ) +
+  tm_local_mask(humid, "#006400", title = "Humid Tropical") +
+  tm_local_mask(other, "#DAA520", title = "Other Forest") +
+  tmap::tm_add_legend(type = "fill", col = c("#006400", "#DAA520"),
+    labels = c("Humid Tropical (T>18°C, P>1500mm)", "Other Forest"),
+    title  = "Forest strata") +
   tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
   tmap::tm_basemap("Esri.WorldImagery")
+})
+
 ```
 
 ### Forest Fire Area Calculation {#sec-veg-forest-area}
@@ -577,27 +590,29 @@ cat("  Other Forest fires:         ",
     round(of_area[["BurnDate"]] %||% 0, 1), "ha\n")
 
 # Visualize
+# --- Offline render -------------------------------------------------------
+
+local({
+source(here::here("R", "palettes.R"))
+source(here::here("R", "local_rasters.R"))
+if (!exists("aoi_country_sf")) aoi_country_sf <- local_aoi("country")
+if (!exists("aoi_states_sf"))  aoi_states_sf  <- local_aoi("states")
+
+igbp <- local_raster("mcd12q1_igbp_2020")
+burn <- local_raster("mcd64a1_burn_2000_2025_max")
+forest_burn <- (igbp >= 1 & igbp <= 5) & !is.na(burn)
+forest_burn[!forest_burn] <- NA
+
+tmap::tmap_mode("view")
 tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
-  tmap::tm_tiles(
-    ee_tile_url(
-      htf_fires_2020$clip(aoi_country_ee$geometry()),
-      list(palette = "darkred", min = 0L, max = 1L)
-    ), group = "Humid Tropical Forest Fires"
-  ) +
-  tmap::tm_tiles(
-    ee_tile_url(
-      other_fires_2020$clip(aoi_country_ee$geometry()),
-      list(palette = "orange", min = 0L, max = 1L)
-    ), group = "Other Forest Fires"
-  ) +
-  tmap::tm_add_legend(
-    type = "polygons",
-    fill = c("darkred", "orange"),
-    labels = c("Humid Tropical Forest Fires", "Other Forest Fires"),
-    title = "Forest Fire Areas (2020)"
-  ) +
+  tm_local_mask(forest_burn, "#c24f44", title = "Forest burns") +
+  tmap::tm_add_legend(type = "fill", col = "#c24f44",
+    labels = "Forest ∩ Burn",
+    title  = "Forest burns 2000–2025") +
   tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
   tmap::tm_basemap("Esri.WorldImagery")
+})
+
 ```
 
 ------------------------------------------------------------
@@ -656,27 +671,29 @@ sav_area <- savanna_fires_2020$
 cat("  Total savanna fire area:", round(sav_area[["BurnDate"]] %||% 0, 1), "ha\n")
 
 # Visualize
+# --- Offline render -------------------------------------------------------
+
+local({
+source(here::here("R", "palettes.R"))
+source(here::here("R", "local_rasters.R"))
+if (!exists("aoi_country_sf")) aoi_country_sf <- local_aoi("country")
+if (!exists("aoi_states_sf"))  aoi_states_sf  <- local_aoi("states")
+
+igbp <- local_raster("mcd12q1_igbp_2020")
+savanna <- igbp >= 6 & igbp <= 10; savanna[!savanna] <- NA
+
+tmap::tmap_mode("view")
 tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
-  tmap::tm_tiles(
-    ee_tile_url(
-      savanna_mask$selfMask()$clip(aoi_country_ee$geometry()),
-      list(palette = "fbff13", min = 1L, max = 1L)
-    ), group = "Savanna/Grassland (IGBP 6-10)"
-  ) +
-  tmap::tm_tiles(
-    ee_tile_url(
-      savanna_fires_2020$clip(aoi_country_ee$geometry()),
-      list(palette = "red", min = 0L, max = 1L)
-    ), group = "Savanna Fires 2020"
-  ) +
-  tmap::tm_add_legend(
-    type = "polygons",
-    fill = c("#fbff13", "red"),
-    labels = c("Savanna/Grassland (IGBP 6-10)", "Savanna Fires 2020"),
-    title = "Savanna Classification & Fires"
-  ) +
+  tm_local_mask(savanna, "#DAA520", title = "Savanna (IGBP 6–10)") +
+  tm_local_mask("mcd64a1_burn_2000_2025_max", "red", title = "Burn Area",
+                group = "Burn Areas") +
+  tmap::tm_add_legend(type = "fill", col = c("#DAA520", "red"),
+    labels = c("Savanna / grassland", "Burn Area"),
+    title  = "Savanna mask + MCD64A1 burns") +
   tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
   tmap::tm_basemap("Esri.WorldImagery")
+})
+
 ```
 
 ### Climate Zone Stratification {#sec-veg-climate-stratification}
@@ -748,21 +765,26 @@ cat("  Temperate savanna fires:",
     round(sav_temp_area[["BurnDate"]] %||% 0, 1), "ha\n")
 
 # Visualize climate-stratified fires
+# --- Offline render -------------------------------------------------------
+
+local({
+source(here::here("R", "palettes.R"))
+source(here::here("R", "local_rasters.R"))
+if (!exists("aoi_country_sf")) aoi_country_sf <- local_aoi("country")
+if (!exists("aoi_states_sf"))  aoi_states_sf  <- local_aoi("states")
+
+tmap::tmap_mode("view")
 tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
-  tmap::tm_tiles(
-    ee_tile_url(
-      tropical_zone$selfMask()$clip(aoi_country_ee$geometry()),
-      list(palette = "ff6600", min = 1L, max = 1L)
-    ), group = "Tropical Zone"
-  ) +
-  tmap::tm_tiles(
-    ee_tile_url(
-      temperate_zone$selfMask()$clip(aoi_country_ee$geometry()),
-      list(palette = "3399ff", min = 1L, max = 1L)
-    ), group = "Temperate Zone"
-  ) +
+  tm_local_categorical("ipcc_climate_zones_honduras", ipcc_climate_palette,
+                       title = "IPCC Climate Zones") +
+  tmap::tm_add_legend(polygons = "fill",
+    fill   = ipcc_climate_palette$colors,
+    labels = ipcc_climate_palette$labels,
+    title  = "IPCC Climate Zones") +
   tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
   tmap::tm_basemap("Esri.WorldImagery")
+})
+
 ```
 
 ### Seasonal Burn Patterns {#sec-veg-seasonal}
@@ -998,33 +1020,35 @@ if (total > 0) {
 }
 
 # Visualize agreement
-tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
-  tmap::tm_tiles(
-    ee_tile_url(
-      agreement$selfMask()$clip(aoi_country_ee$geometry()),
-      list(palette = "green", min = 1L, max = 1L)
-    ), group = "Both Agree: Forest"
-  ) +
-  tmap::tm_tiles(
-    ee_tile_url(
-      modis_only$selfMask()$clip(aoi_country_ee$geometry()),
-      list(palette = "blue", min = 1L, max = 1L)
-    ), group = "MODIS-only Forest"
-  ) +
-  tmap::tm_tiles(
-    ee_tile_url(
-      glad_only$selfMask()$clip(aoi_country_ee$geometry()),
-      list(palette = "red", min = 1L, max = 1L)
-    ), group = "Hansen-only Forest"
-  ) +
-  tmap::tm_add_legend(
-    type = "polygons",
-    fill = c("green", "blue", "red"),
-    labels = c("Both Agree: Forest", "MODIS-only Forest", "Hansen-only Forest"),
-    title = "Forest Classification Agreement"
-  ) +
-  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
-  tmap::tm_basemap("Esri.WorldImagery")
+# --- Offline render (graceful fallback while Hansen COG exports) ---------
+
+local({
+source(here::here("R", "palettes.R"))
+source(here::here("R", "local_rasters.R"))
+if (!exists("aoi_country_sf")) aoi_country_sf <- local_aoi("country")
+if (!exists("aoi_states_sf"))  aoi_states_sf  <- local_aoi("states")
+
+hansen_fp <- here::here("data", "rendered", "hansen_forest_cover_2020_display.tif")
+if (file.exists(hansen_fp)) {
+  ba     <- local_raster("mcd64a1_burn_2000_2025_max")
+  hansen <- local_raster("hansen_forest_cover_2020_display")
+  ba2    <- terra::resample(ba, hansen, method = "near")
+  ba2[is.na(ba2)] <- 0
+  hansen[is.na(hansen)] <- 0
+  agreement <- ba2 * hansen; agreement[agreement == 0] <- NA
+  modis_only <- ba2 * (1 - hansen); modis_only[modis_only == 0] <- NA
+  glad_only  <- hansen * (1 - ba2); glad_only[glad_only == 0] <- NA
+
+  tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+    tm_local_mask(agreement, "green", title = "Both") +
+    tm_local_mask(modis_only, "blue", title = "Burned only") +
+    tm_local_mask(glad_only, "red",  title = "Forested only") +
+    tmap::tm_basemap("Esri.WorldImagery")
+} else {
+  htmltools::HTML("<em>Hansen GFC display COG pending export.</em>")
+}
+})
+
 ```
 
 ### ESA WorldCover Validation {#sec-veg-esri-validation}
@@ -1172,33 +1196,32 @@ if (total_burned_ha > 0) {cat(sprintf("  %-30s %9.1f%%\n", "Classification cover
 
 # 3. Visualize
 tmap::tm_shape(aoi_states_sf) + tmap::tm_borders(col = "MAP_COLORS", lwd = 1) +
-  tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
-  tmap::tm_tiles(
-    ee_tile_url(
-      htf_fires_2020$clip(aoi_country_ee$geometry()),
-      list(palette = "darkred", min = 0L, max = 1L)
-    ), group = "Humid Tropical Forest Fires"
-  ) +
-  tmap::tm_tiles(
-    ee_tile_url(
-      other_fires_2020$clip(aoi_country_ee$geometry()),
-      list(palette = "ff8800", min = 0L, max = 1L)
-    ), group = "Other Forest Fires"
-  ) +
-  tmap::tm_tiles(
-    ee_tile_url(
-      savanna_fires_2020$clip(aoi_country_ee$geometry()),
-      list(palette = "ffff00", min = 0L, max = 1L)
-    ), group = "Savanna Fires"
-  ) +
-  tmap::tm_add_legend(
-    type = "polygons",
-    fill = c("darkred", "#ff8800", "#ffff00"),
-    labels = c("Humid Tropical Forest Fires", "Other Forest Fires", "Savanna Fires"),
-    title = "IPCC Fire Classification (2020)"
-  ) +
-  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+# --- Offline render -------------------------------------------------------
+
+local({
+source(here::here("R", "palettes.R"))
+source(here::here("R", "local_rasters.R"))
+if (!exists("aoi_country_sf")) aoi_country_sf <- local_aoi("country")
+if (!exists("aoi_states_sf"))  aoi_states_sf  <- local_aoi("states")
+
+strata <- local_forest_strata()
+
+tmap::tmap_mode("view")
+tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
+  (tmap::tm_shape(strata) +
+     tmap::tm_raster(
+       col.scale  = tmap::tm_scale_categorical(
+         values   = forest_strata_palette$colors,
+         labels   = forest_strata_palette$labels,
+         value.na = NA),
+       col.legend = tmap::tm_legend(title = "Forest Strata"),
+       col_alpha  = 0.7)) +
+  tm_local_mask("mcd64a1_burn_2000_2025_max", "red", title = "Burn Area") +
+  tmap::tm_add_legend(type = "fill", col = forest_strata_palette$colors,
+    labels = forest_strata_palette$labels, title = "Forest Strata") +
   tmap::tm_basemap("Esri.WorldImagery")
+})
+
 ```
 
 ### Output Format {#sec-veg-output}
