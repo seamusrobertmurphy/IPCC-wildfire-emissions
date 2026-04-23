@@ -10,7 +10,7 @@ Usage:
   python gee/export_to_asset.py [--only ID [ID ...]] [--force] [--dry-run]
 
 Design decisions (see specs/TODO_0001_GEE_Raster_Export.md §6):
-  - Assets live under projects/<project>/assets/trees-wildfire-replications/<id>.
+  - Assets live under projects/murphys-deforisk/assets/ipcc-wildfires/<id>.
   - AOI is FAO/GAUL/2015/level0 filtered to Honduras.
   - Target CRS is EPSG:32616 (UTM zone 16N).
   - Tasks are queued in batches of at most 5 concurrent.
@@ -173,7 +173,7 @@ def submit_task(
     asset_id = f"{asset_root}/{spec.id}"
     task = ee.batch.Export.image.toAsset(
         image=img,
-        description=f"trees-wildfire-{spec.id}"[:100],
+        description=f"ipcc-wildfires-{spec.id}"[:100],
         assetId=asset_id,
         region=aoi,
         scale=spec.scale_m,
@@ -190,6 +190,14 @@ def asset_exists(asset_id: str) -> bool:
         return True
     except Exception:
         return False
+
+
+def ensure_folder(asset_root: str) -> None:
+    """Create the asset folder if missing. No-op if it already exists."""
+    if asset_exists(asset_root):
+        return
+    print(f"[create-folder] {asset_root}")
+    ee.data.createAsset({"type": "FOLDER"}, asset_root)
 
 
 def write_metadata(spec: LayerSpec, asset_id: str, task_id: str) -> None:
@@ -232,6 +240,9 @@ def main() -> int:
     if not selected:
         print("no layers selected", file=sys.stderr)
         return 1
+
+    if not args.dry_run:
+        ensure_folder(asset_root)
 
     pending: list[tuple[LayerSpec, ee.batch.Task, str]] = []
 

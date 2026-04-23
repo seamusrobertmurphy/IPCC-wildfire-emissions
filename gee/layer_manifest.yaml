@@ -16,7 +16,7 @@
 
 version: 1
 asset_project: murphys-deforisk
-asset_root: projects/murphys-deforisk/assets/trees-wildfire-replications
+asset_root: projects/murphys-deforisk/assets/ipcc-wildfires
 aoi:
   source: FAO/GAUL/2015/level0
   filter: "ADM0_NAME == 'Honduras'"
