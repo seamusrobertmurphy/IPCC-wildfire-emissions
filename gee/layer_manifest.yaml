@@ -1,0 +1,171 @@
+# GEE layer manifest
+#
+# Drives gee/export_to_asset.py and gee/download_cogs.R.
+# Each entry defines one raster that the book depends on. The source is pulled
+# from its public GEE collection, written to a user-owned asset for durability,
+# then mirrored to data/rendered/ as a Cloud-Optimised GeoTIFF for offline render.
+#
+# Conventions:
+#   asset_project : GEE project that owns the persistent asset copy
+#   asset_root    : Prefix under which all TODO 0001 assets live
+#   aoi           : FAO GAUL level 0 geometry for Honduras (shared by all entries)
+#   target_crs    : EPSG:32616 (UTM zone 16N) — appropriate for Honduras; never geographic
+#   scale_m       : Native or display resolution in metres
+#   display_only  : true means the COG is downsampled for visual rendering only and
+#                   must not be used for area calculation
+
+version: 1
+asset_project: murphys-deforisk
+asset_root: projects/murphys-deforisk/assets/trees-wildfire-replications
+aoi:
+  source: FAO/GAUL/2015/level0
+  filter: "ADM0_NAME == 'Honduras'"
+  target_crs: EPSG:32616
+  committed_path: data/rendered/aoi_honduras.gpkg
+
+layers:
+
+  - id: mcd64a1_burn_2000_2025_max
+    source: MODIS/061/MCD64A1
+    band: BurnDate
+    reducer: max_gt_zero
+    date_range: [2000-01-01, 2025-12-31]
+    scale_m: 500
+    dtype: uint8
+    nodata: 0
+    description: Pixelwise max of BurnDate > 0 across 2000–2025. Binary burn / no-burn.
+    used_in:
+      - index.qmd:preface-burned-area-climate
+      - index.qmd:preface-igbp-map
+      - index.qmd:preface-forest-strata-map
+      - index.qmd:preface-ipcc-soils-map
+      - 01-burn-area/index.qmd:gee-python-setup
+      - 02-fuel-stratification/index.qmd:veg-forest-area-calc
+
+  - id: mcd64a1_burn_annual_2001_2024
+    source: MODIS/061/MCD64A1
+    band: BurnDate
+    reducer: per_year_max_gt_zero
+    date_range: [2001-01-01, 2024-12-31]
+    bands_per_year: true
+    scale_m: 500
+    dtype: uint8
+    nodata: 0
+    description: One band per year, binary burn / no-burn. Feeds multi-year frequency and annual totals.
+    used_in:
+      - 01-burn-area/index.qmd:annual-summation
+      - 01-burn-area/index.qmd:multiple-burns
+      - 01-burn-area/index.qmd:timeseries-stack
+      - 01-burn-area/index.qmd:annual-burned-honduras
+
+  - id: mcd64a1_uncertainty_2000_2025
+    source: MODIS/061/MCD64A1
+    band: Uncertainty
+    reducer: mean
+    date_range: [2000-01-01, 2025-12-31]
+    scale_m: 500
+    dtype: uint8
+    description: Mean uncertainty across time series. Used to reproduce the FAOSTAT <20% filter.
+    used_in:
+      - 01-burn-area/index.qmd:gee-advanced-filtering-a
+      - 01-burn-area/index.qmd:faostat-filter-honduras
+      - 01-burn-area/index.qmd:sensitivity-analysis
+
+  - id: mod14a1_active_fires_2020
+    source: MODIS/061/MOD14A1
+    band: FireMask
+    reducer: max_gte_7
+    date_range: [2020-01-01, 2020-12-31]
+    scale_m: 1000
+    dtype: uint8
+    description: Active fire detections 2020, confidence ≥ nominal (FireMask ≥ 7). For MCD64A1 vs. MOD14A1 agreement map.
+    used_in:
+      - 01-burn-area/index.qmd:active-fire-comparison
+
+  - id: mcd12q1_igbp_2020
+    source: MODIS/061/MCD12Q1
+    band: LC_Type1
+    reducer: first
+    date_range: [2020-01-01, 2020-12-31]
+    scale_m: 500
+    dtype: uint8
+    description: IGBP 17-class land cover 2020. Used for fire categories, forest mask, savanna mask.
+    used_in:
+      - index.qmd:preface-igbp-map
+      - index.qmd:preface-forest-strata-map
+      - 02-fuel-stratification/index.qmd:veg-mcd12q1-access
+      - 02-fuel-stratification/index.qmd:veg-lc-class-counts
+      - 02-fuel-stratification/index.qmd:veg-forest-classification
+      - 02-fuel-stratification/index.qmd:veg-humid-tropical
+      - 02-fuel-stratification/index.qmd:veg-savanna-classification
+
+  - id: worldclim_bio01_bio12
+    source: WORLDCLIM/V1/BIO
+    bands: [bio01, bio12]
+    reducer: none
+    scale_m: 1000
+    dtype: int16
+    description: bio01 (mean annual temperature × 10, °C) and bio12 (annual precipitation, mm). Drives forest stratification.
+    used_in:
+      - index.qmd:preface-forest-strata-map
+      - 02-fuel-stratification/index.qmd:veg-humid-tropical
+      - 02-fuel-stratification/index.qmd:veg-climate-zones
+
+  - id: ipcc_climate_zones_honduras
+    source: users/philipaudebert/IPCC/Corrigenda/ipcc_climate_1985-2015_corrigenda_raster
+    source_type: image
+    reducer: clip
+    scale_m: 1000
+    dtype: uint8
+    description: 12-class IPCC climate zones (1985–2015 climatology). Clipped to Honduras AOI.
+    used_in:
+      - index.qmd:preface-burned-area-climate
+      - 02-fuel-stratification/index.qmd:veg-climate-zones
+
+  - id: ipcc_soils_honduras
+    source: projects/murphys-deforisk/assets/ipcc_soils
+    source_type: image
+    reducer: clip
+    scale_m: 1000
+    dtype: uint8
+    description: 13-class IPCC soil classification from HWSD v2.0. User-owned asset. Clipped to Honduras.
+    used_in:
+      - index.qmd:preface-ipcc-soils-map
+      - 02-fuel-stratification/index.qmd:veg-histosols-access
+
+  - id: landsat_dnbr_2020_display
+    source: LANDSAT/LC08/C02/T1_L2
+    reducer: dnbr_pre_post
+    date_range:
+      pre: [2020-01-01, 2020-04-30]
+      post: [2020-05-01, 2020-08-31]
+    scale_m: 100
+    display_only: true
+    dtype: float32
+    description: dNBR (pre–post NBR) from Landsat 8 for 2020 fire season. Resampled to 100 m from 30 m native — for visualisation only.
+    used_in:
+      - 01-burn-area/index.qmd:landsat-validation
+
+  - id: hansen_forest_cover_2020_display
+    source: UMD/hansen/global_forest_change_2024_v1_12
+    band: treecover2000
+    reducer: mask_gt_30
+    scale_m: 100
+    display_only: true
+    dtype: uint8
+    description: Hansen tree cover 2000 thresholded at >30%. Resampled to 100 m for visualisation.
+    used_in:
+      - 01-burn-area/index.qmd:veg-glad-height-validation
+      - 02-fuel-stratification/index.qmd:veg-glad-height-validation
+
+  - id: esa_worldcover_2020_display
+    source: ESA/WorldCover/v100/2020
+    band: Map
+    reducer: first
+    scale_m: 100
+    display_only: true
+    dtype: uint8
+    description: ESA WorldCover 2020 land cover. Resampled from 10 m to 100 m for visualisation.
+    used_in:
+      - 01-burn-area/index.qmd:veg-esa-worldcover-validation
+      - 02-fuel-stratification/index.qmd:veg-esa-worldcover-validation

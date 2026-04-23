@@ -9,10 +9,18 @@
 /.claude/
 CLAUDE.md
 SPECIFICATION.md
-/specs/
+/specs/*
+!/specs/TODO_*.md
+!/specs/FEATURE_*.md
+!/specs/TEST_*.md
 
 *.dbf
 *.tif
+!data/rendered/*.tif
+!data/rendered/**/*.tif
 
 .dbf
 .tif
+
+# Local piggyback cache for oversized rasters
+.piggyback_cache/
