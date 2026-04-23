@@ -62,14 +62,15 @@ local_raster <- function(id, display_crs = "EPSG:4326") {
   r
 }
 
-# Vector AOI loader for country / subnational outlines.
+# Vector AOI loader. The GPKG written by gee/download_cogs.R is multilayer:
+# `country` (GAUL level 0 dissolved) and `states` (GAUL level 1).
 local_aoi <- function(level = c("country", "states")) {
   level <- match.arg(level)
   fp <- here::here("data", "rendered", "aoi_honduras.gpkg")
   if (!file.exists(fp)) {
     stop("AOI GPKG missing. Run gee/download_cogs.R.", call. = FALSE)
   }
-  suppressMessages(sf::st_read(fp, quiet = TRUE))
+  suppressMessages(sf::st_read(fp, layer = level, quiet = TRUE))
 }
 
 # --- tmap helpers ---------------------------------------------------------

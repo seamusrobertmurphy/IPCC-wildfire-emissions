@@ -48,13 +48,27 @@ aoi_ee <- ee$FeatureCollection(manifest$aoi$source)$
   filter(ee$Filter$eq("ADM0_NAME", "Honduras"))$
   geometry()
 
-# One-off: export AOI as committed GPKG if missing.
+# Helper matching the preface's ee_to_sf — avoids the geojsonio dependency
+# that rgee::ee_as_sf pulls in.
+ee_fc_to_sf <- function(fc) {
+  info <- fc$getInfo()
+  geojsonsf::geojson_sf(jsonlite::toJSON(info, auto_unbox = TRUE))
+}
+
+# One-off: export AOI as committed GPKG if missing. Exports both country
+# (level0) and state (level1) layers into a single multilayer GPKG so the
+# book's `local_aoi()` can pull either.
 aoi_gpkg <- file.path(repo_root, manifest$aoi$committed_path)
 if (!file.exists(aoi_gpkg) || force) {
   message("Writing AOI GPKG...")
-  aoi_sf <- sf::st_as_sf(rgee::ee_as_sf(aoi_ee))
-  aoi_sf <- sf::st_transform(aoi_sf, 32616)
-  sf::st_write(aoi_sf, aoi_gpkg, delete_dsn = TRUE, quiet = TRUE)
+  country_fc <- ee$FeatureCollection(manifest$aoi$source)$
+    filter(ee$Filter$eq("ADM0_NAME", "Honduras"))
+  country <- sf::st_transform(ee_fc_to_sf(country_fc), 32616)
+  states  <- ee$FeatureCollection(sub("level0", "level1", manifest$aoi$source))$
+    filter(ee$Filter$eq("ADM0_NAME", "Honduras"))
+  states_sf <- sf::st_transform(ee_fc_to_sf(states), 32616)
+  sf::st_write(country,   aoi_gpkg, layer = "country", delete_dsn = TRUE, quiet = TRUE)
+  sf::st_write(states_sf, aoi_gpkg, layer = "states",  append = TRUE,    quiet = TRUE)
 }
 
 cog_options <- c(
@@ -65,6 +79,21 @@ cog_options <- c(
   "BLOCKYSIZE=256",
   "COPY_SRC_OVERVIEWS=YES"
 )
+
+# Manifest dtype strings → terra::writeRaster datatype codes.
+terra_dtype <- function(dtype) {
+  switch(tolower(dtype %||% "uint8"),
+    uint8   = "INT1U",
+    int8    = "INT1S",
+    uint16  = "INT2U",
+    int16   = "INT2S",
+    uint32  = "INT4U",
+    int32   = "INT4S",
+    float32 = "FLT4S",
+    float64 = "FLT8S",
+    "INT1U"
+  )
+}
 
 download_layer <- function(spec) {
   id       <- spec$id
@@ -81,11 +110,17 @@ download_layer <- function(spec) {
 
   tmp_fp <- tempfile(fileext = ".tif")
 
+  # getDownloadURL caps uncompressed payload at ~32 MB. For display-only
+  # rasters the asset is at 100 m but Honduras at 100 m × float32 exceeds
+  # the cap. Request a coarser download scale for those so the pull works
+  # in one request; canonical precision remains in the asset.
+  download_scale <- if (isTRUE(spec$display_only)) max(spec$scale_m, 200) else spec$scale_m
+
   rgee::ee_as_raster(
     image   = img,
     region  = aoi_ee,
     dsn     = tmp_fp,
-    scale   = spec$scale_m,
+    scale   = download_scale,
     via     = "getDownloadURL",
     maxPixels = 1e10
   )
@@ -98,7 +133,7 @@ download_layer <- function(spec) {
     overwrite = TRUE,
     filetype  = "COG",
     gdal      = cog_options,
-    datatype  = toupper(spec$dtype %||% "INT1U")
+    datatype  = terra_dtype(spec$dtype)
   )
 
   size_mb <- file.info(out_fp)$size / 1e6
