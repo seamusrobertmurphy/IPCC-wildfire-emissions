@@ -53,8 +53,7 @@
 
 ### In progress
 
-- **TODO 0001** — `specs/TODO_0001_GEE_Raster_Export.md`
-  Decouple book from live GEE tile sessions by exporting 15 input rasters to user-owned GEE assets, mirroring them as local COGs under `data/rendered/`, and rewriting ~20 map chunks to load from disk. Branch `todo/gee-raster-export`. Phase A in progress.
+None.
 
 ### Handover (pending revert or migration)
 
@@ -63,4 +62,5 @@
 
 ### Completed
 
-None yet.
+- **FEATURE 0001** — `specs/FEATURE_0001_GEE_Raster_Export.md`
+  GEE raster export and offline map conversion. 11 source layers exported to `projects/murphys-deforisk/assets/ipcc-wildfires/`, 9 mirrored as local COGs, 21 map chunks rewritten. Book renders HTML end-to-end without depending on live GEE tile URLs for display. Branch `feature/gee-raster-export`.

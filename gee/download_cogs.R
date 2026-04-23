@@ -123,7 +123,7 @@ download_layer <- function(spec) {
   message(sprintf("[pull] %s <- %s", id, asset_id))
   img <- ee$Image(asset_id)
 
-  download_scale <- if (isTRUE(spec$display_only)) max(spec$scale_m, 200) else spec$scale_m
+  download_scale <- if (isTRUE(spec$display_only)) max(spec$scale_m, 500) else spec$scale_m
 
   fetch_tif <- function(ee_img) {
     url <- ee_img$getDownloadURL(list(

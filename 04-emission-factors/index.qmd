@@ -1130,23 +1130,35 @@ n2o_vis <- list(
 )
 
 tmap::tmap_mode("view")
+# --- Offline render -------------------------------------------------------
+
+local({
+# Spatial emissions proxy: fuel consumption * burn mask. Uses the same
+# IGBP-based fuel lookup as chapter 3 and multiplies by the 25-year burn
+# composite. Values in t DM ha⁻¹ of biomass burned.
+source(here::here("R", "palettes.R"))
+source(here::here("R", "local_rasters.R"))
+if (!exists("aoi_country_sf")) aoi_country_sf <- local_aoi("country")
+if (!exists("aoi_states_sf"))  aoi_states_sf  <- local_aoi("states")
+
+igbp <- local_raster("mcd12q1_igbp_2020")
+burn <- local_raster("mcd64a1_burn_2000_2025_max")
+lookup <- matrix(c(
+  1, 100, 2, 100, 3,  90, 4,  80, 5,  70,
+  6,  50, 7,  40, 8,  20, 9,  15, 10, 10,
+  11, NA, 12, NA, 13, NA, 14, NA, 15, NA, 16, NA, 17, NA
+), ncol = 2, byrow = TRUE)
+fuel <- terra::classify(igbp, lookup, others = NA)
+emissions <- fuel * burn
+
+tmap::tmap_mode("view")
 tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
-  tmap::tm_tiles(
-    ee_tile_url(CH4_per_pixel$selfMask(), ch4_vis),
-    group = "CH₄ Emissions (kg per pixel)"
-  ) +
-  tmap::tm_tiles(
-    ee_tile_url(N2O_per_pixel$selfMask(), n2o_vis),
-    group = "N₂O Emissions (kg per pixel)"
-  ) +
-  tmap::tm_add_legend(
-    type = "polygons",
-    fill = c("orange", "red", "blue", "purple"),
-    labels = c("CH₄ Low", "CH₄ High", "N₂O Low", "N₂O High"),
-    title = "GHG Emissions (kg/pixel)"
-  ) +
-  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tm_local_continuous(emissions,
+    palette_colours = c("#fdae61", "#f46d43", "#d73027", "#7f0000"),
+    title = "Biomass burned (t DM ha⁻¹)") +
   tmap::tm_basemap("Esri.WorldImagery")
+})
+
 ```
 
 ```{r}

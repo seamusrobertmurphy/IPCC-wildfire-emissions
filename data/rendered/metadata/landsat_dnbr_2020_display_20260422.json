@@ -1,0 +1,12 @@
+{
+  "id": "landsat_dnbr_2020_display",
+  "asset_id": "projects/murphys-deforisk/assets/ipcc-wildfires/landsat_dnbr_2020_display",
+  "local_cog": "landsat_dnbr_2020_display.tif",
+  "size_mb": 2.2,
+  "over_50mb": false,
+  "target_crs": "EPSG:32616",
+  "scale_m": 100,
+  "display_only": true,
+  "download_utc": "2026-04-23T01:33:09Z",
+  "rgee_version": "1.1.8"
+}

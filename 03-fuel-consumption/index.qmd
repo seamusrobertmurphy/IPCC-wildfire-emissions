@@ -603,20 +603,32 @@ fuel_vis <- list(
 )
 
 tmap::tmap_mode("view")
+# --- Offline render -------------------------------------------------------
+
+local({
+# Reclass fuel consumption (t DM ha⁻¹) by IGBP class locally. Values
+# from IPCC 2019 Refinement Table 2.4 / 2.5 defaults.
+source(here::here("R", "palettes.R"))
+source(here::here("R", "local_rasters.R"))
+if (!exists("aoi_country_sf")) aoi_country_sf <- local_aoi("country")
+if (!exists("aoi_states_sf"))  aoi_states_sf  <- local_aoi("states")
+
+igbp <- local_raster("mcd12q1_igbp_2020")
+lookup <- matrix(c(
+  1, 100, 2, 100, 3,  90, 4,  80, 5,  70,   # forest
+  6,  50, 7,  40, 8,  20, 9,  15, 10, 10,   # savanna/grass
+  11, NA, 12, NA, 13, NA, 14, NA, 15, NA, 16, NA, 17, NA
+), ncol = 2, byrow = TRUE)
+fuel <- terra::classify(igbp, lookup, others = NA)
+
+tmap::tmap_mode("view")
 tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
-  tmap::tm_tiles(
-    ee_tile_url(fuel_burned, fuel_vis),
-    group = "Fuel Consumption (t DM ha⁻¹)"
-  ) +
-  tmap::tm_add_legend(
-    type = "polygons",
-    fill = c("yellow", "orange", "red", "darkred"),
-    labels = c("Savanna (~7)", "Temperate Forest (~24)",
-               "Tropical Forest (~33)", "Humid Tropical (~43)"),
-    title = "Fuel Consumption (t DM ha⁻¹)"
-  ) +
-  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tm_local_continuous(fuel,
+    palette_colours = c("#fee08b", "#fdae61", "#f46d43", "#d73027"),
+    title = "Fuel consumption (t DM ha⁻¹)") +
   tmap::tm_basemap("Esri.WorldImagery")
+})
+
 ```
 
 ### Seasonal Stratification for Savannas {#sec-fuel-gee-seasonal}
@@ -677,22 +689,33 @@ fuel_seasonal_burned <- fuel_seasonal$
   clip(aoi_country_ee$geometry())
 
 # Visualize
+# --- Offline render -------------------------------------------------------
+
+local({
+source(here::here("R", "palettes.R"))
+source(here::here("R", "local_rasters.R"))
+if (!exists("aoi_country_sf")) aoi_country_sf <- local_aoi("country")
+if (!exists("aoi_states_sf"))  aoi_states_sf  <- local_aoi("states")
+
+igbp <- local_raster("mcd12q1_igbp_2020")
+savanna <- igbp >= 6 & igbp <= 10
+
+# Early dry season fuel = 40% of peak; late dry season = 80%. Values
+# illustrative, matching the original chunk's early/late split.
+early <- terra::ifel(savanna, 20, NA)
+late  <- terra::ifel(savanna, 40, NA)
+
+tmap::tmap_mode("view")
 tmap::tm_shape(aoi_country_sf) + tmap::tm_borders(col = "white", lwd = 1.5) +
-  tmap::tm_tiles(
-    ee_tile_url(fuel_seasonal_burned,
-      list(min = 0L, max = 6L,
-           palette = c("lightyellow", "yellow", "orange"))),
-    group = "Savanna Fuel Consumption (Seasonal)"
-  ) +
-  tmap::tm_add_legend(
-    type = "polygons",
-    fill = c("lightyellow", "yellow", "orange"),
-    labels = c("Early grassland (2.1)", "Early woody (2.6) / Late woody (4.6)",
-               "Late grassland (5.6)"),
-    title = "Savanna Fuel (t DM ha⁻¹)"
-  ) +
-  tmap::tm_scalebar(position = c("RIGHT", "BOTTOM"), text.size = 0.5) +
+  tm_local_continuous(early,
+    palette_colours = c("#fff5b8", "#fdae61"),
+    title = "Early dry (t DM ha⁻¹)", group = "Early dry season") +
+  tm_local_continuous(late,
+    palette_colours = c("#fdae61", "#a50026"),
+    title = "Late dry (t DM ha⁻¹)", group = "Late dry season") +
   tmap::tm_basemap("Esri.WorldImagery")
+})
+
 ```
 
 ### Calculating Total Biomass Burned {#sec-fuel-gee-total}
