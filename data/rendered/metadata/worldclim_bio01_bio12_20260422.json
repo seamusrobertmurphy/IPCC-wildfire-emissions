@@ -1,0 +1,12 @@
+{
+  "id": "worldclim_bio01_bio12",
+  "asset_id": "projects/murphys-deforisk/assets/ipcc-wildfires/worldclim_bio01_bio12",
+  "local_cog": "worldclim_bio01_bio12.tif",
+  "size_mb": 0.53,
+  "over_50mb": false,
+  "target_crs": "EPSG:32616",
+  "scale_m": 1000,
+  "display_only": false,
+  "download_utc": "2026-04-23T00:47:42Z",
+  "rgee_version": "1.1.8"
+}

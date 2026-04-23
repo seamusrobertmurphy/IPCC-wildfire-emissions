@@ -1,0 +1,12 @@
+{
+  "id": "ipcc_climate_zones_honduras",
+  "asset_id": "projects/murphys-deforisk/assets/ipcc-wildfires/ipcc_climate_zones_honduras",
+  "local_cog": "ipcc_climate_zones_honduras.tif",
+  "size_mb": 0.01,
+  "over_50mb": false,
+  "target_crs": "EPSG:32616",
+  "scale_m": 1000,
+  "display_only": false,
+  "download_utc": "2026-04-23T00:47:43Z",
+  "rgee_version": "1.1.8"
+}

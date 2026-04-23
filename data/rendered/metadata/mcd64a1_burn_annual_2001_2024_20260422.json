@@ -1,0 +1,12 @@
+{
+  "id": "mcd64a1_burn_annual_2001_2024",
+  "asset_id": "projects/murphys-deforisk/assets/ipcc-wildfires/mcd64a1_burn_annual_2001_2024",
+  "local_cog": "mcd64a1_burn_annual_2001_2024.tif",
+  "size_mb": 0.37,
+  "over_50mb": false,
+  "target_crs": "EPSG:32616",
+  "scale_m": 500,
+  "display_only": false,
+  "download_utc": "2026-04-23T00:49:40Z",
+  "rgee_version": "1.1.8"
+}

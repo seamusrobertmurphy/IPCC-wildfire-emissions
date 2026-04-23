@@ -20,6 +20,7 @@ suppressPackageStartupMessages({
   library(terra)
   library(sf)
   library(jsonlite)
+  library(httr)
 })
 
 repo_root   <- here::here()
@@ -95,6 +96,13 @@ terra_dtype <- function(dtype) {
   )
 }
 
+asset_ready <- function(asset_id) {
+  tryCatch({
+    rgee::ee$data$getAsset(asset_id)
+    TRUE
+  }, error = function(e) FALSE)
+}
+
 download_layer <- function(spec) {
   id       <- spec$id
   asset_id <- paste0(manifest$asset_root, "/", id)
@@ -105,28 +113,41 @@ download_layer <- function(spec) {
     return(invisible(NULL))
   }
 
+  if (!asset_ready(asset_id)) {
+    message(sprintf("[wait] %s — asset not ready yet, skipping for now", id))
+    return(invisible(NULL))
+  }
+
   message(sprintf("[pull] %s <- %s", id, asset_id))
   img <- ee$Image(asset_id)
 
-  tmp_fp <- tempfile(fileext = ".tif")
-
-  # getDownloadURL caps uncompressed payload at ~32 MB. For display-only
-  # rasters the asset is at 100 m but Honduras at 100 m × float32 exceeds
-  # the cap. Request a coarser download scale for those so the pull works
-  # in one request; canonical precision remains in the asset.
   download_scale <- if (isTRUE(spec$display_only)) max(spec$scale_m, 200) else spec$scale_m
 
-  rgee::ee_as_raster(
-    image   = img,
-    region  = aoi_ee,
-    dsn     = tmp_fp,
-    scale   = download_scale,
-    via     = "getDownloadURL",
-    maxPixels = 1e10
-  )
+  fetch_tif <- function(ee_img) {
+    url <- ee_img$getDownloadURL(list(
+      region = aoi_ee,
+      scale  = download_scale,
+      crs    = "EPSG:32616",
+      format = "GEO_TIFF"
+    ))
+    tmp <- tempfile(fileext = ".tif")
+    resp <- httr::GET(url, httr::write_disk(tmp, overwrite = TRUE), httr::timeout(600))
+    if (httr::http_error(resp)) {
+      stop(sprintf("HTTP %d fetching %s", httr::status_code(resp), id), call. = FALSE)
+    }
+    terra::rast(tmp)
+  }
 
-  r <- terra::rast(tmp_fp)
-  r <- terra::project(r, "EPSG:32616", method = if (grepl("display", id)) "bilinear" else "near")
+  # Assets with many bands blow past the 50 MB per-request limit. Pull in
+  # groups of 6 bands and stack on disk.
+  band_names <- img$bandNames()$getInfo()
+  if (length(band_names) > 6) {
+    chunks <- split(band_names, ceiling(seq_along(band_names) / 6))
+    parts <- lapply(chunks, function(bs) fetch_tif(img$select(bs)))
+    r <- Reduce(c, parts)
+  } else {
+    r <- fetch_tif(img)
+  }
   terra::writeRaster(
     r,
     filename  = out_fp,

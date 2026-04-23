@@ -1,0 +1,12 @@
+{
+  "id": "mod14a1_active_fires_2020",
+  "asset_id": "projects/murphys-deforisk/assets/ipcc-wildfires/mod14a1_active_fires_2020",
+  "local_cog": "mod14a1_active_fires_2020.tif",
+  "size_mb": 0.01,
+  "over_50mb": false,
+  "target_crs": "EPSG:32616",
+  "scale_m": 1000,
+  "display_only": false,
+  "download_utc": "2026-04-23T00:47:37Z",
+  "rgee_version": "1.1.8"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "mcd64a1_uncertainty_2000_2025",
+  "asset_id": "projects/murphys-deforisk/assets/ipcc-wildfires/mcd64a1_uncertainty_2000_2025",
+  "local_cog": "mcd64a1_uncertainty_2000_2025.tif",
+  "size_mb": 0.2,
+  "over_50mb": false,
+  "target_crs": "EPSG:32616",
+  "scale_m": 500,
+  "display_only": false,
+  "download_utc": "2026-04-23T00:47:35Z",
+  "rgee_version": "1.1.8"
+}
